@@ -2,7 +2,7 @@
 pragma solidity >=0.8.14;
 import {IKresko} from "./interfaces/IKresko.sol";
 import {IGnosisSafeL2} from "./vendor/safe/IGnosisSafeL2.sol";
-import {IUniswapV2Router02, IUniswapV2Factory} from "./vendor/uniswapv2/IUniswap.sol";
+import {IUniswapV2Router02, IUniswapV2Factory} from "./vendor/uniswapV2/IUniswap.sol";
 import {IWETH} from "./vendor/IWETH.sol";
 import {IUniswapV2Oracle} from "./interfaces/IUniswapV2Oracle.sol";
 import {IKrStaking} from "./staking/IKrStaking.sol";

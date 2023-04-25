@@ -2,7 +2,7 @@
 pragma solidity >=0.8.14;
 
 import {SafeERC20, IERC20} from "oz-contracts/token/ERC20/utils/SafeERC20.sol";
-import {IUniswapV2Factory, IUniswapV2Router02} from "../vendor/uniswapv2/IUniswap.sol";
+import {IUniswapV2Factory, IUniswapV2Router02} from "../vendor/uniswapV2/IUniswap.sol";
 import {IKrStaking} from "./IKrStaking.sol";
 
 contract KrStakingHelper {
