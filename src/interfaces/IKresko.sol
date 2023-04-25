@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
 
-import {MinterInitArgs, KrAsset, CollateralAsset, MinterParams, Action, SafetyState} from "../MinterTypes.sol";
+import {MinterInitArgs, KrAsset, CollateralAsset, MinterParams, Action, SafetyState} from "../types/MinterTypes.sol";
 import {FixedPoint} from "../libs/FixedPoint.sol";
-import {StabilityRateParams, StabilityRateConfig} from "../StabilityRateTypes.sol";
+import {StabilityRateParams, StabilityRateConfig} from "../types/StabilityRateTypes.sol";
 
 interface IKresko {
     function initialize(MinterInitArgs calldata args) external;

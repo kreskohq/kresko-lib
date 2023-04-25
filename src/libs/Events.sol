@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
 import {IDiamondCutFacet} from "../interfaces/IDiamondCutFacet.sol";
-import {Action} from "../MinterTypes.sol";
+import {Action} from "../types/MinterTypes.sol";
 
 /* solhint-disable var-name-mixedcase */
 

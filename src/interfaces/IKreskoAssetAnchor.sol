@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
-import {IAccessControlEnumerableUpgradeable} from "./IAccessControl.sol";
-import {IERC165} from "./IERC165.sol";
-import {IERC20} from "./IERC20.sol";
+import {IAccessControlEnumerableUpgradeable} from "../vendor/IAccessControl.sol";
+import {IERC165} from "../vendor/IERC165.sol";
+import {IERC20} from "../vendor/IERC20.sol";
 import {IKreskoAssetIssuer} from "./IKreskoAssetIssuer.sol";
 
 interface IKreskoAssetAnchor is

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
 
-import {StringsUpgradeable} from "oz-upgradeable/utils/StringsUpgradeable.sol";
+import {Strings} from "oz-contracts/utils/Strings.sol";
 import "./FluxPriceFeed.sol";
 
 /**

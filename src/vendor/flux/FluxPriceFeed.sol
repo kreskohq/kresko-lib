@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
 
-import {AccessControlUpgradeable} from "oz-upgradeable/access/AccessControlUpgradeable.sol";
-import {AggregatorV2V3Interface} from "../interfaces/IFlux.sol";
+import {AccessControl} from "oz-contracts/access/AccessControl.sol";
+import {AggregatorV2V3Interface} from "./IFlux.sol";
 
 /**
  * @notice Simple data posting on chain of a scalar value, compatible with Chainlink V2 and V3 aggregator interface

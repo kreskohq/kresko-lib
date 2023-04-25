@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
-import {CollateralAsset, KrAsset} from "../MinterTypes.sol";
+import {CollateralAsset, KrAsset} from "../types/MinterTypes.sol";
 import {LibDecimals, FixedPoint} from "../libs/LibDecimals.sol";
 import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
 

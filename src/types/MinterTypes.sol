@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.14;
 
-import {AggregatorV2V3Interface} from "./interfaces/IFlux.sol";
-import {FixedPoint} from "./libs/FixedPoint.sol";
-import {IKreskoAssetAnchor} from "./interfaces/IKreskoAssetAnchor.sol";
+import {AggregatorV2V3Interface} from "../vendor/flux/IFlux.sol";
+import {FixedPoint} from "../libs/FixedPoint.sol";
+import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
 
 /* solhint-disable state-visibility */
 
@@ -206,4 +206,14 @@ struct MinterState {
     address ammOracle;
     /// @notice Offchain oracle decimals
     uint8 extOracleDecimals;
+}
+
+// Storage position
+bytes32 constant MINTER_STORAGE_POSITION = keccak256("kresko.minter.storage");
+
+function ms() pure returns (MinterState storage state) {
+    bytes32 position = MINTER_STORAGE_POSITION;
+    assembly {
+        state.slot := position
+    }
 }
