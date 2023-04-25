@@ -23,7 +23,7 @@ library OPGOERLI {
         KrStakingHelper(0xB1A13FbC46800276671403CeDdd528D01a447c8F);
     IWETH constant WETH = IWETH(0x4200000000000000000000000000000000000006);
     IUniswapV2Router02 constant UniswapV2Router =
-        IUniswapV2Router02(0x1f693246650f93a7E9f4a713479695881b96b5F1);
+        IUniswapV2Router02(0x8F1f2A89930dC9aaa7B5a799AC695dF809B0fbe5);
     IUniswapV2Factory constant UniswapV2Factory =
         IUniswapV2Factory(0xc88508156D93BfF0Adce6c84d4269Efc82D4C827);
     IUniswapV2Oracle constant UniswapV2Oracle =
