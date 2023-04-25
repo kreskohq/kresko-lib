@@ -29,4 +29,8 @@ library OPGOERLI {
     IUniswapV2Oracle constant UniswapV2Oracle =
         IUniswapV2Oracle(0x1B855054ebd895Cf9E08587b537D6864f947620F);
     address constant KISS = 0xC0B5aBa9F46bDf4D1bC52a4C3ab05C857aC4Ee80;
+    address constant DAI = 0x7ff84e6d3111327ED63eb97691Bf469C7fcE832F;
+    address constant krBTC = 0xf88721B9C87EBc86E3C91E6C98c0f646a75600f4;
+    address constant krETH = 0xbb37d6016f97Dd369eCB76e2A5036DacD8770f8b;
+    address constant krTSLA = 0x3502B0329a45011C8FEE033B8eEe6BDA89c03081;
 }
