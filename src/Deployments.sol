@@ -28,4 +28,5 @@ library OPGOERLI {
         IUniswapV2Factory(0xc88508156D93BfF0Adce6c84d4269Efc82D4C827);
     IUniswapV2Oracle constant UniswapV2Oracle =
         IUniswapV2Oracle(0x1B855054ebd895Cf9E08587b537D6864f947620F);
+    address constant KISS = 0xC0B5aBa9F46bDf4D1bC52a4C3ab05C857aC4Ee80;
 }
