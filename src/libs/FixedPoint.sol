@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.14;
 
-import {SafeMathUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import {SignedSafeMathUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/math/SignedSafeMathUpgradeable.sol";
+import {SafeMathUpgradeable} from "oz-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import {SignedSafeMathUpgradeable} from "oz-upgradeable/utils/math/SignedSafeMathUpgradeable.sol";
 
 /* solhint-disable  func-name-mixedcase */
 
