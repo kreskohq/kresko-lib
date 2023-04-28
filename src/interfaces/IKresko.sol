@@ -70,6 +70,16 @@ interface IKresko {
 
     function kreskoAsset(address _asset) external view returns (KrAsset memory);
 
+    function collateralDeposits(
+        address _account,
+        address _asset
+    ) external view returns (uint256);
+
+    function kreskoAssetDebt(
+        address _account,
+        address _asset
+    ) external view returns (uint256);
+
     function getAccountKrAssetValue(
         address _account
     ) external view returns (FixedPoint.Unsigned memory);
