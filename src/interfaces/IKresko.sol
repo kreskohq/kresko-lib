@@ -70,6 +70,18 @@ interface IKresko {
 
     function kreskoAsset(address _asset) external view returns (KrAsset memory);
 
+    function getAccountKrAssetValue(
+        address _account
+    ) external view returns (FixedPoint.Unsigned memory);
+
+    function getAccountCollateralRatio(
+        address _account
+    ) external view returns (FixedPoint.Unsigned memory ratio);
+
+    function getAccountCollateralValue(
+        address _account
+    ) external view returns (FixedPoint.Unsigned memory);
+
     function collateralAsset(
         address _asset
     ) external view returns (CollateralAsset memory);
@@ -79,6 +91,11 @@ interface IKresko {
     ) external view returns (bool);
 
     function getAllParams() external view returns (MinterParams memory);
+
+    function kreskoAssetDebtPrincipal(
+        address _account,
+        address _asset
+    ) external view returns (uint256);
 
     function getCollateralValueAndOraclePrice(
         address _collateralAsset,
