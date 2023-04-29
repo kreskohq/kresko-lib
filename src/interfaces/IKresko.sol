@@ -40,6 +40,12 @@ interface IKresko {
 
     function minterInitializations() external view returns (uint256);
 
+    function mintKreskoAsset(
+        address _account,
+        address _kreskoAsset,
+        uint256 _mintAmount
+    ) external;
+
     function feeRecipient() external view returns (address);
 
     function ammOracle() external view returns (address);
