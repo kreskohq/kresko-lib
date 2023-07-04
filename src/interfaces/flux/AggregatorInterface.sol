@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.20;
+pragma solidity ^0.8.0;
 
 interface AggregatorInterface {
     function latestAnswer() external view returns (int256);
@@ -16,6 +16,15 @@ interface AggregatorInterface {
 
     function getMarketOpen(uint256 roundId) external view returns (bool);
 
-    event AnswerUpdated(int256 indexed current, bool marketOpen, uint256 indexed roundId, uint256 updatedAt);
-    event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt);
+    event AnswerUpdated(
+        int256 indexed current,
+        bool marketOpen,
+        uint256 indexed roundId,
+        uint256 updatedAt
+    );
+    event NewRound(
+        uint256 indexed roundId,
+        address indexed startedBy,
+        uint256 startedAt
+    );
 }

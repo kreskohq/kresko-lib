@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.14;
+pragma solidity ^0.8.0;
 
 import {MinterInitArgs, KrAsset, CollateralAsset, MinterParams, Action, SafetyState} from "../types/MinterTypes.sol";
 import {FixedPoint} from "../libs/FixedPoint.sol";

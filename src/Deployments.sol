@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.14;
+pragma solidity ^0.8.0;
 import {IKresko} from "./interfaces/IKresko.sol";
 import {IGnosisSafeL2} from "./vendor/safe/IGnosisSafeL2.sol";
 import {IUniswapV2Router02, IUniswapV2Factory, IUniswapV2Pair} from "./vendor/uniswapV2/IUniswap.sol";

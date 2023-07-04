@@ -1,8 +1,12 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: BUSL-1.1
 pragma solidity >=0.8.14;
+
 import {CollateralAsset, KrAsset} from "../types/MinterTypes.sol";
-import {LibDecimals, FixedPoint} from "../libs/LibDecimals.sol";
+import {LibDecimals} from "../libs/LibDecimals.sol";
+import {WadRay} from "../libs/WadRay.sol";
 import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
+import {LibDecimals} from "../libs/LibDecimals.sol";
+import {Error} from "../libs/Errors.sol";
 
 /**
  * @title LibAssetUtility
@@ -10,10 +14,8 @@ import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
  * @notice Utility functions for KrAsset and CollateralAsset structs
  */
 library LibAssetUtility {
-    using FixedPoint for int256;
-    using FixedPoint for uint256;
-    using FixedPoint for FixedPoint.Unsigned;
-    using LibDecimals for int256;
+    using WadRay for uint256;
+    using LibDecimals for uint256;
 
     /**
      * @notice Amount of non rebasing tokens -> amount of rebasing tokens
@@ -81,31 +83,42 @@ library LibAssetUtility {
     function uintPrice(
         CollateralAsset memory self
     ) internal view returns (uint256) {
-        return uint256(self.oracle.latestAnswer());
+        (, int256 answer, , , ) = self.oracle.latestRoundData();
+        require(answer >= 0, Error.NEGATIVE_ORACLE_PRICE);
+        return uint256(answer);
     }
 
     /**
      * @notice Get the oracle price of a kresko asset in uint256 with extOracleDecimals
      */
     function uintPrice(KrAsset memory self) internal view returns (uint256) {
-        return uint256(self.oracle.latestAnswer());
+        (, int256 answer, , , ) = self.oracle.latestRoundData();
+        require(answer >= 0, Error.NEGATIVE_ORACLE_PRICE);
+        return uint256(answer);
     }
 
     /**
-     * @notice Get the oracle price of a collateral asset in FixedPoint.Unsigned
+     * @notice check the price and return it
+     * @notice reverts if the price deviates more than `_oracleDeviationPct`
+     * @param _chainlinkPrice chainlink price
+     * @param _redstonePrice redstone price
+     * @param _oracleDeviationPct the deviation percentage to use for the oracle
      */
-    function fixedPointPrice(
-        CollateralAsset memory self
-    ) internal view returns (FixedPoint.Unsigned memory) {
-        return self.oracle.latestAnswer().toFixedPoint();
-    }
+    function _getPrice(
+        uint256 _chainlinkPrice,
+        uint256 _redstonePrice,
+        uint256 _oracleDeviationPct
+    ) internal pure returns (uint256) {
+        if (_chainlinkPrice == 0) return _redstonePrice;
+        if (_redstonePrice == 0) return _chainlinkPrice;
+        if (
+            (_redstonePrice.wadMul(1 ether - _oracleDeviationPct) <=
+                _chainlinkPrice) &&
+            (_redstonePrice.wadMul(1 ether + _oracleDeviationPct) >=
+                _chainlinkPrice)
+        ) return _chainlinkPrice;
 
-    /**
-     * @notice Get the oracle price of a kresko asset in FixedPoint.Unsigned
-     */
-    function fixedPointPrice(
-        KrAsset memory self
-    ) internal view returns (FixedPoint.Unsigned memory) {
-        return self.oracle.latestAnswer().toFixedPoint();
+        // Revert if price deviates more than `_oracleDeviationPct`
+        revert(Error.ORACLE_PRICE_UNSTABLE);
     }
 }
