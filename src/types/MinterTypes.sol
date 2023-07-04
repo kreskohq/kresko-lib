@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity >=0.8.20;
+pragma solidity >=0.8.14;
 
 import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
 import {IFluxPriceFeed} from "../interfaces/flux/IFluxPriceFeed.sol";
