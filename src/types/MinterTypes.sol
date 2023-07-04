@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.8.14;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity >=0.8.20;
 
-import {AggregatorV2V3Interface} from "../vendor/flux/IFlux.sol";
-import {FixedPoint} from "../libs/FixedPoint.sol";
 import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
+import {IFluxPriceFeed} from "../interfaces/flux/IFluxPriceFeed.sol";
+import {AggregatorV3Interface} from "../interfaces/chainlink/AggregatorV3Interface.sol";
 
 /* solhint-disable state-visibility */
 
@@ -12,13 +12,23 @@ import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
 /* -------------------------------------------------------------------------- */
 
 library Constants {
-    uint256 constant ONE_HUNDRED_PERCENT = 1e18;
+    uint256 constant FP_DECIMALS = 18;
+
+    uint256 constant FP_SCALING_FACTOR = 10 ** FP_DECIMALS;
+
+    uint256 constant ONE_HUNDRED_PERCENT = 1 ether;
+
+    uint256 constant BASIS_POINT = 1e14;
 
     /// @dev The maximum configurable close fee.
-    uint256 constant MAX_CLOSE_FEE = 10e16; // 10%
+    uint256 constant MAX_CLOSE_FEE = 0.1 ether; // 10%
 
     /// @dev The maximum configurable open fee.
-    uint256 constant MAX_OPEN_FEE = 10e16; // 10%
+    uint256 constant MAX_OPEN_FEE = 0.1 ether; // 10%
+
+    /// @dev Overflow over maximum liquidatable value to allow leeway for users after one happens.
+    uint256 constant MIN_MAX_LIQUIDATION_MULTIPLIER =
+        ONE_HUNDRED_PERCENT + BASIS_POINT; // 100.01% or .01% over
 
     /// @dev The minimum configurable minimum collateralization ratio.
     uint256 constant MIN_COLLATERALIZATION_RATIO = ONE_HUNDRED_PERCENT;
@@ -29,10 +39,13 @@ library Constants {
 
     /// @dev The maximum configurable liquidation incentive multiplier.
     /// This means liquidator receives 25% bonus collateral compared to the debt repaid.
-    uint256 constant MAX_LIQUIDATION_INCENTIVE_MULTIPLIER = 1.25e18; // 125%
+    uint256 constant MAX_LIQUIDATION_INCENTIVE_MULTIPLIER = 1.25 ether; // 125%
 
-    /// @dev The maximum configurable minimum debt USD value.
-    uint256 constant MAX_DEBT_VALUE = 1000e18; // $1,000
+    /// @dev The minimum collateral amount for a kresko asset.
+    uint256 constant MIN_KRASSET_COLLATERAL_AMOUNT = 1e12;
+
+    /// @dev The maximum configurable minimum debt USD value. 8 decimals.
+    uint256 constant MAX_MIN_DEBT_VALUE = 1_000 * 1e8; // $1,000
 }
 
 /* -------------------------------------------------------------------------- */
@@ -78,10 +91,10 @@ struct MinterInitArgs {
     address council;
     address treasury;
     uint8 extOracleDecimals;
-    uint256 liquidationIncentiveMultiplier;
     uint256 minimumCollateralizationRatio;
     uint256 minimumDebtValue;
     uint256 liquidationThreshold;
+    uint256 oracleDeviationPct;
 }
 
 /**
@@ -89,12 +102,13 @@ struct MinterInitArgs {
  */
 
 struct MinterParams {
-    FixedPoint.Unsigned minimumCollateralizationRatio;
-    FixedPoint.Unsigned liquidationIncentiveMultiplier;
-    FixedPoint.Unsigned minimumDebtValue;
-    FixedPoint.Unsigned liquidationThreshold;
+    uint256 minimumCollateralizationRatio;
+    uint256 minimumDebtValue;
+    uint256 liquidationThreshold;
+    uint256 liquidationOverflowPercentage;
     address feeRecipient;
     uint8 extOracleDecimals;
+    uint256 oracleDeviationPct;
 }
 
 /**
@@ -109,14 +123,15 @@ struct MinterParams {
  * @param exists Whether the KreskoAsset exists within the protocol.
  */
 struct KrAsset {
-    FixedPoint.Unsigned kFactor;
-    AggregatorV2V3Interface oracle;
-    AggregatorV2V3Interface marketStatusOracle;
+    uint256 kFactor;
+    AggregatorV3Interface oracle;
+    IFluxPriceFeed marketStatusOracle;
     uint256 supplyLimit;
     address anchor;
-    FixedPoint.Unsigned closeFee;
-    FixedPoint.Unsigned openFee;
+    uint256 closeFee;
+    uint256 openFee;
     bool exists;
+    bytes32 redstoneId;
 }
 
 /**
@@ -128,14 +143,17 @@ struct KrAsset {
  * @param anchor If the collateral is a KreskoAsset, the anchor address
  * @param decimals The decimals for the token, stored here to avoid repetitive external calls.
  * @param exists Whether the collateral asset exists within the protocol.
+ * @param liquidationIncentive The liquidation incentive for the asset
  */
 struct CollateralAsset {
-    FixedPoint.Unsigned factor;
-    AggregatorV2V3Interface oracle;
-    AggregatorV2V3Interface marketStatusOracle;
+    uint256 factor;
+    AggregatorV3Interface oracle;
+    IFluxPriceFeed marketStatusOracle;
     address anchor;
     uint8 decimals;
     bool exists;
+    uint256 liquidationIncentive;
+    bytes32 redstoneId;
 }
 
 /// @notice Configuration for pausing `Action`
@@ -148,72 +166,4 @@ struct Pause {
 /// @notice Safety configuration for assets
 struct SafetyState {
     Pause pause;
-}
-
-/**
- * @title Storage layout for the minter state
- * @author Kresko
- */
-struct MinterState {
-    /* -------------------------------------------------------------------------- */
-    /*                               Initialization                               */
-    /* -------------------------------------------------------------------------- */
-
-    /// @notice Initialization version
-    uint256 initializations;
-    bytes32 domainSeparator;
-    /* -------------------------------------------------------------------------- */
-    /*                           Configurable Parameters                          */
-    /* -------------------------------------------------------------------------- */
-
-    /// @notice The recipient of protocol fees.
-    address feeRecipient;
-    /// @notice The factor used to calculate the incentive a liquidator receives in the form of seized collateral.
-    FixedPoint.Unsigned liquidationIncentiveMultiplier;
-    /// @notice The absolute minimum ratio of collateral value to debt value used to calculate collateral requirements.
-    FixedPoint.Unsigned minimumCollateralizationRatio;
-    /// @notice The minimum USD value of an individual synthetic asset debt position.
-    FixedPoint.Unsigned minimumDebtValue;
-    /// @notice The collateralization ratio at which positions may be liquidated.
-    FixedPoint.Unsigned liquidationThreshold;
-    /// @notice Flag tells if there is a need to perform safety checks on user actions
-    bool safetyStateSet;
-    /// @notice asset -> action -> state
-    mapping(address => mapping(Action => SafetyState)) safetyState;
-    /* -------------------------------------------------------------------------- */
-    /*                              Collateral Assets                             */
-    /* -------------------------------------------------------------------------- */
-
-    /// @notice Mapping of collateral asset token address to information on the collateral asset.
-    mapping(address => CollateralAsset) collateralAssets;
-    /**
-     * @notice Mapping of account -> asset -> deposit amount
-     */
-    mapping(address => mapping(address => uint256)) collateralDeposits;
-    /// @notice Mapping of account -> collateral asset addresses deposited
-    mapping(address => address[]) depositedCollateralAssets;
-    /* -------------------------------------------------------------------------- */
-    /*                                Kresko Assets                               */
-    /* -------------------------------------------------------------------------- */
-
-    /// @notice Mapping of kresko asset token address to information on the Kresko asset.
-    mapping(address => KrAsset) kreskoAssets;
-    /// @notice Mapping of account -> krAsset -> debt amount owed to the protocol
-    mapping(address => mapping(address => uint256)) kreskoAssetDebt;
-    /// @notice Mapping of account -> addresses of borrowed krAssets
-    mapping(address => address[]) mintedKreskoAssets;
-    /// @notice The AMM oracle address.
-    address ammOracle;
-    /// @notice Offchain oracle decimals
-    uint8 extOracleDecimals;
-}
-
-// Storage position
-bytes32 constant MINTER_STORAGE_POSITION = keccak256("kresko.minter.storage");
-
-function ms() pure returns (MinterState storage state) {
-    bytes32 position = MINTER_STORAGE_POSITION;
-    assembly {
-        state.slot := position
-    }
 }
