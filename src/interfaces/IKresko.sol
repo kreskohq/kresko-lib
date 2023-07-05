@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {MinterInitArgs, KrAsset, CollateralAsset, MinterParams, Action, SafetyState} from "../types/MinterTypes.sol";
-import {FixedPoint} from "../libs/FixedPoint.sol";
+
 import {StabilityRateParams, StabilityRateConfig} from "../types/StabilityRateTypes.sol";
 
 interface IKresko {
@@ -52,25 +52,13 @@ interface IKresko {
 
     function extOracleDecimals() external view returns (uint8);
 
-    function liquidationThreshold()
-        external
-        view
-        returns (FixedPoint.Unsigned memory);
+    function liquidationThreshold() external view returns (uint256);
 
-    function liquidationIncentiveMultiplier()
-        external
-        view
-        returns (FixedPoint.Unsigned memory);
+    function liquidationIncentiveMultiplier() external view returns (uint256);
 
-    function minimumCollateralizationRatio()
-        external
-        view
-        returns (FixedPoint.Unsigned memory);
+    function minimumCollateralizationRatio() external view returns (uint256);
 
-    function minimumDebtValue()
-        external
-        view
-        returns (FixedPoint.Unsigned memory);
+    function minimumDebtValue() external view returns (uint256);
 
     function krAssetExists(address _krAsset) external view returns (bool);
 
@@ -93,13 +81,7 @@ interface IKresko {
     function getAccountSingleCollateralValueAndRealValue(
         address _account,
         address _asset
-    )
-        external
-        view
-        returns (
-            FixedPoint.Unsigned memory value,
-            FixedPoint.Unsigned memory realValue
-        );
+    ) external view returns (uint256 value, uint256 realValue);
 
     /**
      * @notice Gets an index for the Kresko asset the account has minted.
@@ -128,7 +110,7 @@ interface IKresko {
      */
     function getAccountKrAssetValue(
         address _account
-    ) external view returns (FixedPoint.Unsigned memory);
+    ) external view returns (uint256);
 
     function getDepositedCollateralAssets(
         address _account
@@ -136,8 +118,8 @@ interface IKresko {
 
     function getAccountMinimumCollateralValueAtRatio(
         address _account,
-        FixedPoint.Unsigned memory _ratio
-    ) external view returns (FixedPoint.Unsigned memory);
+        uint256 _ratio
+    ) external view returns (uint256);
 
     /**
      * @notice Get `_account` debt amount for `_asset`
@@ -186,11 +168,11 @@ interface IKresko {
 
     function getAccountCollateralRatio(
         address _account
-    ) external view returns (FixedPoint.Unsigned memory ratio);
+    ) external view returns (uint256 ratio);
 
     function getAccountCollateralValue(
         address _account
-    ) external view returns (FixedPoint.Unsigned memory);
+    ) external view returns (uint256);
 
     function collateralAsset(
         address _asset
@@ -217,16 +199,13 @@ interface IKresko {
         address _collateralAsset,
         uint256 _amount,
         bool _ignoreCollateralFactor
-    )
-        external
-        view
-        returns (FixedPoint.Unsigned memory, FixedPoint.Unsigned memory);
+    ) external view returns (uint256, uint256);
 
     function getKrAssetValue(
         address _kreskoAsset,
         uint256 _amount,
         bool _ignoreKFactor
-    ) external view returns (FixedPoint.Unsigned memory);
+    ) external view returns (uint256);
 
     function updateLiquidationIncentiveMultiplier(
         uint256 _liquidationIncentiveMultiplier
@@ -268,7 +247,7 @@ interface IKresko {
         address _account,
         address _repayKreskoAsset,
         address _collateralAssetToSeize
-    ) external view returns (FixedPoint.Unsigned memory maxLiquidatableUSD);
+    ) external view returns (uint256 maxLiquidatableUSD);
 
     function isAccountLiquidatable(
         address _account
