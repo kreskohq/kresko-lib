@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity >=0.8.14;
+pragma solidity ^0.8.0;
 
 import {IKreskoAssetAnchor} from "../interfaces/IKreskoAssetAnchor.sol";
-import {IFluxPriceFeed} from "../interfaces/flux/IFluxPriceFeed.sol";
 import {AggregatorV3Interface} from "../interfaces/chainlink/AggregatorV3Interface.sol";
 
 /* solhint-disable state-visibility */
@@ -95,6 +94,9 @@ struct MinterInitArgs {
     uint256 minimumDebtValue;
     uint256 liquidationThreshold;
     uint256 oracleDeviationPct;
+    address sequencerUptimeFeed;
+    uint256 sequencerGracePeriodTime;
+    uint256 oracleTimeout;
 }
 
 /**
@@ -125,7 +127,6 @@ struct MinterParams {
 struct KrAsset {
     uint256 kFactor;
     AggregatorV3Interface oracle;
-    IFluxPriceFeed marketStatusOracle;
     uint256 supplyLimit;
     address anchor;
     uint256 closeFee;
@@ -148,7 +149,6 @@ struct KrAsset {
 struct CollateralAsset {
     uint256 factor;
     AggregatorV3Interface oracle;
-    IFluxPriceFeed marketStatusOracle;
     address anchor;
     uint8 decimals;
     bool exists;

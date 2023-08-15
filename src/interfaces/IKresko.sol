@@ -3,8 +3,6 @@ pragma solidity ^0.8.0;
 
 import {MinterInitArgs, KrAsset, CollateralAsset, MinterParams, Action, SafetyState} from "../types/MinterTypes.sol";
 
-import {StabilityRateParams, StabilityRateConfig} from "../types/StabilityRateTypes.sol";
-
 interface IKresko {
     function initialize(MinterInitArgs calldata args) external;
 
@@ -48,8 +46,6 @@ interface IKresko {
 
     function feeRecipient() external view returns (address);
 
-    function ammOracle() external view returns (address);
-
     function extOracleDecimals() external view returns (uint8);
 
     function liquidationThreshold() external view returns (uint256);
@@ -68,15 +64,6 @@ interface IKresko {
         address _account,
         address _asset
     ) external view returns (uint256);
-
-    /**
-     * @notice Get `_account` interest amount for `_asset`
-     * @param _account The account to query amount for
-     * @return kissAmount the interest denominated in KISS, ignores K-factor
-     */
-    function kreskoAssetDebtInterestTotal(
-        address _account
-    ) external view returns (uint256 kissAmount);
 
     function getAccountSingleCollateralValueAndRealValue(
         address _account,
@@ -131,18 +118,6 @@ interface IKresko {
         address _account,
         address _asset
     ) external view returns (uint256);
-
-    /**
-     * @notice Get `_account` interest amount for `_asset`
-     * @param _asset The asset address
-     * @param _account The account to query amount for
-     * @return assetAmount the interest denominated in _asset
-     * @return kissAmount the interest denominated in KISS, ignores K-factor
-     */
-    function kreskoAssetDebtInterest(
-        address _account,
-        address _asset
-    ) external view returns (uint256 assetAmount, uint256 kissAmount);
 
     /**
      * @notice Calculates the expected fee to be taken from a user's deposited collateral assets,
@@ -232,17 +207,6 @@ interface IKresko {
         bytes memory _userData
     ) external;
 
-    function batchLiquidateInterest(
-        address _account,
-        address _collateralAssetToSeize
-    ) external;
-
-    function liquidateInterest(
-        address _account,
-        address _repayKreskoAsset,
-        address _collateralAssetToSeize
-    ) external;
-
     function calculateMaxLiquidatableValueForAssets(
         address _account,
         address _repayKreskoAsset,
@@ -261,58 +225,6 @@ interface IKresko {
         uint256 _mintedKreskoAssetIndex,
         uint256 _depositedCollateralAssetIndex
     ) external;
-
-    function setupStabilityRateParams(
-        address _asset,
-        StabilityRateParams memory _setup
-    ) external;
-
-    function updateStabilityRateParams(
-        address _asset,
-        StabilityRateParams memory _setup
-    ) external;
-
-    function updateStabilityRateAndIndexForAsset(address _asset) external;
-
-    function updateKiss(address _kiss) external;
-
-    function repayStabilityRateInterestPartial(
-        address _account,
-        address _kreskoAsset,
-        uint256 _kissRepayAmount
-    ) external;
-
-    function repayFullStabilityRateInterest(
-        address _account,
-        address _kreskoAsset
-    ) external returns (uint256 kissRepayAmount);
-
-    function batchRepayFullStabilityRateInterest(
-        address _account
-    ) external returns (uint256 kissRepayAmount);
-
-    function getStabilityRateForAsset(
-        address _asset
-    ) external view returns (uint256 stabilityRate);
-
-    function getPriceRateForAsset(
-        address _asset
-    ) external view returns (uint256 priceRate);
-
-    function getDebtIndexForAsset(
-        address _asset
-    ) external view returns (uint256 debtIndex);
-
-    function getStabilityRateConfigurationForAsset(
-        address _asset
-    ) external view returns (StabilityRateConfig memory);
-
-    function kiss() external view returns (address);
-
-    function getLastDebtIndexForAccount(
-        address _account,
-        address _asset
-    ) external view returns (uint128 lastDebtIndex);
 
     /**
      * @notice Adds a collateral asset to the protocol.
@@ -412,12 +324,6 @@ interface IKresko {
      * @param _liquidationThreshold The new liquidation threshold value
      */
     function updateLiquidationThreshold(uint256 _liquidationThreshold) external;
-
-    /**
-     * @notice Sets the protocol AMM oracle address
-     * @param _ammOracle  The address of the oracle
-     */
-    function updateAMMOracle(address _ammOracle) external;
 
     /**
      * @notice Sets the decimal precision of external oracle
