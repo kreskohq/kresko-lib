@@ -2,9 +2,18 @@
 pragma solidity >=0.8.14;
 
 import {IERC20} from "../vendor/IERC20.sol";
-import {Rebase} from "../libs/Rebase.sol";
 
 interface IKreskoAsset is IERC20 {
+    /**
+     * @notice Rebase information
+     * @param positive supply increasing/reducing rebase
+     * @param denominator the denominator for the operator, 1 ether = 1
+     */
+    struct Rebase {
+        bool positive;
+        uint256 denominator;
+    }
+
     function initialize(
         string memory _name,
         string memory _symbol,
