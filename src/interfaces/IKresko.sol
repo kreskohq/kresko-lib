@@ -50,8 +50,6 @@ interface IKresko {
 
     function liquidationThreshold() external view returns (uint256);
 
-    function liquidationIncentiveMultiplier() external view returns (uint256);
-
     function minimumCollateralizationRatio() external view returns (uint256);
 
     function minimumDebtValue() external view returns (uint256);
