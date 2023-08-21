@@ -1193,6 +1193,8 @@ library LibTest {
             emit log_named_decimal_uint("     % Delta", percentDelta * 100, 18);
             fail();
         }
+
+        return !s()._failed;
     }
 
     function closeToRelDecimal(
@@ -1210,6 +1212,8 @@ library LibTest {
             emit log_named_string("Error", err);
             closeToRelDecimal(a, b, maxPercentDelta, decimals);
         }
+
+        return !s()._failed;
     }
 
     function equalsCall(
