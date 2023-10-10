@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {IERC20Permit} from "./IERC20Permit.sol";
 import {Address} from "@oz/utils/Address.sol";
-import {CError} from "common/CError.sol";
+import {CError} from "core/Errors.sol";
 
 /**
  * @title SafeERC20Permit

@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 /* solhint-disable no-inline-assembly */
-
-pragma solidity >=0.8.21;
-import {CError} from "./Errors.sol";
+pragma solidity ^0.8.14;
+import {CError} from "core/Errors.sol";
 
 library Meta {
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH =

@@ -1,25 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
-
-import {Initializable} from "@oz-upgradeable/proxy/utils/Initializable.sol";
-import {IERC20Permit} from "vendor/IERC20Permit.sol";
-import {CError} from "common/CError.sol";
-
-/* solhint-disable var-name-mixedcase */
-/* solhint-disable not-rely-on-time */
-/* solhint-disable func-name-mixedcase */
-/* solhint-disable no-empty-blocks */
+import {CError} from "core/Errors.sol";
 
 /// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.
-/// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC20.sol)
+/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC20.sol)
 /// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)
-/// @author Kresko: modified to an upgradeable
 /// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
-
-contract ERC20Upgradeable is Initializable, IERC20Permit {
-    /* -------------------------------------------------------------------------- */
-    /*                                   Events                                   */
-    /* -------------------------------------------------------------------------- */
+abstract contract ERC20 {
+    /*//////////////////////////////////////////////////////////////
+                                 EVENTS
+    //////////////////////////////////////////////////////////////*/
 
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
@@ -29,83 +19,62 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         uint256 amount
     );
 
-    /* -------------------------------------------------------------------------- */
-    /*                                ERC20 Storage                               */
-    /* -------------------------------------------------------------------------- */
+    /*//////////////////////////////////////////////////////////////
+                            METADATA STORAGE
+    //////////////////////////////////////////////////////////////*/
 
     string public name;
+
     string public symbol;
-    uint8 public decimals;
+
+    uint8 public immutable decimals;
+
+    /*//////////////////////////////////////////////////////////////
+                              ERC20 STORAGE
+    //////////////////////////////////////////////////////////////*/
 
     uint256 internal _totalSupply;
-    mapping(address => uint256) internal _balances;
-    mapping(address => mapping(address => uint256)) internal _allowances;
 
-    /* -------------------------------------------------------------------------- */
-    /*                                  EIP-2612                                  */
-    /* -------------------------------------------------------------------------- */
+    mapping(address => uint256) public balanceOf;
+
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    /*//////////////////////////////////////////////////////////////
+                            EIP-2612 STORAGE
+    //////////////////////////////////////////////////////////////*/
+
+    uint256 internal immutable INITIAL_CHAIN_ID;
+
+    bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;
 
     mapping(address => uint256) public nonces;
 
-    /* -------------------------------------------------------------------------- */
-    /*                                 Immutables                                 */
-    /* -------------------------------------------------------------------------- */
+    /*//////////////////////////////////////////////////////////////
+                               CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
 
-    uint256 internal immutable INITIAL_CHAIN_ID;
-    bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;
+    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
+        name = _name;
+        symbol = _symbol;
+        decimals = _decimals;
 
-    constructor() payable {
         INITIAL_CHAIN_ID = block.chainid;
         INITIAL_DOMAIN_SEPARATOR = computeDomainSeparator();
     }
 
-    /**
-     * @dev Sets the values for {name} and {symbol}.
-     *
-     * The default value of {decimals} is 18. To select a different value for
-     * {decimals} you should overload it.
-     *
-     * All two of these values are immutable: they can only be set once during
-     * construction.
-     */
-    function __ERC20Upgradeable_init(
-        string memory _name,
-        string memory _symbol,
-        uint8 _decimals
-    ) internal onlyInitializing {
-        name = _name;
-        symbol = _symbol;
-        decimals = _decimals;
-    }
-
-    /* -------------------------------------------------------------------------- */
-    /*                                    READ                                    */
-    /* -------------------------------------------------------------------------- */
-
-    function balanceOf(address _account) public view virtual returns (uint256) {
-        return _balances[_account];
-    }
+    /*//////////////////////////////////////////////////////////////
+                               ERC20 LOGIC
+    //////////////////////////////////////////////////////////////*/
 
     function totalSupply() public view virtual returns (uint256) {
         return _totalSupply;
     }
 
-    function allowance(
-        address _owner,
-        address _spender
-    ) public view virtual returns (uint256) {
-        return _allowances[_owner][_spender];
-    }
-
-    /* -------------------------------------------------------------------------- */
-    /*                                 ERC20 Logic                                */
-    /* -------------------------------------------------------------------------- */
-
     function approve(
         address spender,
         uint256 amount
     ) public virtual returns (bool) {
-        _allowances[msg.sender][spender] = amount;
+        allowance[msg.sender][spender] = amount;
 
         emit Approval(msg.sender, spender, amount);
 
@@ -116,14 +85,12 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         address to,
         uint256 amount
     ) public virtual returns (bool) {
-        _beforeTokenTransfer(msg.sender, to, amount);
-
-        _balances[msg.sender] -= amount;
+        balanceOf[msg.sender] -= amount;
 
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            _balances[to] += amount;
+            balanceOf[to] += amount;
         }
 
         emit Transfer(msg.sender, to, amount);
@@ -136,19 +103,17 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         address to,
         uint256 amount
     ) public virtual returns (bool) {
-        _beforeTokenTransfer(from, to, amount);
-
-        uint256 allowed = _allowances[from][msg.sender]; // Saves gas for limited approvals.
+        uint256 allowed = allowance[from][msg.sender]; // Saves gas for limited approvals.
 
         if (allowed != type(uint256).max)
-            _allowances[from][msg.sender] = allowed - amount;
+            allowance[from][msg.sender] = allowed - amount;
 
-        _balances[from] -= amount;
+        balanceOf[from] -= amount;
 
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            _balances[to] += amount;
+            balanceOf[to] += amount;
         }
 
         emit Transfer(from, to, amount);
@@ -156,9 +121,9 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         return true;
     }
 
-    /* -------------------------------------------------------------------------- */
-    /*                               EIP-2612 Logic                               */
-    /* -------------------------------------------------------------------------- */
+    /*//////////////////////////////////////////////////////////////
+                             EIP-2612 LOGIC
+    //////////////////////////////////////////////////////////////*/
 
     function permit(
         address owner,
@@ -203,10 +168,11 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
                 r,
                 s
             );
+
             if (recoveredAddress == address(0) || recoveredAddress != owner)
                 revert CError.INVALID_SIGNER(owner, recoveredAddress);
 
-            _allowances[recoveredAddress][spender] = value;
+            allowance[recoveredAddress][spender] = value;
         }
 
         emit Approval(owner, spender, value);
@@ -234,28 +200,24 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
             );
     }
 
-    /* -------------------------------------------------------------------------- */
-    /*                                  Internals                                 */
-    /* -------------------------------------------------------------------------- */
+    /*//////////////////////////////////////////////////////////////
+                        INTERNAL MINT/BURN LOGIC
+    //////////////////////////////////////////////////////////////*/
 
     function _mint(address to, uint256 amount) internal virtual {
-        _beforeTokenTransfer(address(0), to, amount);
-
         _totalSupply += amount;
 
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            _balances[to] += amount;
+            balanceOf[to] += amount;
         }
 
         emit Transfer(address(0), to, amount);
     }
 
     function _burn(address from, uint256 amount) internal virtual {
-        _beforeTokenTransfer(from, address(0), amount);
-
-        _balances[from] -= amount;
+        balanceOf[from] -= amount;
 
         // Cannot underflow because a user's balance
         // will never be larger than the total supply.
@@ -264,20 +226,5 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         }
 
         emit Transfer(from, address(0), amount);
-    }
-
-    /**
-     * @dev See {ERC20-_beforeTokenTransfer}.
-     *
-     * Requirements:
-     *
-     * - the contract must not be paused.
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal virtual {
-        // Silence state mutability warning without generating bytecode.
     }
 }
