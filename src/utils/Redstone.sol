@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 import {Script} from "forge-std/Script.sol";
-import {IKresko} from "core/IKresko.sol";
 
 abstract contract RedstonePayload is Script {
     string internal _payloadGetterScript;
@@ -28,7 +27,7 @@ abstract contract RedstonePayload is Script {
 }
 
 abstract contract RedstoneScript is RedstonePayload {
-    IKresko internal kresko;
+    address internal __current_kresko;
 
     constructor(string memory scriptLocation) RedstonePayload(scriptLocation) {}
 
@@ -74,9 +73,8 @@ abstract contract RedstoneScript is RedstonePayload {
             param1,
             param2
         );
-        (bool success, bytes memory data) = address(kresko).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
-        );
+        (bool success, bytes memory data) = address(__current_kresko)
+            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
         require(success, _getRevertMsg(data));
         return abi.decode(data, (uint256));
     }
@@ -89,9 +87,8 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes memory redstonePayload = getRedstonePayload(prices);
 
         bytes memory encodedFunction = abi.encodeWithSelector(selector, param1);
-        (bool success, bytes memory data) = address(kresko).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
-        );
+        (bool success, bytes memory data) = address(__current_kresko)
+            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
         require(success, _getRevertMsg(data));
         return abi.decode(data, (uint256));
     }
@@ -109,9 +106,8 @@ abstract contract RedstoneScript is RedstonePayload {
             param1,
             param2
         );
-        (bool success, bytes memory data) = address(kresko).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
-        );
+        (bool success, bytes memory data) = address(__current_kresko)
+            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
         require(success, _getRevertMsg(data));
         return abi.decode(data, (uint256));
     }
@@ -124,9 +120,8 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes memory redstonePayload = getRedstonePayload(prices);
 
         bytes memory encodedFunction = abi.encodeWithSelector(selector, param1);
-        (bool success, bytes memory data) = address(kresko).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
-        );
+        (bool success, bytes memory data) = address(__current_kresko)
+            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
         require(success, _getRevertMsg(data));
         return abi.decode(data, (uint256));
     }
@@ -143,7 +138,7 @@ abstract contract RedstoneScript is RedstonePayload {
             param1,
             param2
         );
-        (bool success, bytes memory data) = address(kresko).call(
+        (bool success, bytes memory data) = address(__current_kresko).call(
             abi.encodePacked(encodedFunction, redstonePayload)
         );
         require(success, _getRevertMsg(data));
@@ -164,7 +159,7 @@ abstract contract RedstoneScript is RedstonePayload {
             param2,
             param3
         );
-        (bool success, bytes memory data) = address(kresko).call(
+        (bool success, bytes memory data) = address(__current_kresko).call(
             abi.encodePacked(encodedFunction, redstonePayload)
         );
         require(success, _getRevertMsg(data));
@@ -202,7 +197,7 @@ abstract contract RedstoneScript is RedstonePayload {
             param4,
             param5
         );
-        (bool success, bytes memory data) = address(kresko).call(
+        (bool success, bytes memory data) = address(__current_kresko).call(
             abi.encodePacked(encodedFunction, redstonePayload)
         );
         require(success, _getRevertMsg(data));
@@ -225,7 +220,7 @@ abstract contract RedstoneScript is RedstonePayload {
             param3,
             param4
         );
-        (bool success, bytes memory data) = address(kresko).call(
+        (bool success, bytes memory data) = address(__current_kresko).call(
             abi.encodePacked(encodedFunction, redstonePayload)
         );
         require(success, _getRevertMsg(data));
