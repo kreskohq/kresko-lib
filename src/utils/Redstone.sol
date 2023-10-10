@@ -53,9 +53,8 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes memory redstonePayload = getRedstonePayload(prices);
 
         bytes memory encodedFunction = abi.encodeWithSelector(selector);
-        (bool success, bytes memory data) = address(kresko).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
-        );
+        (bool success, bytes memory data) = address(__current_kresko)
+            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
         require(success, _getRevertMsg(data));
         return abi.decode(data, (uint256));
     }
