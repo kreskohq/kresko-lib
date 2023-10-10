@@ -29,9 +29,9 @@ library Arbitrum {
     ERC20 constant usdce = ERC20(0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8);
     ERC20 constant link = ERC20(0xf97f4df75117a78c1A5a0DBb814Af92458539FB4);
     ERC20 constant wbtc = ERC20(0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f);
-    ERC20 constant USDT = ERC20(0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9);
-    ERC20 constant GMX = ERC20(0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a);
-    ERC20 constant GNS = ERC20(0x18c11FD286C5EC11c3b683Caa813B77f5163A122);
+    ERC20 constant usdt = ERC20(0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9);
+    ERC20 constant gmx = ERC20(0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a);
+    ERC20 constant gns = ERC20(0x18c11FD286C5EC11c3b683Caa813B77f5163A122);
     IWETH9 constant weth = IWETH9(0x82aF49447D8a07e3bd95BD0d56f35241523fBab1);
 
     uint24 constant defaultFee = 3000;
@@ -51,7 +51,7 @@ library Arbitrum {
     IUniswapV3Factory constant V3Factory =
         IUniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984);
 
-    function univ3() internal pure returns (V3Pools memory) {
+    function poolv3() internal pure returns (V3Pools memory) {
         return
             V3Pools({
                 usdceusdt100: 0x8c9D230D45d6CfeE39a6680Fb7CB7E8DE7Ea8E71,
