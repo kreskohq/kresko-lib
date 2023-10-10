@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 
 pragma solidity >=0.8.21;
-import {AggregatorV3Interface} from "vendor/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "../vendor/AggregatorV3Interface.sol";
 
 contract MockOracle is AggregatorV3Interface {
     uint8 public decimals = 8;

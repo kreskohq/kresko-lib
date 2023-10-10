@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import {ERC20} from "./ERC20.sol";
-import {CError} from "core/Errors.sol";
+import {CError} from "../core/Errors.sol";
 
 /// @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/SafeTransferLib.sol)

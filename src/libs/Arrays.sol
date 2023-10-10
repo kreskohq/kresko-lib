@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.21;
 
-import {CError} from "core/Errors.sol";
+import {CError} from "../core/Errors.sol";
 
 /**
  * @title Library for operations on arrays
@@ -16,7 +16,7 @@ library Arrays {
     function find(
         address[] storage _addresses,
         address _elementToFind
-    ) internal view returns (Item memory) {
+    ) internal view returns (Item memory item) {
         for (uint256 i; i < _addresses.length; ) {
             if (_addresses[i] == _elementToFind) {
                 return Item(true, i);

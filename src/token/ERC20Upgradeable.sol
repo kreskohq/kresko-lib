@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import {Initializable} from "@oz-upgradeable/proxy/utils/Initializable.sol";
 import {IERC20Permit} from "./IERC20Permit.sol";
-import {CError} from "core/Errors.sol";
+import {CError} from "../core/Errors.sol";
 
 /* solhint-disable var-name-mixedcase */
 /* solhint-disable not-rely-on-time */

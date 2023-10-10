@@ -3,7 +3,7 @@ pragma solidity ^0.8.14;
 
 import {WadRay} from "./WadRay.sol";
 import {PercentageMath} from "./PercentageMath.sol";
-import {AggregatorV3Interface} from "vendor/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} from "../vendor/AggregatorV3Interface.sol";
 
 using WadRay for uint256;
 using PercentageMath for uint256;

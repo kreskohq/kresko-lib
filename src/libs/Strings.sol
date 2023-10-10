@@ -2,7 +2,7 @@
 // OpenZeppelin Contracts v4.4.1 (utils/Strings.sol)
 
 pragma solidity >=0.8.21;
-import {CError} from "core/Errors.sol";
+import {CError} from "../core/Errors.sol";
 
 /**
  * @dev String operations.

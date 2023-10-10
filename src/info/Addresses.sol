@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IQuoterV2} from "vendor/IQuoterV2.sol";
-import {ISwapRouter} from "vendor/ISwapRouter.sol";
-import {IUniswapV3Factory} from "vendor/IUniswapV3Factory.sol";
-import {IUniswapV3NFTManager} from "vendor/IUniswapV3NFTManager.sol";
-import {ERC20} from "core/IVault.sol";
-import {IWETH9} from "vendor/IWETH9.sol";
+import {IQuoterV2} from "../vendor/IQuoterV2.sol";
+import {ISwapRouter} from "../vendor/ISwapRouter.sol";
+import {IUniswapV3Factory} from "../vendor/IUniswapV3Factory.sol";
+import {IUniswapV3NFTManager} from "../vendor/IUniswapV3NFTManager.sol";
+import {ERC20} from "../core/IVault.sol";
+import {IWETH9} from "../vendor/IWETH9.sol";
 
 struct V3Pools {
     address usdcweth500;
