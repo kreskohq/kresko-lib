@@ -1,6 +1,5 @@
 pragma solidity ^0.8.0;
 
-import {Deployments} from "../Deployments.sol";
 import {Wallet} from "./Wallet.sol";
 
 abstract contract ScriptBase is Deployments, Wallet {

@@ -1,14 +1,191 @@
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.8.14;
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.0;
 
-interface IKISS {
-    function pendingOperatorUnlockTime() external returns (uint256);
+interface IERC165 {
+    /// @notice Query if a contract implements an interface
+    /// @param interfaceId The interface identifier, as specified in ERC-165
+    /// @dev Interface identification is specified in ERC-165. This function
+    ///  uses less than 30,000 gas.
+    /// @return `true` if the contract implements `interfaceID` and
+    ///  `interfaceID` is not 0xffffffff, `false` otherwise
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+}
 
-    function pendingOperator() external returns (address);
+/// @title KreskoAsset issuer interface
+/// @author Kresko
+/// @notice Contract that can issue/destroy Kresko Assets through Kresko
+/// @dev This interface is used by KISS & KreskoAssetAnchor
+interface IKreskoAssetIssuer {
+    /**
+     * @notice Mints @param _assets of krAssets for @param _to,
+     * @notice Mints relative @return _shares of wkrAssets
+     */
+    function issue(uint256 _assets, address _to) external returns (uint256 shares);
 
-    function maxOperators() external returns (uint256);
+    /**
+     * @notice Burns @param _assets of krAssets from @param _from,
+     * @notice Burns relative @return _shares of wkrAssets
+     */
+    function destroy(uint256 _assets, address _from) external returns (uint256 shares);
 
-    function setMaxOperators(uint256 _maxMinters) external;
+    /**
+     * @notice Returns the total amount of anchor tokens out
+     */
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
 
-    function kresko() external returns (address);
+    /**
+     * @notice Returns the total amount of krAssets out
+     */
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
+}
+
+interface IVaultExtender {
+    event Deposit(address indexed _from, address indexed _to, uint256 _amount);
+    event Withdraw(address indexed _from, address indexed _to, uint256 _amount);
+
+    /**
+     * @notice Deposit tokens to vault for shares and convert them to equal amount of extender token.
+     * @param _asset Supported vault asset address
+     * @param _assets amount of `_asset` to deposit
+     * @param _receiver Address receive extender tokens
+     * @return sharesOut amount of shares/extender tokens minted
+     * @return assetFee amount of `_asset` vault took as fee
+     */
+    function vaultDeposit(
+        address _asset,
+        uint256 _assets,
+        address _receiver
+    ) external returns (uint256 sharesOut, uint256 assetFee);
+
+    /**
+     * @notice Deposit supported vault assets to receive `_shares`, depositing the shares for equal amount of extender token.
+     * @param _asset Supported vault asset address
+     * @param _receiver Address receive extender tokens
+     * @param _shares Amount of shares to receive
+     * @return assetsIn Amount of assets for `_shares`
+     * @return assetFee Amount of `_asset` vault took as fee
+     */
+    function vaultMint(
+        address _asset,
+        uint256 _shares,
+        address _receiver
+    ) external returns (uint256 assetsIn, uint256 assetFee);
+
+    /**
+     * @notice Withdraw supported vault asset, burning extender tokens and withdrawing shares from vault.
+     * @param _asset Supported vault asset address
+     * @param _assets amount of `_asset` to deposit
+     * @param _receiver Address receive extender tokens
+     * @param _owner Owner of extender tokens
+     * @return sharesIn amount of shares/extender tokens burned
+     * @return assetFee amount of `_asset` vault took as fee
+     */
+    function vaultWithdraw(
+        address _asset,
+        uint256 _assets,
+        address _receiver,
+        address _owner
+    ) external returns (uint256 sharesIn, uint256 assetFee);
+
+    /**
+     * @notice  Withdraw supported vault asset for  `_shares` of extender tokens.
+     * @param _asset Token to deposit into vault for shares.
+     * @param _shares amount of extender tokens to burn
+     * @param _receiver Address to receive assets withdrawn
+     * @param _owner Owner of extender tokens
+     * @return sharesIn amount of shares/extender tokens minted
+     * @return assetFee amount of `_asset` vault took as fee
+     * @dev Does not return a value
+     */
+    function vaultRedeem(
+        address _asset,
+        uint256 _shares,
+        address _receiver,
+        address _owner
+    ) external returns (uint256 sharesIn, uint256 assetFee);
+
+    /**
+     * @notice Deposit shares for equal amount of extender token.
+     * @param _shares amount of vault shares to deposit
+     * @param _receiver address to mint extender tokens to
+     * @dev Does not return a value
+     */
+    function deposit(uint256 _shares, address _receiver) external;
+
+    /**
+     * @notice Withdraw shares for equal amount of extender token.
+     * @param _amount amount of vault extender tokens to burn
+     * @param _receiver address to send shares to
+     * @dev Does not return a value
+     */
+    function withdraw(uint256 _amount, address _receiver) external;
+
+    /**
+     * @notice Withdraw shares for equal amount of extender token with allowance.
+     * @param _from address to burn extender tokens from
+     * @param _to address to send shares to
+     * @param _amount amount to convert
+     * @dev Does not return a value
+     */
+    function withdrawFrom(address _from, address _to, uint256 _amount) external;
+}
+
+interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
+    /* -------------------------------------------------------------------------- */
+    /*                                   Events                                   */
+    /* -------------------------------------------------------------------------- */
+
+    /**
+     * @notice This function adds KISS to circulation
+     * Caller must be a contract and have the OPERATOR_ROLE
+     * @param _amount amount to mint
+     * @param _to address to mint tokens to
+     * @return uint256 amount minted
+     */
+    function issue(uint256 _amount, address _to) external override returns (uint256);
+
+    /**
+     * @notice This function removes KISS from circulation
+     * Caller must be a contract and have the OPERATOR_ROLE
+     * @param _amount amount to burn
+     * @param _from address to burn tokens from
+     * @return uint256 amount burned
+     *
+     * @inheritdoc IKreskoAssetIssuer
+     */
+    function destroy(uint256 _amount, address _from) external override returns (uint256);
+
+    /**
+     * @notice Triggers stopped state.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    function pause() external;
+
+    /**
+     * @notice  Returns to normal state.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    function unpause() external;
+
+    /**
+     * @notice Exchange rate of vKISS to USD.
+     * @return rate vKISS/USD exchange rate.
+     * @custom:signature exchangeRate()
+     * @custom:selector 0x3ba0b9a9
+     */
+    function exchangeRate() external view returns (uint256 rate);
+
+    /**
+     * @notice Overrides `AccessControl.grantRole` for following:
+     * @notice EOA cannot be granted Role.OPERATOR role
+     * @param _role role to grant
+     * @param _to address to grant role for
+     */
+    function grantRole(bytes32 _role, address _to) external;
 }

@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (utils/Strings.sol)
 
-pragma solidity >=0.8.14;
+pragma solidity >=0.8.21;
+import {CError} from "./Errors.sol";
 
 /**
  * @dev String operations.
  */
 library Strings {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
+
+    function toString(bytes32 value) internal pure returns (string memory) {
+        return string(abi.encodePacked(value));
+    }
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
@@ -64,7 +69,7 @@ library Strings {
             buffer[i] = _HEX_SYMBOLS[value & 0xf];
             value >>= 4;
         }
-        require(value == 0, "Strings: hex length insufficient");
+        if (value != 0) revert CError.STRING_HEX_LENGTH_INSUFFICIENT();
         return string(buffer);
     }
 }
