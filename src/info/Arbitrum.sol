@@ -11,6 +11,14 @@ import {IProxy} from "../vendor/IProxy.sol";
 import {IWETH9} from "../vendor/IWETH9.sol";
 
 library addr {
+    address internal constant ZERO = address(0);
+    address internal constant KRESKO_SAFE =
+        0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
+    address internal constant OFFICIALLY_KRESKIAN =
+        0xAbDb949a18d27367118573A217E5353EDe5A0f1E;
+    address internal constant QUEST_FOR_KRESK =
+        0x1C04925779805f2dF7BbD0433ABE92Ea74829bF6;
+
     address internal constant gDAI = 0xd85E038593d7A098614721EaE955EC2022B9B91B;
     address internal constant DAI = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
     address internal constant ARB = 0x912CE59144191C1204E64559FE8253a0e49E6548;
