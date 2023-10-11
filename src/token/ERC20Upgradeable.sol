@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import {Initializable} from "@oz-upgradeable/proxy/utils/Initializable.sol";
 import {IERC20Permit} from "./IERC20Permit.sol";
-import {CError} from "../core/Errors.sol";
 
 /* solhint-disable var-name-mixedcase */
 /* solhint-disable not-rely-on-time */
@@ -16,19 +15,7 @@ import {CError} from "../core/Errors.sol";
 /// @author Kresko: modified to an upgradeable
 /// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
 
-contract ERC20Upgradeable is Initializable, IERC20Permit {
-    /* -------------------------------------------------------------------------- */
-    /*                                   Events                                   */
-    /* -------------------------------------------------------------------------- */
-
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 amount
-    );
-
+abstract contract ERC20Upgradeable is Initializable, IERC20Permit {
     /* -------------------------------------------------------------------------- */
     /*                                ERC20 Storage                               */
     /* -------------------------------------------------------------------------- */
@@ -170,7 +157,7 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
         bytes32 s
     ) public virtual {
         if (block.timestamp > deadline)
-            revert CError.PERMIT_DEADLINE_EXPIRED(
+            revert PERMIT_DEADLINE_EXPIRED(
                 owner,
                 spender,
                 deadline,
@@ -204,7 +191,7 @@ contract ERC20Upgradeable is Initializable, IERC20Permit {
                 s
             );
             if (recoveredAddress == address(0) || recoveredAddress != owner)
-                revert CError.INVALID_SIGNER(owner, recoveredAddress);
+                revert INVALID_SIGNER(owner, recoveredAddress);
 
             _allowances[recoveredAddress][spender] = value;
         }

@@ -3,7 +3,7 @@ pragma solidity ^0.8.14;
 
 import {WadRay} from "./WadRay.sol";
 import {PercentageMath} from "./PercentageMath.sol";
-import {AggregatorV3Interface} from "../vendor/AggregatorV3Interface.sol";
+import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 
 using WadRay for uint256;
 using PercentageMath for uint256;
@@ -22,9 +22,8 @@ function isSequencerUp(
 ) view returns (bool) {
     bool up = true;
     if (_uptimeFeed != address(0)) {
-        (, int256 answer, uint256 startedAt, , ) = AggregatorV3Interface(
-            _uptimeFeed
-        ).latestRoundData();
+        (, int256 answer, uint256 startedAt, , ) = IAggregatorV3(_uptimeFeed)
+            .latestRoundData();
 
         up = answer == 0;
         if (!up) {

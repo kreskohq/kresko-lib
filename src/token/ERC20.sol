@@ -1,24 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.0;
-import {CError} from "../core/Errors.sol";
+import {IERC20Permit} from "./IERC20Permit.sol";
 
 /// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC20.sol)
 /// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)
 /// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
-abstract contract ERC20 {
-    /*//////////////////////////////////////////////////////////////
-                                 EVENTS
-    //////////////////////////////////////////////////////////////*/
-
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 amount
-    );
-
+contract ERC20 is IERC20Permit {
     /*//////////////////////////////////////////////////////////////
                             METADATA STORAGE
     //////////////////////////////////////////////////////////////*/
@@ -135,7 +123,7 @@ abstract contract ERC20 {
         bytes32 s
     ) public virtual {
         if (block.timestamp > deadline)
-            revert CError.PERMIT_DEADLINE_EXPIRED(
+            revert PERMIT_DEADLINE_EXPIRED(
                 owner,
                 spender,
                 deadline,
@@ -170,7 +158,7 @@ abstract contract ERC20 {
             );
 
             if (recoveredAddress == address(0) || recoveredAddress != owner)
-                revert CError.INVALID_SIGNER(owner, recoveredAddress);
+                revert INVALID_SIGNER(owner, recoveredAddress);
 
             allowance[recoveredAddress][spender] = value;
         }

@@ -1963,7 +1963,7 @@ function wadUSD(
     return toWad(_amount, _amountDecimal).wadMul(toWad(_price, _priceDecimals));
 }
 
-interface AggregatorV3Interface {
+interface IAggregatorV3 {
     function decimals() external view returns (uint8);
 
     function description() external view returns (string memory);
@@ -2568,9 +2568,8 @@ function isSequencerUp(
 ) view returns (bool) {
     bool up = true;
     if (_uptimeFeed != address(0)) {
-        (, int256 answer, uint256 startedAt, , ) = AggregatorV3Interface(
-            _uptimeFeed
-        ).latestRoundData();
+        (, int256 answer, uint256 startedAt, , ) = IAggregatorV3(_uptimeFeed)
+            .latestRoundData();
 
         up = answer == 0;
         if (!up) {
@@ -4021,7 +4020,7 @@ function aggregatorV3Price(
     address _feedAddr,
     uint256 _oracleTimeout
 ) view returns (uint256) {
-    (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(_feedAddr)
+    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr)
         .latestRoundData();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);
@@ -4041,7 +4040,7 @@ function aggregatorV3Price(
 function aggregatorV3PriceWithTimestamp(
     address _feedAddr
 ) view returns (PushPrice memory) {
-    (, int256 answer, , uint256 updatedAt, ) = AggregatorV3Interface(_feedAddr)
+    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr)
         .latestRoundData();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);

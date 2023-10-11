@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
-import {ERC20} from "./ERC20.sol";
-import {CError} from "../core/Errors.sol";
+import {IERC20} from "./IERC20.sol";
+
+error APPROVE_FAILED(address, address, address, uint256);
+error ETH_TRANSFER_FAILED(address, uint256);
+error TRANSFER_FAILED(address, address, address, uint256);
 
 /// @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/SafeTransferLib.sol)
 /// @dev Use with caution! Some functions in this library knowingly create dirty bits at the destination of the free memory pointer.
 /// @dev Note that none of the functions in this library check that a token has code at all! That responsibility is delegated to the caller.
-library SafeERC20 {
+library SafeTransfer {
     /*//////////////////////////////////////////////////////////////
                              ETH OPERATIONS
     //////////////////////////////////////////////////////////////*/
@@ -22,7 +25,7 @@ library SafeERC20 {
             success := call(gas(), to, amount, 0, 0, 0, 0)
         }
 
-        if (!success) revert CError.ETH_TRANSFER_FAILED(to, amount);
+        if (!success) revert ETH_TRANSFER_FAILED(to, amount);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -30,7 +33,7 @@ library SafeERC20 {
     //////////////////////////////////////////////////////////////*/
 
     function safeTransferFrom(
-        ERC20 token,
+        IERC20 token,
         address from,
         address to,
         uint256 amount
@@ -72,11 +75,10 @@ library SafeERC20 {
             )
         }
 
-        if (!success)
-            revert CError.TRANSFER_FAILED(address(token), from, to, amount);
+        if (!success) revert TRANSFER_FAILED(address(token), from, to, amount);
     }
 
-    function safeTransfer(ERC20 token, address to, uint256 amount) internal {
+    function safeTransfer(IERC20 token, address to, uint256 amount) internal {
         bool success;
 
         /// @solidity memory-safe-assembly
@@ -111,15 +113,10 @@ library SafeERC20 {
         }
 
         if (!success)
-            revert CError.TRANSFER_FAILED(
-                address(token),
-                msg.sender,
-                to,
-                amount
-            );
+            revert TRANSFER_FAILED(address(token), msg.sender, to, amount);
     }
 
-    function safeApprove(ERC20 token, address to, uint256 amount) internal {
+    function safeApprove(IERC20 token, address to, uint256 amount) internal {
         bool success;
 
         /// @solidity memory-safe-assembly
@@ -154,11 +151,6 @@ library SafeERC20 {
         }
 
         if (!success)
-            revert CError.APPROVE_FAILED(
-                address(token),
-                msg.sender,
-                to,
-                amount
-            );
+            revert APPROVE_FAILED(address(token), msg.sender, to, amount);
     }
 }
