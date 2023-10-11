@@ -10,7 +10,7 @@ import {ERC20} from "../core/IVault.sol";
 import {IProxy} from "../vendor/IProxy.sol";
 import {IWETH9} from "../vendor/IWETH9.sol";
 
-library Address {
+library addr {
     address internal constant gDAI = 0xd85E038593d7A098614721EaE955EC2022B9B91B;
     address internal constant DAI = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
     address internal constant ARB = 0x912CE59144191C1204E64559FE8253a0e49E6548;
@@ -168,7 +168,7 @@ library Address {
         0x467194771dAe2967Aef3ECbEDD3Bf9a310C76C65;
 }
 
-library Token {
+library tokens {
     ERC20 internal constant gDAI = ERC20(Address.gDAI);
     ERC20 internal constant ARB = ERC20(Address.ARB);
     ERC20 internal constant FRAX = ERC20(Address.FRAX);
@@ -183,7 +183,65 @@ library Token {
     ERC20 internal constant GNS = ERC20(Address.GNS);
 }
 
-library API3 {
+interface IArbitrumBridge {
+    function depositEth() external payable;
+}
+
+interface L2DaiGateway {
+    function outboundTransfer(
+        address l1Token,
+        address to,
+        uint256 amount,
+        bytes calldata data
+    ) external returns (bytes memory);
+
+    function counterpartGateway() external view returns (address);
+}
+
+interface L1DaiGateway {
+    function outboundTransfer(
+        address l1Token,
+        address to,
+        uint256 amount,
+        uint256 maxGas,
+        uint256 gasPriceBid,
+        bytes calldata data
+    ) external payable returns (bytes memory);
+
+    function calculateL2TokenAddress(
+        address l1Token
+    ) external view returns (address);
+
+    function counterpartGateway() external view returns (address);
+}
+
+library bridges {
+    L1DaiGateway internal constant DAI_L1_GATEWAY =
+        L1DaiGateway(Address.DAI_L1_GATEWAY);
+    L2DaiGateway internal constant DAI_L2_GATEWAY =
+        L2DaiGateway(Address.DAI_L2_GATEWAY);
+    IArbitrumBridge internal constant L1_GOERLI_BRIDGE =
+        IArbitrumBridge(Address.L1_GOERLI_BRIDGE);
+    IArbitrumBridge internal constant L1_MAINNET_BRIDGE =
+        IArbitrumBridge(Address.L1_MAINNET_BRIDGE);
+    IArbitrumBridge internal constant L1_MAINNET_BRIDGE_NOVA =
+        IArbitrumBridge(Address.L1_MAINNET_BRIDGE_NOVA);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                     EXT                                    */
+/* -------------------------------------------------------------------------- */
+library uniswap {
+    uint24 internal constant defaultFee = 3000;
+    ISwapRouter internal constant Router02 = ISwapRouter(Address.V3Router02);
+    IQuoterV2 internal constant QuoterV2 = IQuoterV2(Address.V3QuoterV2);
+    IUniswapV3NFTManager internal constant NFT =
+        IUniswapV3NFTManager(Address.V3NFT);
+    IUniswapV3Factory internal constant V3Factory =
+        IUniswapV3Factory(Address.V3Factory);
+}
+
+library api3 {
     IProxy internal constant ARB = IProxy(Address.API3_ARB);
     IProxy internal constant EUR = IProxy(Address.API3_EUR);
     IProxy internal constant BTC = IProxy(Address.API3_BTC);
@@ -207,7 +265,7 @@ library API3 {
     }
 }
 
-library Chainlink {
+library cl {
     function price(AggregatorV3Interface feed) internal view returns (uint256) {
         (, int256 answer, , , ) = feed.latestRoundData();
         return uint256(answer);
@@ -273,59 +331,4 @@ library Chainlink {
         AggregatorV3Interface(Address.CL_GOOGL);
     AggregatorV3Interface internal constant CBETH_USD =
         AggregatorV3Interface(Address.CL_CBETH_USD);
-}
-
-interface IArbitrumBridge {
-    function depositEth() external payable;
-}
-
-interface L2DaiGateway {
-    function outboundTransfer(
-        address l1Token,
-        address to,
-        uint256 amount,
-        bytes calldata data
-    ) external returns (bytes memory);
-
-    function counterpartGateway() external view returns (address);
-}
-
-interface L1DaiGateway {
-    function outboundTransfer(
-        address l1Token,
-        address to,
-        uint256 amount,
-        uint256 maxGas,
-        uint256 gasPriceBid,
-        bytes calldata data
-    ) external payable returns (bytes memory);
-
-    function calculateL2TokenAddress(
-        address l1Token
-    ) external view returns (address);
-
-    function counterpartGateway() external view returns (address);
-}
-
-library Bridge {
-    L1DaiGateway internal constant DAI_L1_GATEWAY =
-        L1DaiGateway(Address.DAI_L1_GATEWAY);
-    L2DaiGateway internal constant DAI_L2_GATEWAY =
-        L2DaiGateway(Address.DAI_L2_GATEWAY);
-    IArbitrumBridge internal constant L1_GOERLI_BRIDGE =
-        IArbitrumBridge(Address.L1_GOERLI_BRIDGE);
-    IArbitrumBridge internal constant L1_MAINNET_BRIDGE =
-        IArbitrumBridge(Address.L1_MAINNET_BRIDGE);
-    IArbitrumBridge internal constant L1_MAINNET_BRIDGE_NOVA =
-        IArbitrumBridge(Address.L1_MAINNET_BRIDGE_NOVA);
-}
-
-library Uniswap {
-    uint24 internal constant defaultFee = 3000;
-    ISwapRouter internal constant Router02 = ISwapRouter(Address.V3Router02);
-    IQuoterV2 internal constant QuoterV2 = IQuoterV2(Address.V3QuoterV2);
-    IUniswapV3NFTManager internal constant NFT =
-        IUniswapV3NFTManager(Address.V3NFT);
-    IUniswapV3Factory internal constant V3Factory =
-        IUniswapV3Factory(Address.V3Factory);
 }
