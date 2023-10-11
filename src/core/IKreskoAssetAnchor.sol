@@ -27,11 +27,7 @@ interface IAccessControl {
      * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
      * {RoleAdminChanged} not being emitted signaling this.
      */
-    event RoleAdminChanged(
-        bytes32 indexed role,
-        bytes32 indexed previousAdminRole,
-        bytes32 indexed newAdminRole
-    );
+    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
 
     /**
      * @dev Emitted when `account` is granted `role`.
@@ -39,11 +35,7 @@ interface IAccessControl {
      * `sender` is the account that originated the contract call, an admin role
      * bearer except when using {AccessControl-_setupRole}.
      */
-    event RoleGranted(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Emitted when `account` is revoked `role`.
@@ -52,19 +44,12 @@ interface IAccessControl {
      *   - if using `revokeRole`, it is the admin role bearer
      *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
      */
-    event RoleRevoked(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(
-        bytes32 role,
-        address account
-    ) external view returns (bool);
+    function hasRole(bytes32 role, address account) external view returns (bool);
 
     /**
      * @dev Returns the admin role that controls `role`. See {grantRole} and
@@ -130,10 +115,7 @@ interface IAccessControlEnumerable is IAccessControl {
      * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
      * for more information.
      */
-    function getRoleMember(
-        bytes32 role,
-        uint256 index
-    ) external view returns (address);
+    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
 
     /**
      * @dev Returns the number of accounts that have `role`. Can be used
@@ -152,10 +134,22 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-/* solhint-disable func-name-mixedcase */
+interface IERC20 {
+    /* -------------------------------------------------------------------------- */
+    /*                                   Events                                   */
+    /* -------------------------------------------------------------------------- */
 
-interface IERC20Permit {
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
+    event Transfer(address indexed from, address indexed to, uint256 amount);
+
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    ERC20                                   */
+    /* -------------------------------------------------------------------------- */
 
     function allowance(address, address) external view returns (uint256);
 
@@ -166,18 +160,6 @@ interface IERC20Permit {
     function decimals() external view returns (uint8);
 
     function name() external view returns (string memory);
-
-    function nonces(address) external view returns (uint256);
-
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
 
     function symbol() external view returns (string memory);
 
@@ -192,6 +174,27 @@ interface IERC20Permit {
     ) external returns (bool);
 }
 
+/* solhint-disable func-name-mixedcase */
+
+interface IERC20Permit is IERC20 {
+    error PERMIT_DEADLINE_EXPIRED(address, address, uint256, uint256);
+    error INVALID_SIGNER(address, address);
+
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+
+    function nonces(address) external view returns (uint256);
+
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+}
+
 /// @title KreskoAsset issuer interface
 /// @author Kresko
 /// @notice Contract that can issue/destroy Kresko Assets through Kresko
@@ -201,33 +204,23 @@ interface IKreskoAssetIssuer {
      * @notice Mints @param _assets of krAssets for @param _to,
      * @notice Mints relative @return _shares of wkrAssets
      */
-    function issue(
-        uint256 _assets,
-        address _to
-    ) external returns (uint256 shares);
+    function issue(uint256 _assets, address _to) external returns (uint256 shares);
 
     /**
      * @notice Burns @param _assets of krAssets from @param _from,
      * @notice Burns relative @return _shares of wkrAssets
      */
-    function destroy(
-        uint256 _assets,
-        address _from
-    ) external returns (uint256 shares);
+    function destroy(uint256 _assets, address _from) external returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of anchor tokens out
      */
-    function convertToShares(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of krAssets out
      */
-    function convertToAssets(
-        uint256 shares
-    ) external view returns (uint256 assets);
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
 }
 
 interface ISyncable {
@@ -283,11 +276,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @param _pools UniswapV2Pair address to sync so we wont get rekt by skim() calls.
      * @dev denumerator values 0 and 1 ether will disable the rebase
      */
-    function rebase(
-        uint256 _denominator,
-        bool _positive,
-        address[] calldata _pools
-    ) external;
+    function rebase(uint256 _denominator, bool _positive, address[] calldata _pools) external;
 
     /**
      * @notice Updates ERC20 metadata for the token in case eg. a ticker change
@@ -295,56 +284,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @param _symbol new symbol for the asset
      * @param _version number that must be greater than latest emitted `Initialized` version
      */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
-    ) external;
-
-    /**
-     * @notice Returns the total supply of the token.
-     * @notice This amount is adjusted by rebases.
-     * @inheritdoc IERC20Permit
-     */
-    function totalSupply()
-        external
-        view
-        override(IERC20Permit)
-        returns (uint256);
-
-    /**
-     * @notice Returns the balance of @param _account
-     * @notice This amount is adjusted by rebases.
-     * @inheritdoc IERC20Permit
-     */
-    function balanceOf(
-        address _account
-    ) external view override(IERC20Permit) returns (uint256);
-
-    /// @inheritdoc IERC20Permit
-    function allowance(
-        address _owner,
-        address _account
-    ) external view override(IERC20Permit) returns (uint256);
-
-    /// @inheritdoc IERC20Permit
-    function approve(
-        address spender,
-        uint256 amount
-    ) external override returns (bool);
-
-    /// @inheritdoc IERC20Permit
-    function transfer(
-        address _to,
-        uint256 _amount
-    ) external override(IERC20Permit) returns (bool);
-
-    /// @inheritdoc IERC20Permit
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _amount
-    ) external override(IERC20Permit) returns (bool);
+    function reinitializeERC20(string memory _name, string memory _symbol, uint8 _version) external;
 
     /**
      * @notice Mints tokens to an address.
@@ -452,10 +392,7 @@ interface IERC4626Upgradeable {
      * @param receiver Address to send shares to
      * @return shares Amount of shares minted
      */
-    function deposit(
-        uint256 assets,
-        address receiver
-    ) external returns (uint256 shares);
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
 
     /**
      * @notice Withdraw KreskoAssets for equivalent amount of anchor tokens
@@ -465,11 +402,7 @@ interface IERC4626Upgradeable {
      * @return shares Amount of shares burned
      * @dev shares are burned from owner, not msg.sender
      */
-    function withdraw(
-        uint256 assets,
-        address receiver,
-        address owner
-    ) external returns (uint256 shares);
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
 
     function maxDeposit(address) external view returns (uint256);
 
@@ -485,24 +418,15 @@ interface IERC4626Upgradeable {
      * @param receiver Address to send shares to
      * @return assets Amount of KreskoAssets redeemed
      */
-    function mint(
-        uint256 shares,
-        address receiver
-    ) external returns (uint256 assets);
+    function mint(uint256 shares, address receiver) external returns (uint256 assets);
 
-    function previewDeposit(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function previewDeposit(uint256 assets) external view returns (uint256 shares);
 
     function previewMint(uint256 shares) external view returns (uint256 assets);
 
-    function previewRedeem(
-        uint256 shares
-    ) external view returns (uint256 assets);
+    function previewRedeem(uint256 shares) external view returns (uint256 assets);
 
-    function previewWithdraw(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function previewWithdraw(uint256 assets) external view returns (uint256 shares);
 
     /**
      * @notice Track the underlying amount
@@ -517,25 +441,11 @@ interface IERC4626Upgradeable {
      * @param owner Address to burn shares from
      * @return assets Amount of KreskoAssets redeemed
      */
-    function redeem(
-        uint256 shares,
-        address receiver,
-        address owner
-    ) external returns (uint256 assets);
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
 }
 
-interface IKreskoAssetAnchor is
-    IKreskoAssetIssuer,
-    IERC4626Upgradeable,
-    IERC20Permit,
-    IAccessControlEnumerable,
-    IERC165
-{
-    function totalAssets()
-        external
-        view
-        override(IERC4626Upgradeable)
-        returns (uint256);
+interface IKreskoAssetAnchor is IKreskoAssetIssuer, IERC4626Upgradeable, IERC20Permit, IAccessControlEnumerable, IERC165 {
+    function totalAssets() external view override(IERC4626Upgradeable) returns (uint256);
 
     /**
      * @notice Initializes the Kresko Asset Anchor.
@@ -546,12 +456,7 @@ interface IKreskoAssetAnchor is
      * @param _admin The adminstrator of this contract.
      * @dev Decimals are not supplied as they are read from the underlying Kresko Asset
      */
-    function initialize(
-        IKreskoAsset _asset,
-        string memory _name,
-        string memory _symbol,
-        address _admin
-    ) external;
+    function initialize(IKreskoAsset _asset, string memory _name, string memory _symbol, address _admin) external;
 
     /**
      * @notice Updates ERC20 metadata for the token in case eg. a ticker change
@@ -559,11 +464,7 @@ interface IKreskoAssetAnchor is
      * @param _symbol new symbol for the asset
      * @param _version number that must be greater than latest emitted `Initialized` version
      */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
-    ) external;
+    function reinitializeERC20(string memory _name, string memory _symbol, uint8 _version) external;
 
     /**
      * @notice Mint Kresko Anchor Asset to Kresko Asset (Only KreskoAsset can call)

@@ -20,23 +20,33 @@ interface IKreskoAssetIssuer {
      * @notice Mints @param _assets of krAssets for @param _to,
      * @notice Mints relative @return _shares of wkrAssets
      */
-    function issue(uint256 _assets, address _to) external returns (uint256 shares);
+    function issue(
+        uint256 _assets,
+        address _to
+    ) external returns (uint256 shares);
 
     /**
      * @notice Burns @param _assets of krAssets from @param _from,
      * @notice Burns relative @return _shares of wkrAssets
      */
-    function destroy(uint256 _assets, address _from) external returns (uint256 shares);
+    function destroy(
+        uint256 _assets,
+        address _from
+    ) external returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of anchor tokens out
      */
-    function convertToShares(uint256 assets) external view returns (uint256 shares);
+    function convertToShares(
+        uint256 assets
+    ) external view returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of krAssets out
      */
-    function convertToAssets(uint256 shares) external view returns (uint256 assets);
+    function convertToAssets(
+        uint256 shares
+    ) external view returns (uint256 assets);
 }
 
 interface IVaultExtender {
@@ -142,7 +152,10 @@ interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
      * @param _to address to mint tokens to
      * @return uint256 amount minted
      */
-    function issue(uint256 _amount, address _to) external override returns (uint256);
+    function issue(
+        uint256 _amount,
+        address _to
+    ) external override returns (uint256);
 
     /**
      * @notice This function removes KISS from circulation
@@ -153,7 +166,10 @@ interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
      *
      * @inheritdoc IKreskoAssetIssuer
      */
-    function destroy(uint256 _amount, address _from) external override returns (uint256);
+    function destroy(
+        uint256 _amount,
+        address _from
+    ) external override returns (uint256);
 
     /**
      * @notice Triggers stopped state.

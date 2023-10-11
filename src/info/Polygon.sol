@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// solhint-disable
+
 library addr {
     address internal constant ZERO = address(0);
     address internal constant KRESKO_SAFE =

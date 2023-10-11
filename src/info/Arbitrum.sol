@@ -10,6 +10,8 @@ import {IERC20} from "../token/IERC20.sol";
 import {IAPI3} from "../vendor/IAPI3.sol";
 import {IWETH9} from "../token/IWETH9.sol";
 
+// solhint-disable
+
 library addr {
     address internal constant ZERO = address(0);
     address internal constant KRESKO_SAFE =

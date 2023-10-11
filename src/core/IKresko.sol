@@ -27,11 +27,7 @@ interface IAccessControl {
      * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
      * {RoleAdminChanged} not being emitted signaling this.
      */
-    event RoleAdminChanged(
-        bytes32 indexed role,
-        bytes32 indexed previousAdminRole,
-        bytes32 indexed newAdminRole
-    );
+    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
 
     /**
      * @dev Emitted when `account` is granted `role`.
@@ -39,11 +35,7 @@ interface IAccessControl {
      * `sender` is the account that originated the contract call, an admin role
      * bearer except when using {AccessControl-_setupRole}.
      */
-    event RoleGranted(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Emitted when `account` is revoked `role`.
@@ -52,19 +44,12 @@ interface IAccessControl {
      *   - if using `revokeRole`, it is the admin role bearer
      *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
      */
-    event RoleRevoked(
-        bytes32 indexed role,
-        address indexed account,
-        address indexed sender
-    );
+    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
 
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(
-        bytes32 role,
-        address account
-    ) external view returns (bool);
+    function hasRole(bytes32 role, address account) external view returns (bool);
 
     /**
      * @dev Returns the admin role that controls `role`. See {grantRole} and
@@ -130,10 +115,7 @@ interface IAccessControlEnumerable is IAccessControl {
      * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
      * for more information.
      */
-    function getRoleMember(
-        bytes32 role,
-        uint256 index
-    ) external view returns (address);
+    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
 
     /**
      * @dev Returns the number of accounts that have `role`. Can be used
@@ -152,10 +134,22 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-/* solhint-disable func-name-mixedcase */
+interface IERC20 {
+    /* -------------------------------------------------------------------------- */
+    /*                                   Events                                   */
+    /* -------------------------------------------------------------------------- */
 
-interface IERC20Permit {
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
+    event Transfer(address indexed from, address indexed to, uint256 amount);
+
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 amount
+    );
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    ERC20                                   */
+    /* -------------------------------------------------------------------------- */
 
     function allowance(address, address) external view returns (uint256);
 
@@ -166,18 +160,6 @@ interface IERC20Permit {
     function decimals() external view returns (uint8);
 
     function name() external view returns (string memory);
-
-    function nonces(address) external view returns (uint256);
-
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
 
     function symbol() external view returns (string memory);
 
@@ -192,6 +174,27 @@ interface IERC20Permit {
     ) external returns (bool);
 }
 
+/* solhint-disable func-name-mixedcase */
+
+interface IERC20Permit is IERC20 {
+    error PERMIT_DEADLINE_EXPIRED(address, address, uint256, uint256);
+    error INVALID_SIGNER(address, address);
+
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+
+    function nonces(address) external view returns (uint256);
+
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+}
+
 /// @title KreskoAsset issuer interface
 /// @author Kresko
 /// @notice Contract that can issue/destroy Kresko Assets through Kresko
@@ -201,33 +204,23 @@ interface IKreskoAssetIssuer {
      * @notice Mints @param _assets of krAssets for @param _to,
      * @notice Mints relative @return _shares of wkrAssets
      */
-    function issue(
-        uint256 _assets,
-        address _to
-    ) external returns (uint256 shares);
+    function issue(uint256 _assets, address _to) external returns (uint256 shares);
 
     /**
      * @notice Burns @param _assets of krAssets from @param _from,
      * @notice Burns relative @return _shares of wkrAssets
      */
-    function destroy(
-        uint256 _assets,
-        address _from
-    ) external returns (uint256 shares);
+    function destroy(uint256 _assets, address _from) external returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of anchor tokens out
      */
-    function convertToShares(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
 
     /**
      * @notice Returns the total amount of krAssets out
      */
-    function convertToAssets(
-        uint256 shares
-    ) external view returns (uint256 assets);
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
 }
 
 interface ISyncable {
@@ -283,11 +276,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @param _pools UniswapV2Pair address to sync so we wont get rekt by skim() calls.
      * @dev denumerator values 0 and 1 ether will disable the rebase
      */
-    function rebase(
-        uint256 _denominator,
-        bool _positive,
-        address[] calldata _pools
-    ) external;
+    function rebase(uint256 _denominator, bool _positive, address[] calldata _pools) external;
 
     /**
      * @notice Updates ERC20 metadata for the token in case eg. a ticker change
@@ -295,56 +284,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @param _symbol new symbol for the asset
      * @param _version number that must be greater than latest emitted `Initialized` version
      */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
-    ) external;
-
-    /**
-     * @notice Returns the total supply of the token.
-     * @notice This amount is adjusted by rebases.
-     * @inheritdoc IERC20Permit
-     */
-    function totalSupply()
-        external
-        view
-        override(IERC20Permit)
-        returns (uint256);
-
-    /**
-     * @notice Returns the balance of @param _account
-     * @notice This amount is adjusted by rebases.
-     * @inheritdoc IERC20Permit
-     */
-    function balanceOf(
-        address _account
-    ) external view override(IERC20Permit) returns (uint256);
-
-    /// @inheritdoc IERC20Permit
-    function allowance(
-        address _owner,
-        address _account
-    ) external view override(IERC20Permit) returns (uint256);
-
-    /// @inheritdoc IERC20Permit
-    function approve(
-        address spender,
-        uint256 amount
-    ) external override returns (bool);
-
-    /// @inheritdoc IERC20Permit
-    function transfer(
-        address _to,
-        uint256 _amount
-    ) external override(IERC20Permit) returns (bool);
-
-    /// @inheritdoc IERC20Permit
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _amount
-    ) external override(IERC20Permit) returns (bool);
+    function reinitializeERC20(string memory _name, string memory _symbol, uint8 _version) external;
 
     /**
      * @notice Mints tokens to an address.
@@ -452,10 +392,7 @@ interface IERC4626Upgradeable {
      * @param receiver Address to send shares to
      * @return shares Amount of shares minted
      */
-    function deposit(
-        uint256 assets,
-        address receiver
-    ) external returns (uint256 shares);
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
 
     /**
      * @notice Withdraw KreskoAssets for equivalent amount of anchor tokens
@@ -465,11 +402,7 @@ interface IERC4626Upgradeable {
      * @return shares Amount of shares burned
      * @dev shares are burned from owner, not msg.sender
      */
-    function withdraw(
-        uint256 assets,
-        address receiver,
-        address owner
-    ) external returns (uint256 shares);
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
 
     function maxDeposit(address) external view returns (uint256);
 
@@ -485,24 +418,15 @@ interface IERC4626Upgradeable {
      * @param receiver Address to send shares to
      * @return assets Amount of KreskoAssets redeemed
      */
-    function mint(
-        uint256 shares,
-        address receiver
-    ) external returns (uint256 assets);
+    function mint(uint256 shares, address receiver) external returns (uint256 assets);
 
-    function previewDeposit(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function previewDeposit(uint256 assets) external view returns (uint256 shares);
 
     function previewMint(uint256 shares) external view returns (uint256 assets);
 
-    function previewRedeem(
-        uint256 shares
-    ) external view returns (uint256 assets);
+    function previewRedeem(uint256 shares) external view returns (uint256 assets);
 
-    function previewWithdraw(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function previewWithdraw(uint256 assets) external view returns (uint256 shares);
 
     /**
      * @notice Track the underlying amount
@@ -517,25 +441,11 @@ interface IERC4626Upgradeable {
      * @param owner Address to burn shares from
      * @return assets Amount of KreskoAssets redeemed
      */
-    function redeem(
-        uint256 shares,
-        address receiver,
-        address owner
-    ) external returns (uint256 assets);
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
 }
 
-interface IKreskoAssetAnchor is
-    IKreskoAssetIssuer,
-    IERC4626Upgradeable,
-    IERC20Permit,
-    IAccessControlEnumerable,
-    IERC165
-{
-    function totalAssets()
-        external
-        view
-        override(IERC4626Upgradeable)
-        returns (uint256);
+interface IKreskoAssetAnchor is IKreskoAssetIssuer, IERC4626Upgradeable, IERC20Permit, IAccessControlEnumerable, IERC165 {
+    function totalAssets() external view override(IERC4626Upgradeable) returns (uint256);
 
     /**
      * @notice Initializes the Kresko Asset Anchor.
@@ -546,12 +456,7 @@ interface IKreskoAssetAnchor is
      * @param _admin The adminstrator of this contract.
      * @dev Decimals are not supplied as they are read from the underlying Kresko Asset
      */
-    function initialize(
-        IKreskoAsset _asset,
-        string memory _name,
-        string memory _symbol,
-        address _admin
-    ) external;
+    function initialize(IKreskoAsset _asset, string memory _name, string memory _symbol, address _admin) external;
 
     /**
      * @notice Updates ERC20 metadata for the token in case eg. a ticker change
@@ -559,11 +464,7 @@ interface IKreskoAssetAnchor is
      * @param _symbol new symbol for the asset
      * @param _version number that must be greater than latest emitted `Initialized` version
      */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
-    ) external;
+    function reinitializeERC20(string memory _name, string memory _symbol, uint8 _version) external;
 
     /**
      * @notice Mint Kresko Anchor Asset to Kresko Asset (Only KreskoAsset can call)
@@ -607,9 +508,7 @@ library WadRay {
     function wadMul(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - HALF_WAD) / b
         assembly {
-            if iszero(
-                or(iszero(b), iszero(gt(a, div(sub(not(0), HALF_WAD), b))))
-            ) {
+            if iszero(or(iszero(b), iszero(gt(a, div(sub(not(0), HALF_WAD), b))))) {
                 revert(0, 0)
             }
 
@@ -627,10 +526,7 @@ library WadRay {
     function wadDiv(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - halfB) / WAD
         assembly {
-            if or(
-                iszero(b),
-                iszero(iszero(gt(a, div(sub(not(0), div(b, 2)), WAD))))
-            ) {
+            if or(iszero(b), iszero(iszero(gt(a, div(sub(not(0), div(b, 2)), WAD))))) {
                 revert(0, 0)
             }
 
@@ -648,9 +544,7 @@ library WadRay {
     function rayMul(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - HALF_RAY) / b
         assembly {
-            if iszero(
-                or(iszero(b), iszero(gt(a, div(sub(not(0), HALF_RAY), b))))
-            ) {
+            if iszero(or(iszero(b), iszero(gt(a, div(sub(not(0), HALF_RAY), b))))) {
                 revert(0, 0)
             }
 
@@ -668,10 +562,7 @@ library WadRay {
     function rayDiv(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - halfB) / RAY
         assembly {
-            if or(
-                iszero(b),
-                iszero(iszero(gt(a, div(sub(not(0), div(b, 2)), RAY))))
-            ) {
+            if or(iszero(b), iszero(iszero(gt(a, div(sub(not(0), div(b, 2)), RAY))))) {
                 revert(0, 0)
             }
 
@@ -725,41 +616,19 @@ library CError {
     error DIAMOND_INCORRECT_FACET_CUT_ACTION();
     error DIAMOND_REMOVE_FUNCTIONS_NONZERO_FACET_ADDRESS(address);
     error DIAMOND_NO_FACET_SELECTORS(address);
-    error ETH_TRANSFER_FAILED(address, uint256);
-    error TRANSFER_FAILED(address, address, address, uint256);
-    error INVALID_SIGNER(address, address);
-    error APPROVE_FAILED(address, address, address, uint256);
-    error PERMIT_DEADLINE_EXPIRED(address, address, uint256, uint256);
-    error SAFE_ERC20_PERMIT_ERC20_OPERATION_FAILED(address);
-    error SAFE_ERC20_PERMIT_APPROVE_NON_ZERO(address, uint256, uint256);
     error DIAMOND_REMOVE_FUNCTION_FACET_IS_ZERO();
     error DIAMOND_REPLACE_FUNCTION_DUPLICATE();
     error STRING_HEX_LENGTH_INSUFFICIENT();
     error ALREADY_INITIALIZED();
-    error SAFE_ERC20_PERMIT_DECREASE_BELOW_ZERO(address, uint256, uint256);
     error INVALID_SENDER(address, address);
     error NOT_OWNER(address who, address owner);
     error NOT_PENDING_OWNER(address who, address pendingOwner);
     error SEIZE_UNDERFLOW(uint256, uint256);
     error MARKET_CLOSED(address, string);
-    error SCDP_ASSET_ECONOMY(
-        address seizeAsset,
-        uint256 seizeReductionPct,
-        address repayAsset,
-        uint256 repayIncreasePct
-    );
-    error MINTER_ASSET_ECONOMY(
-        address seizeAsset,
-        uint256 seizeReductionPct,
-        address repayAsset,
-        uint256 repayIncreasePct
-    );
+    error SCDP_ASSET_ECONOMY(address seizeAsset, uint256 seizeReductionPct, address repayAsset, uint256 repayIncreasePct);
+    error MINTER_ASSET_ECONOMY(address seizeAsset, uint256 seizeReductionPct, address repayAsset, uint256 repayIncreasePct);
     error INVALID_ASSET(address asset);
-    error DEBT_EXCEEDS_COLLATERAL(
-        uint256 collateralValue,
-        uint256 minCollateralValue,
-        uint32 ratio
-    );
+    error DEBT_EXCEEDS_COLLATERAL(uint256 collateralValue, uint256 minCollateralValue, uint32 ratio);
     error DEPOSIT_LIMIT(address asset, uint256 deposits, uint256 limit);
     error INVALID_MIN_DEBT(uint256 invalid, uint256 valid);
     error INVALID_SCDP_FEE(address asset, uint256 invalid, uint256 valid);
@@ -781,12 +650,7 @@ library CError {
     error INVALID_LIQ_INCENTIVE(address asset, uint256 invalid, uint256 valid);
     error LIQ_AMOUNT_OVERFLOW(uint256 invalid, uint256 valid);
     error MAX_LIQ_OVERFLOW(uint256 value);
-    error SCDP_WITHDRAWAL_VIOLATION(
-        address asset,
-        uint256 requested,
-        uint256 principal,
-        uint256 scaled
-    );
+    error SCDP_WITHDRAWAL_VIOLATION(address asset, uint256 requested, uint256 principal, uint256 scaled);
     error INVALID_DEPOSIT_ASSET(address asset);
     error IDENTICAL_ASSETS();
     error NO_PUSH_PRICE(string underlyingId);
@@ -853,26 +717,13 @@ library CError {
     error INVALID_DEPOSIT(address token, uint256 assetsIn, uint256 sharesOut);
     error INVALID_WITHDRAW(address asset, uint256 sharesIn, uint256 assetsOut);
     error ROUNDING_ERROR(string desc, uint256 sharesIn, uint256 assetsOut);
-    error MAX_DEPOSIT_EXCEEDED(
-        address asset,
-        uint256 assetsIn,
-        uint256 maxDeposit
-    );
+    error MAX_DEPOSIT_EXCEEDED(address asset, uint256 assetsIn, uint256 maxDeposit);
     error MAX_SUPPLY_EXCEEDED(address asset, uint256 supply, uint256 maxSupply);
     error COLLATERAL_VALUE_LOW(uint256 value, uint256 minRequiredValue);
-    error MINT_VALUE_LOW(
-        address asset,
-        uint256 value,
-        uint256 minRequiredValue
-    );
+    error MINT_VALUE_LOW(address asset, uint256 value, uint256 minRequiredValue);
     error INVALID_FEE(uint256 invalid, uint256 valid);
     error NOT_A_CONTRACT(address who);
-    error NO_ALLOWANCE(
-        address spender,
-        address owner,
-        uint256 requested,
-        uint256 allowed
-    );
+    error NO_ALLOWANCE(address spender, address owner, uint256 requested, uint256 allowed);
     error NOT_ENOUGH_BALANCE(address who, uint256 requested, uint256 available);
     error INVALID_DENOMINATOR(uint256 denominator, uint256 valid);
     error INVALID_OPERATOR(address who, address valid);
@@ -888,6 +739,7 @@ library NumericArrayLib {
     // This function sort array in memory using bubble sort algorithm,
     // which performs even better than quick sort for small arrays
 
+    uint256 internal constant BYTES_ARR_LEN_VAR_BS = 32;
     uint256 internal constant UINT256_VALUE_BS = 32;
 
     error CanNotPickMedianOfEmptyArray();
@@ -942,18 +794,10 @@ library RedstoneDefaultsLib {
     uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 minutes;
     uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 minutes;
 
-    error TimestampFromTooLongFuture(
-        uint256 receivedTimestampSeconds,
-        uint256 blockTimestamp
-    );
-    error TimestampIsTooOld(
-        uint256 receivedTimestampSeconds,
-        uint256 blockTimestamp
-    );
+    error TimestampFromTooLongFuture(uint256 receivedTimestampSeconds, uint256 blockTimestamp);
+    error TimestampIsTooOld(uint256 receivedTimestampSeconds, uint256 blockTimestamp);
 
-    function validateTimestamp(
-        uint256 receivedTimestampMilliseconds
-    ) internal view {
+    function validateTimestamp(uint256 receivedTimestampMilliseconds) internal view {
         // Getting data timestamp from future seems quite unlikely
         // But we've already spent too much time with different cases
         // Where block.timestamp was less than dataPackage.timestamp.
@@ -963,42 +807,25 @@ library RedstoneDefaultsLib {
         uint256 receivedTimestampSeconds = receivedTimestampMilliseconds / 1000;
 
         if (block.timestamp < receivedTimestampSeconds) {
-            if (
-                (receivedTimestampSeconds - block.timestamp) >
-                DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS
-            ) {
-                revert TimestampFromTooLongFuture(
-                    receivedTimestampSeconds,
-                    block.timestamp
-                );
+            if ((receivedTimestampSeconds - block.timestamp) > DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) {
+                revert TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
             }
-        } else if (
-            (block.timestamp - receivedTimestampSeconds) >
-            DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS
-        ) {
+        } else if ((block.timestamp - receivedTimestampSeconds) > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
             revert TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
         }
     }
 
-    function aggregateValues(
-        uint256[] memory values
-    ) internal pure returns (uint256) {
+    function aggregateValues(uint256[] memory values) internal pure returns (uint256) {
         return NumericArrayLib.pickMedian(values);
     }
 }
 
 library BitmapLib {
-    function setBitInBitmap(
-        uint256 bitmap,
-        uint256 bitIndex
-    ) internal pure returns (uint256) {
+    function setBitInBitmap(uint256 bitmap, uint256 bitIndex) internal pure returns (uint256) {
         return bitmap | (1 << bitIndex);
     }
 
-    function getBitFromBitmap(
-        uint256 bitmap,
-        uint256 bitIndex
-    ) internal pure returns (bool) {
+    function getBitFromBitmap(uint256 bitmap, uint256 bitIndex) internal pure returns (bool) {
         uint256 bitAtIndex = bitmap & (1 << bitIndex);
         return bitAtIndex > 0;
     }
@@ -1008,28 +835,16 @@ library SignatureLib {
     uint256 constant ECDSA_SIG_R_BS = 32;
     uint256 constant ECDSA_SIG_S_BS = 32;
 
-    function recoverSignerAddress(
-        bytes32 signedHash,
-        uint256 signatureCalldataNegativeOffset
-    ) internal pure returns (address) {
+    function recoverSignerAddress(bytes32 signedHash, uint256 signatureCalldataNegativeOffset) internal pure returns (address) {
         bytes32 r;
         bytes32 s;
         uint8 v;
         assembly {
-            let signatureCalldataStartPos := sub(
-                calldatasize(),
-                signatureCalldataNegativeOffset
-            )
+            let signatureCalldataStartPos := sub(calldatasize(), signatureCalldataNegativeOffset)
             r := calldataload(signatureCalldataStartPos)
-            signatureCalldataStartPos := add(
-                signatureCalldataStartPos,
-                ECDSA_SIG_R_BS
-            )
+            signatureCalldataStartPos := add(signatureCalldataStartPos, ECDSA_SIG_R_BS)
             s := calldataload(signatureCalldataStartPos)
-            signatureCalldataStartPos := add(
-                signatureCalldataStartPos,
-                ECDSA_SIG_S_BS
-            )
+            signatureCalldataStartPos := add(signatureCalldataStartPos, ECDSA_SIG_S_BS)
             v := byte(0, calldataload(signatureCalldataStartPos)) // last byte of the signature memory array
         }
         return ecrecover(signedHash, v, r, s);
@@ -1050,10 +865,7 @@ library RedstoneError {
     error ProxyCalldataFailedWithCustomError(bytes result);
     error IncorrectUnsignedMetadataSize();
     error ProxyCalldataFailedWithStringMessage(string);
-    error InsufficientNumberOfUniqueSigners(
-        uint256 receivedSignersCount,
-        uint256 requiredSignersCount
-    );
+    error InsufficientNumberOfUniqueSigners(uint256 receivedSignersCount, uint256 requiredSignersCount);
     error EachSignerMustProvideTheSameValue();
     error EmptyCalldataPointersArr();
     error InvalidCalldataPointer();
@@ -1061,45 +873,43 @@ library RedstoneError {
     error SignerNotAuthorised(address receivedSigner);
 }
 
+// solhint-disable no-empty-blocks
+// solhint-disable avoid-low-level-calls
+
 // === Abbreviations ===
 // BS - Bytes size
 // PTR - Pointer (memory location)
 // SIG - Signature
 
-// Solidity and YUL constants
-uint256 constant STANDARD_SLOT_BS = 32;
-uint256 constant FREE_MEMORY_PTR = 0x40;
-uint256 constant BYTES_ARR_LEN_VAR_BS = 32;
-uint256 constant FUNCTION_SIGNATURE_BS = 4;
-uint256 constant REVERT_MSG_OFFSET = 68; // Revert message structure described here: https://ethereum.stackexchange.com/a/66173/106364
-uint256 constant STRING_ERR_MESSAGE_MASK = 0x08c379a000000000000000000000000000000000000000000000000000000000;
-
-// RedStone protocol consts
-uint256 constant SIG_BS = 65;
-uint256 constant TIMESTAMP_BS = 6;
-uint256 constant DATA_PACKAGES_COUNT_BS = 2;
-uint256 constant DATA_POINTS_COUNT_BS = 3;
-uint256 constant DATA_POINT_VALUE_BYTE_SIZE_BS = 4;
-uint256 constant DATA_POINT_SYMBOL_BS = 32;
-uint256 constant DEFAULT_DATA_POINT_VALUE_BS = 32;
-uint256 constant UNSIGNED_METADATA_BYTE_SIZE_BS = 3;
-uint256 constant REDSTONE_MARKER_BS = 9; // byte size of 0x000002ed57011e0000
-uint256 constant REDSTONE_MARKER_MASK = 0x0000000000000000000000000000000000000000000000000002ed57011e0000;
-
-// Derived values (based on consts)
-uint256 constant TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS = 104; // SIG_BS + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + STANDARD_SLOT_BS
-uint256 constant DATA_PACKAGE_WITHOUT_DATA_POINTS_BS = 78; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS + SIG_BS
-uint256 constant DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS = 13; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
-uint256 constant REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS = 41; // REDSTONE_MARKER_BS + STANDARD_SLOT_BS
-
 library Redstone {
+    // Solidity and YUL constants
+    uint256 internal constant STANDARD_SLOT_BS = 32;
+    uint256 internal constant FREE_MEMORY_PTR = 0x40;
+    uint256 internal constant BYTES_ARR_LEN_VAR_BS = 32;
+    uint256 internal constant FUNCTION_SIGNATURE_BS = 4;
+    uint256 internal constant REVERT_MSG_OFFSET = 68; // Revert message structure described here: https://ethereum.stackexchange.com/a/66173/106364
+    uint256 internal constant STRING_ERR_MESSAGE_MASK = 0x08c379a000000000000000000000000000000000000000000000000000000000;
+
+    // RedStone protocol consts
+    uint256 internal constant SIG_BS = 65;
+    uint256 internal constant TIMESTAMP_BS = 6;
+    uint256 internal constant DATA_PACKAGES_COUNT_BS = 2;
+    uint256 internal constant DATA_POINTS_COUNT_BS = 3;
+    uint256 internal constant DATA_POINT_VALUE_BYTE_SIZE_BS = 4;
+    uint256 internal constant DATA_POINT_SYMBOL_BS = 32;
+    uint256 internal constant DEFAULT_DATA_POINT_VALUE_BS = 32;
+    uint256 internal constant UNSIGNED_METADATA_BYTE_SIZE_BS = 3;
+    uint256 internal constant REDSTONE_MARKER_BS = 9; // byte size of 0x000002ed57011e0000
+    uint256 internal constant REDSTONE_MARKER_MASK = 0x0000000000000000000000000000000000000000000000000002ed57011e0000;
+
+    // Derived values (based on consts)
+    uint256 internal constant TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS = 104; // SIG_BS + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + STANDARD_SLOT_BS
+    uint256 internal constant DATA_PACKAGE_WITHOUT_DATA_POINTS_BS = 78; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS + SIG_BS
+    uint256 internal constant DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS = 13; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+    uint256 internal constant REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS = 41; // REDSTONE_MARKER_BS + STANDARD_SLOT_BS
+
     // using SafeMath for uint256;
     // inside unchecked these functions are still checked
-    using {sub, add} for uint256;
-
-    // solhint-disable no-empty-blocks
-    // solhint-disable avoid-low-level-calls
-
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         return a - b;
     }
@@ -1107,6 +917,8 @@ library Redstone {
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         return a + b;
     }
+
+    using {sub, add} for uint256;
 
     /**
      * @dev This function can be used in a consumer contract to securely extract an
@@ -1125,17 +937,12 @@ library Redstone {
         return _securelyExtractOracleValuesFromTxMsg(dataFeedIds)[0];
     }
 
-    function getAuthorisedSignerIndex(
-        address signerAddress
-    ) internal pure returns (uint8) {
-        if (signerAddress == 0x926E370fD53c23f8B71ad2B3217b227E41A92b12)
-            return 0;
-        if (signerAddress == 0x0C39486f770B26F5527BBBf942726537986Cd7eb)
-            return 1;
+    function getAuthorisedSignerIndex(address signerAddress) internal pure returns (uint8) {
+        if (signerAddress == 0x926E370fD53c23f8B71ad2B3217b227E41A92b12) return 0;
+        if (signerAddress == 0x0C39486f770B26F5527BBBf942726537986Cd7eb) return 1;
         // For testing hardhat signer 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 is authorised
         // will be removed in production deployment
-        if (signerAddress == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266)
-            return 2;
+        if (signerAddress == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266) return 2;
 
         revert RedstoneError.SignerNotAuthorised(signerAddress);
     }
@@ -1152,9 +959,7 @@ library Redstone {
      * @return An array of the extracted and verified oracle values in the same order
      * as they are requested in the dataFeedIds array
      */
-    function getPrices(
-        bytes32[] memory dataFeedIds
-    ) internal view returns (uint256[] memory) {
+    function getPrices(bytes32[] memory dataFeedIds) internal view returns (uint256[] memory) {
         return _securelyExtractOracleValuesFromTxMsg(dataFeedIds);
     }
 
@@ -1164,9 +969,7 @@ library Redstone {
      * It should revert with a helpful message if the timestamp is not valid
      * @param receivedTimestampMilliseconds Timestamp extracted from calldata
      */
-    function validateTimestamp(
-        uint256 receivedTimestampMilliseconds
-    ) internal view {
+    function validateTimestamp(uint256 receivedTimestampMilliseconds) internal view {
         // For testing this function is disabled
         // Uncomment this line to enable timestamp validation in prod
         // RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
@@ -1187,9 +990,7 @@ library Redstone {
      * @param values An array of uint256 values from different signers
      * @return Result of the aggregation in the form of a single number
      */
-    function aggregateValues(
-        uint256[] memory values
-    ) internal pure returns (uint256) {
+    function aggregateValues(uint256[] memory values) internal pure returns (uint256) {
         return RedstoneDefaultsLib.aggregateValues(values);
     }
 
@@ -1207,19 +1008,11 @@ library Redstone {
      * @return An array of the extracted and verified oracle values in the same order
      * as they are requested in dataFeedIds array
      */
-    function _securelyExtractOracleValuesFromTxMsg(
-        bytes32[] memory dataFeedIds
-    ) private view returns (uint256[] memory) {
+    function _securelyExtractOracleValuesFromTxMsg(bytes32[] memory dataFeedIds) private view returns (uint256[] memory) {
         // Initializing helpful variables and allocating memory
-        uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](
-            dataFeedIds.length
-        );
-        uint256[] memory signersBitmapForDataFeedIds = new uint256[](
-            dataFeedIds.length
-        );
-        uint256[][] memory valuesForDataFeeds = new uint256[][](
-            dataFeedIds.length
-        );
+        uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
+        uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
+        uint256[][] memory valuesForDataFeeds = new uint256[][](dataFeedIds.length);
         for (uint256 i; i < dataFeedIds.length; ) {
             // The line below is commented because newly allocated arrays are filled with zeros
             // But we left it for better readability
@@ -1233,9 +1026,7 @@ library Redstone {
 
         // Extracting the number of data packages from calldata
         uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
-        uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(
-            calldataNegativeOffset
-        );
+        uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
         unchecked {
             calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
         }
@@ -1271,11 +1062,7 @@ library Redstone {
         }
 
         // Validating numbers of unique signers and calculating aggregated values for each dataFeedId
-        return
-            _getAggregatedValues(
-                valuesForDataFeeds,
-                uniqueSignerCountForDataFeedIds
-            );
+        return _getAggregatedValues(valuesForDataFeeds, uniqueSignerCountForDataFeedIds);
     }
 
     /**
@@ -1302,10 +1089,9 @@ library Redstone {
     ) private view returns (uint256) {
         uint256 signerIndex;
 
-        (
-            uint256 dataPointsCount,
-            uint256 eachDataPointValueByteSize
-        ) = _extractDataPointsDetailsForDataPackage(calldataNegativeOffset);
+        (uint256 dataPointsCount, uint256 eachDataPointValueByteSize) = _extractDataPointsDetailsForDataPackage(
+            calldataNegativeOffset
+        );
 
         // We use scopes to resolve problem with too deep stack
         {
@@ -1319,8 +1105,7 @@ library Redstone {
 
             unchecked {
                 uint256 timestampCalldataOffset = msg.data.length.sub(
-                    calldataNegativeOffset +
-                        TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS
+                    calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS
                 );
 
                 uint256 signedMessageCalldataOffset = msg.data.length.sub(
@@ -1329,16 +1114,10 @@ library Redstone {
 
                 assembly {
                     // Extracting the signed message
-                    signedMessage := extractBytesFromCalldata(
-                        signedMessageCalldataOffset,
-                        signedMessageBytesCount
-                    )
+                    signedMessage := extractBytesFromCalldata(signedMessageCalldataOffset, signedMessageBytesCount)
 
                     // Hashing the signed message
-                    signedHash := keccak256(
-                        add(signedMessage, BYTES_ARR_LEN_VAR_BS),
-                        signedMessageBytesCount
-                    )
+                    signedHash := keccak256(add(signedMessage, BYTES_ARR_LEN_VAR_BS), signedMessageBytesCount)
 
                     // Extracting timestamp
                     extractedTimestamp := calldataload(timestampCalldataOffset)
@@ -1350,15 +1129,10 @@ library Redstone {
                         mstore(FREE_MEMORY_PTR, add(ptr, bytesCount))
                     }
 
-                    function extractBytesFromCalldata(offset, bytesCount)
-                        -> extractedBytes
-                    {
+                    function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
                         let extractedBytesStartPtr := initByteArray(bytesCount)
                         calldatacopy(extractedBytesStartPtr, offset, bytesCount)
-                        extractedBytes := sub(
-                            extractedBytesStartPtr,
-                            BYTES_ARR_LEN_VAR_BS
-                        )
+                        extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
                     }
                 }
             }
@@ -1366,10 +1140,7 @@ library Redstone {
             validateTimestamp(extractedTimestamp);
 
             // Verifying the off-chain signature against on-chain hashed data
-            signerAddress = SignatureLib.recoverSignerAddress(
-                signedHash,
-                calldataNegativeOffset + SIG_BS
-            );
+            signerAddress = SignatureLib.recoverSignerAddress(signedHash, calldataNegativeOffset + SIG_BS);
             signerIndex = getAuthorisedSignerIndex(signerAddress);
         }
 
@@ -1379,50 +1150,34 @@ library Redstone {
             uint256 dataPointValue;
             for (uint256 dataPointIndex; dataPointIndex < dataPointsCount; ) {
                 // Extracting data feed id and value for the current data point
-                (
-                    dataPointDataFeedId,
-                    dataPointValue
-                ) = _extractDataPointValueAndDataFeedId(
+                (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedId(
                     calldataNegativeOffset,
                     eachDataPointValueByteSize,
                     dataPointIndex
                 );
 
-                for (
-                    uint256 dataFeedIdIndex;
-                    dataFeedIdIndex < dataFeedIds.length;
-
-                ) {
+                for (uint256 dataFeedIdIndex; dataFeedIdIndex < dataFeedIds.length; ) {
                     if (dataPointDataFeedId == dataFeedIds[dataFeedIdIndex]) {
-                        uint256 bitmapSignersForDataFeedId = signersBitmapForDataFeedIds[
-                                dataFeedIdIndex
-                            ];
+                        uint256 bitmapSignersForDataFeedId = signersBitmapForDataFeedIds[dataFeedIdIndex];
 
                         if (
                             !BitmapLib.getBitFromBitmap(
                                 bitmapSignersForDataFeedId,
                                 signerIndex
                             ) /* current signer was not counted for current dataFeedId */ &&
-                            uniqueSignerCountForDataFeedIds[dataFeedIdIndex] <
-                            getUniqueSignersThreshold()
+                            uniqueSignerCountForDataFeedIds[dataFeedIdIndex] < getUniqueSignersThreshold()
                         ) {
                             unchecked {
                                 // Increase unique signer counter
-                                uniqueSignerCountForDataFeedIds[
-                                    dataFeedIdIndex
-                                ]++;
+                                uniqueSignerCountForDataFeedIds[dataFeedIdIndex]++;
 
                                 // Add new value
                                 valuesForDataFeeds[dataFeedIdIndex][
-                                    uniqueSignerCountForDataFeedIds[
-                                        dataFeedIdIndex
-                                    ] - 1
+                                    uniqueSignerCountForDataFeedIds[dataFeedIdIndex] - 1
                                 ] = dataPointValue;
                             }
                             // Update signers bitmap
-                            signersBitmapForDataFeedIds[
-                                dataFeedIdIndex
-                            ] = BitmapLib.setBitInBitmap(
+                            signersBitmapForDataFeedIds[dataFeedIdIndex] = BitmapLib.setBitInBitmap(
                                 bitmapSignersForDataFeedId,
                                 signerIndex
                             );
@@ -1443,10 +1198,7 @@ library Redstone {
 
         // Return total data package byte size
         unchecked {
-            return
-                DATA_PACKAGE_WITHOUT_DATA_POINTS_BS +
-                (eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) *
-                dataPointsCount;
+            return DATA_PACKAGE_WITHOUT_DATA_POINTS_BS + (eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) * dataPointsCount;
         }
     }
 
@@ -1465,28 +1217,17 @@ library Redstone {
         uint256[][] memory valuesForDataFeeds,
         uint256[] memory uniqueSignerCountForDataFeedIds
     ) private pure returns (uint256[] memory) {
-        uint256[] memory aggregatedValues = new uint256[](
-            valuesForDataFeeds.length
-        );
+        uint256[] memory aggregatedValues = new uint256[](valuesForDataFeeds.length);
         uint256 uniqueSignersThreshold = getUniqueSignersThreshold();
 
-        for (
-            uint256 dataFeedIndex;
-            dataFeedIndex < valuesForDataFeeds.length;
-
-        ) {
-            if (
-                uniqueSignerCountForDataFeedIds[dataFeedIndex] <
-                uniqueSignersThreshold
-            ) {
+        for (uint256 dataFeedIndex; dataFeedIndex < valuesForDataFeeds.length; ) {
+            if (uniqueSignerCountForDataFeedIds[dataFeedIndex] < uniqueSignersThreshold) {
                 revert RedstoneError.InsufficientNumberOfUniqueSigners(
                     uniqueSignerCountForDataFeedIds[dataFeedIndex],
                     uniqueSignersThreshold
                 );
             }
-            uint256 aggregatedValueForDataFeedId = aggregateValues(
-                valuesForDataFeeds[dataFeedIndex]
-            );
+            uint256 aggregatedValueForDataFeedId = aggregateValues(valuesForDataFeeds[dataFeedIndex]);
             aggregatedValues[dataFeedIndex] = aggregatedValueForDataFeedId;
             unchecked {
                 dataFeedIndex++;
@@ -1498,11 +1239,7 @@ library Redstone {
 
     function _extractDataPointsDetailsForDataPackage(
         uint256 calldataNegativeOffsetForDataPackage
-    )
-        private
-        pure
-        returns (uint256 dataPointsCount, uint256 eachDataPointValueByteSize)
-    {
+    ) private pure returns (uint256 dataPointsCount, uint256 eachDataPointValueByteSize) {
         // Using uint24, because data points count byte size number has 3 bytes
         uint24 dataPointsCount_;
 
@@ -1511,11 +1248,8 @@ library Redstone {
 
         // Extract data points count
         unchecked {
-            uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage +
-                    SIG_BS;
-            uint256 calldataOffset = msg.data.length.sub(
-                negativeCalldataOffset + STANDARD_SLOT_BS
-            );
+            uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + SIG_BS;
+            uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS);
             assembly {
                 dataPointsCount_ := calldataload(calldataOffset)
             }
@@ -1532,21 +1266,12 @@ library Redstone {
         }
     }
 
-    function _extractByteSizeOfUnsignedMetadata()
-        private
-        pure
-        returns (uint256)
-    {
+    function _extractByteSizeOfUnsignedMetadata() private pure returns (uint256) {
         // Checking if the calldata ends with the RedStone marker
         bool hasValidRedstoneMarker;
         assembly {
-            let calldataLast32Bytes := calldataload(
-                sub(calldatasize(), STANDARD_SLOT_BS)
-            )
-            hasValidRedstoneMarker := eq(
-                REDSTONE_MARKER_MASK,
-                and(calldataLast32Bytes, REDSTONE_MARKER_MASK)
-            )
+            let calldataLast32Bytes := calldataload(sub(calldatasize(), STANDARD_SLOT_BS))
+            hasValidRedstoneMarker := eq(REDSTONE_MARKER_MASK, and(calldataLast32Bytes, REDSTONE_MARKER_MASK))
         }
         if (!hasValidRedstoneMarker) {
             revert RedstoneError.CalldataMustHaveValidPayload();
@@ -1558,18 +1283,11 @@ library Redstone {
             revert RedstoneError.CalldataOverOrUnderFlow();
         }
         assembly {
-            unsignedMetadataByteSize := calldataload(
-                sub(calldatasize(), REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS)
-            )
+            unsignedMetadataByteSize := calldataload(sub(calldatasize(), REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS))
         }
         unchecked {
-            uint256 calldataNegativeOffset = unsignedMetadataByteSize +
-                UNSIGNED_METADATA_BYTE_SIZE_BS +
-                REDSTONE_MARKER_BS;
-            if (
-                calldataNegativeOffset + DATA_PACKAGES_COUNT_BS >
-                msg.data.length
-            ) {
+            uint256 calldataNegativeOffset = unsignedMetadataByteSize + UNSIGNED_METADATA_BYTE_SIZE_BS + REDSTONE_MARKER_BS;
+            if (calldataNegativeOffset + DATA_PACKAGES_COUNT_BS > msg.data.length) {
                 revert RedstoneError.IncorrectUnsignedMetadataSize();
             }
             return calldataNegativeOffset;
@@ -1580,15 +1298,12 @@ library Redstone {
         uint256 calldataNegativeOffset
     ) private pure returns (uint16 dataPackagesCount) {
         unchecked {
-            uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset +
-                    STANDARD_SLOT_BS;
+            uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
             if (calldataNegativeOffsetWithStandardSlot > msg.data.length) {
                 revert RedstoneError.CalldataOverOrUnderFlow();
             }
             assembly {
-                dataPackagesCount := calldataload(
-                    sub(calldatasize(), calldataNegativeOffsetWithStandardSlot)
-                )
+                dataPackagesCount := calldataload(sub(calldatasize(), calldataNegativeOffsetWithStandardSlot))
             }
             return dataPackagesCount;
         }
@@ -1598,24 +1313,14 @@ library Redstone {
         uint256 calldataNegativeOffsetForDataPackage,
         uint256 defaultDataPointValueByteSize,
         uint256 dataPointIndex
-    )
-        private
-        pure
-        returns (bytes32 dataPointDataFeedId, uint256 dataPointValue)
-    {
-        uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage +
-                DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    ) private pure returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
+        uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
         uint256 dataPointNegativeOffset = negativeOffsetToDataPoints +
-            ((1 + dataPointIndex) *
-                ((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS)));
-        uint256 dataPointCalldataOffset = msg.data.length.sub(
-            dataPointNegativeOffset
-        );
+            ((1 + dataPointIndex) * ((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS)));
+        uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
         assembly {
             dataPointDataFeedId := calldataload(dataPointCalldataOffset)
-            dataPointValue := calldataload(
-                add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS)
-            )
+            dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
         }
     }
 
@@ -1626,42 +1331,27 @@ library Redstone {
     ) internal returns (bytes memory) {
         bytes memory message = _prepareMessage(encodedFunction);
 
-        (bool success, bytes memory result) = contractAddress.call{
-            value: forwardValue ? msg.value : 0
-        }(message);
+        (bool success, bytes memory result) = contractAddress.call{value: forwardValue ? msg.value : 0}(message);
 
         return _prepareReturnValue(success, result);
     }
 
-    function proxyDelegateCalldata(
-        address contractAddress,
-        bytes memory encodedFunction
-    ) internal returns (bytes memory) {
+    function proxyDelegateCalldata(address contractAddress, bytes memory encodedFunction) internal returns (bytes memory) {
         bytes memory message = _prepareMessage(encodedFunction);
-        (bool success, bytes memory result) = contractAddress.delegatecall(
-            message
-        );
+        (bool success, bytes memory result) = contractAddress.delegatecall(message);
         return _prepareReturnValue(success, result);
     }
 
-    function proxyCalldataView(
-        address contractAddress,
-        bytes memory encodedFunction
-    ) internal view returns (bytes memory) {
+    function proxyCalldataView(address contractAddress, bytes memory encodedFunction) internal view returns (bytes memory) {
         bytes memory message = _prepareMessage(encodedFunction);
-        (bool success, bytes memory result) = contractAddress.staticcall(
-            message
-        );
+        (bool success, bytes memory result) = contractAddress.staticcall(message);
         return _prepareReturnValue(success, result);
     }
 
-    function _prepareMessage(
-        bytes memory encodedFunction
-    ) private pure returns (bytes memory) {
+    function _prepareMessage(bytes memory encodedFunction) private pure returns (bytes memory) {
         uint256 encodedFunctionBytesCount = encodedFunction.length;
         uint256 redstonePayloadByteSize = _getRedstonePayloadByteSize();
-        uint256 resultMessageByteSize = encodedFunctionBytesCount +
-            redstonePayloadByteSize;
+        uint256 resultMessageByteSize = encodedFunctionBytesCount + redstonePayloadByteSize;
 
         if (redstonePayloadByteSize > msg.data.length) {
             revert RedstoneError.CalldataOverOrUnderFlow();
@@ -1690,10 +1380,7 @@ library Redstone {
 
             // Copying redstone payload to the message bytes
             calldatacopy(
-                add(
-                    message,
-                    add(BYTES_ARR_LEN_VAR_BS, encodedFunctionBytesCount)
-                ), // address
+                add(message, add(BYTES_ARR_LEN_VAR_BS, encodedFunctionBytesCount)), // address
                 sub(calldatasize(), redstonePayloadByteSize), // offset
                 redstonePayloadByteSize // bytes length to copy
             )
@@ -1701,13 +1388,7 @@ library Redstone {
             // Updating free memory pointer
             mstore(
                 FREE_MEMORY_PTR,
-                add(
-                    add(
-                        message,
-                        add(redstonePayloadByteSize, encodedFunctionBytesCount)
-                    ),
-                    BYTES_ARR_LEN_VAR_BS
-                )
+                add(add(message, add(redstonePayloadByteSize, encodedFunctionBytesCount)), BYTES_ARR_LEN_VAR_BS)
             )
         }
 
@@ -1716,14 +1397,10 @@ library Redstone {
 
     function _getRedstonePayloadByteSize() private pure returns (uint256) {
         uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
-        uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(
-            calldataNegativeOffset
-        );
+        uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
         calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
         for (uint256 dataPackageIndex; dataPackageIndex < dataPackagesCount; ) {
-            calldataNegativeOffset += _getDataPackageByteSize(
-                calldataNegativeOffset
-            );
+            calldataNegativeOffset += _getDataPackageByteSize(calldataNegativeOffset);
             unchecked {
                 dataPackageIndex++;
             }
@@ -1732,37 +1409,23 @@ library Redstone {
         return calldataNegativeOffset;
     }
 
-    function _getDataPackageByteSize(
-        uint256 calldataNegativeOffset
-    ) private pure returns (uint256) {
-        (
-            uint256 dataPointsCount,
-            uint256 eachDataPointValueByteSize
-        ) = _extractDataPointsDetailsForDataPackage(calldataNegativeOffset);
+    function _getDataPackageByteSize(uint256 calldataNegativeOffset) private pure returns (uint256) {
+        (uint256 dataPointsCount, uint256 eachDataPointValueByteSize) = _extractDataPointsDetailsForDataPackage(
+            calldataNegativeOffset
+        );
 
-        return
-            dataPointsCount *
-            (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
-            DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+        return dataPointsCount * (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
     }
 
-    function _prepareReturnValue(
-        bool success,
-        bytes memory result
-    ) internal pure returns (bytes memory) {
+    function _prepareReturnValue(bool success, bytes memory result) internal pure returns (bytes memory) {
         if (!success) {
             if (result.length == 0) {
                 revert RedstoneError.ProxyCalldataFailedWithoutErrMsg();
             } else {
                 bool isStringErrorMessage;
                 assembly {
-                    let first32BytesOfResult := mload(
-                        add(result, BYTES_ARR_LEN_VAR_BS)
-                    )
-                    isStringErrorMessage := eq(
-                        first32BytesOfResult,
-                        STRING_ERR_MESSAGE_MASK
-                    )
+                    let first32BytesOfResult := mload(add(result, BYTES_ARR_LEN_VAR_BS))
+                    isStringErrorMessage := eq(first32BytesOfResult, STRING_ERR_MESSAGE_MASK)
                 }
 
                 if (isStringErrorMessage) {
@@ -1770,13 +1433,9 @@ library Redstone {
                     assembly {
                         receivedErrMsg := add(result, REVERT_MSG_OFFSET)
                     }
-                    revert RedstoneError.ProxyCalldataFailedWithStringMessage(
-                        receivedErrMsg
-                    );
+                    revert RedstoneError.ProxyCalldataFailedWithStringMessage(receivedErrMsg);
                 } else {
-                    revert RedstoneError.ProxyCalldataFailedWithCustomError(
-                        result
-                    );
+                    revert RedstoneError.ProxyCalldataFailedWithCustomError(result);
                 }
             }
         }
@@ -1807,30 +1466,14 @@ library PercentageMath {
      * @param percentage The percentage of the value to be calculated
      * @return result value percentmul percentage
      **/
-    function percentMul(
-        uint256 value,
-        uint256 percentage
-    ) internal pure returns (uint256 result) {
+    function percentMul(uint256 value, uint256 percentage) internal pure returns (uint256 result) {
         // to avoid overflow, value <= (type(uint256).max - HALF_PERCENTAGE_FACTOR) / percentage
         assembly {
-            if iszero(
-                or(
-                    iszero(percentage),
-                    iszero(
-                        gt(
-                            value,
-                            div(sub(not(0), HALF_PERCENTAGE_FACTOR), percentage)
-                        )
-                    )
-                )
-            ) {
+            if iszero(or(iszero(percentage), iszero(gt(value, div(sub(not(0), HALF_PERCENTAGE_FACTOR), percentage))))) {
                 revert(0, 0)
             }
 
-            result := div(
-                add(mul(value, percentage), HALF_PERCENTAGE_FACTOR),
-                PERCENTAGE_FACTOR
-            )
+            result := div(add(mul(value, percentage), HALF_PERCENTAGE_FACTOR), PERCENTAGE_FACTOR)
         }
     }
 
@@ -1841,33 +1484,14 @@ library PercentageMath {
      * @param percentage The percentage of the value to be calculated
      * @return result value percentdiv percentage
      **/
-    function percentDiv(
-        uint256 value,
-        uint256 percentage
-    ) internal pure returns (uint256 result) {
+    function percentDiv(uint256 value, uint256 percentage) internal pure returns (uint256 result) {
         // to avoid overflow, value <= (type(uint256).max - halfPercentage) / PERCENTAGE_FACTOR
         assembly {
-            if or(
-                iszero(percentage),
-                iszero(
-                    iszero(
-                        gt(
-                            value,
-                            div(
-                                sub(not(0), div(percentage, 2)),
-                                PERCENTAGE_FACTOR
-                            )
-                        )
-                    )
-                )
-            ) {
+            if or(iszero(percentage), iszero(iszero(gt(value, div(sub(not(0), div(percentage, 2)), PERCENTAGE_FACTOR))))) {
                 revert(0, 0)
             }
 
-            result := div(
-                add(mul(value, PERCENTAGE_FACTOR), div(percentage, 2)),
-                percentage
-            )
+            result := div(add(mul(value, PERCENTAGE_FACTOR), div(percentage, 2)), percentage)
         }
     }
 }
@@ -1886,11 +1510,7 @@ using PercentageMath for uint16;
  * @param _price The price to apply.
  * @param _multiplier Multiplier to apply, 1e4 = 100.00% precision.
  */
-function valueToAmount(
-    uint256 _value,
-    uint256 _price,
-    uint16 _multiplier
-) pure returns (uint256) {
+function valueToAmount(uint256 _value, uint256 _price, uint16 _multiplier) pure returns (uint256) {
     return _value.percentMul(_multiplier).wadDiv(_price);
 }
 
@@ -1953,12 +1573,7 @@ function fromWad(uint256 _wadAmount, uint8 _decimals) pure returns (uint256) {
  * @param _priceDecimals Precision of `_price`.
  * @return uint256 Value of `_amount` in 18 decimal precision.
  */
-function wadUSD(
-    uint256 _amount,
-    uint8 _amountDecimal,
-    uint256 _price,
-    uint8 _priceDecimals
-) pure returns (uint256) {
+function wadUSD(uint256 _amount, uint8 _amountDecimal, uint256 _price, uint8 _priceDecimals) pure returns (uint256) {
     if (_amount == 0 || _price == 0) return 0;
     return toWad(_amount, _amountDecimal).wadMul(toWad(_price, _priceDecimals));
 }
@@ -2008,7 +1623,7 @@ interface IAggregatorV3 {
 }
 
 /// @dev See DapiProxy.sol for comments about usage
-interface IProxy {
+interface IAPI3 {
     function read() external view returns (int224 value, uint32 timestamp);
 
     function api3ServerV1() external view returns (address);
@@ -2070,10 +1685,7 @@ library Strings {
     /**
      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
      */
-    function toHexString(
-        uint256 value,
-        uint256 length
-    ) internal pure returns (string memory) {
+    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
         bytes memory buffer = new bytes(2 * length + 2);
         buffer[0] = "0";
         buffer[1] = "x";
@@ -2084,6 +1696,98 @@ library Strings {
         if (value != 0) revert CError.STRING_HEX_LENGTH_INSUFFICIENT();
         return string(buffer);
     }
+}
+
+/**
+ * @notice Checks if the L2 sequencer is up.
+ * 1 means the sequencer is down, 0 means the sequencer is up.
+ * @param _uptimeFeed The address of the uptime feed.
+ * @param _gracePeriod The grace period in seconds.
+ * @return bool returns true/false if the sequencer is up/not.
+ */
+function isSequencerUp(address _uptimeFeed, uint256 _gracePeriod) view returns (bool) {
+    bool up = true;
+    if (_uptimeFeed != address(0)) {
+        (, int256 answer, uint256 startedAt, , ) = IAggregatorV3(_uptimeFeed).latestRoundData();
+
+        up = answer == 0;
+        if (!up) {
+            return false;
+        }
+        // Make sure the grace period has passed after the
+        // sequencer is back up.
+        if (block.timestamp - startedAt < _gracePeriod) {
+            return false;
+        }
+    }
+    return up;
+}
+
+bytes12 constant EMPTY_BYTES12 = bytes12("");
+
+/* -------------------------------------------------------------------------- */
+/*                                 Reentrancy                                 */
+/* -------------------------------------------------------------------------- */
+
+/// @dev Set the initial value to 1, (not hindering possible gas refunds by setting it to 0 on exit).
+uint8 constant NOT_ENTERED = 1;
+uint8 constant ENTERED = 2;
+
+/* -------------------------------------------------------------------------- */
+/*                               Access Control                               */
+/* -------------------------------------------------------------------------- */
+
+library Role {
+    /// @dev Meta role for all roles.
+    bytes32 internal constant DEFAULT_ADMIN = 0x00;
+    /// @dev keccak256("kresko.roles.minter.admin")
+    bytes32 internal constant ADMIN = 0xb9dacdf02281f2e98ddbadaaf44db270b3d5a916342df47c59f77937a6bcd5d8;
+    /// @dev keccak256("kresko.roles.minter.operator")
+    bytes32 internal constant OPERATOR = 0x112e48a576fb3a75acc75d9fcf6e0bc670b27b1dbcd2463502e10e68cf57d6fd;
+    /// @dev keccak256("kresko.roles.minter.manager")
+    bytes32 internal constant MANAGER = 0x46925e0f0cc76e485772167edccb8dc449d43b23b55fc4e756b063f49099e6a0;
+    /// @dev keccak256("kresko.roles.minter.safety.council")
+    bytes32 internal constant SAFETY_COUNCIL = 0x9c387ecf1663f9144595993e2c602b45de94bf8ba3a110cb30e3652d79b581c0;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                    MISC                                    */
+/* -------------------------------------------------------------------------- */
+
+library Constants {
+    /// @dev The minimum collateral amount for a kresko asset.
+    uint256 internal constant MIN_KRASSET_COLLATERAL_AMOUNT = 1e12;
+
+    /// @dev The maximum configurable minimum debt USD value. 8 decimals.
+    uint256 internal constant MAX_MIN_DEBT_VALUE = 1_000 * 1e8; // $1,000
+}
+
+library Percents {
+    uint16 internal constant ONE = 0.01e4;
+    uint16 internal constant HUNDRED = 1e4;
+    uint16 internal constant TWENTY_FIVE = 0.25e4;
+    uint16 internal constant FIFTY = 0.50e4;
+
+    uint16 internal constant BASIS_POINT = 1;
+    /// @dev The maximum configurable close fee.
+    uint16 internal constant MAX_CLOSE_FEE = 0.25e4; // 25%
+
+    /// @dev The maximum configurable open fee.
+    uint16 internal constant MAX_OPEN_FEE = 0.25e4; // 25%
+
+    /// @dev The maximum configurable protocol fee per asset for collateral pool swaps.
+    uint16 internal constant MAX_SCDP_FEE = 0.5e4; // 50%
+
+    /// @dev The minimum configurable minimum collateralization ratio.
+    uint16 internal constant MIN_CR = HUNDRED + ONE; // 101%
+
+    /// @dev The minimum configurable liquidation incentive multiplier.
+    /// This means liquidator only receives equal amount of collateral to debt repaid.
+    uint16 internal constant MIN_LIQ_INCENTIVE = HUNDRED;
+
+    /// @dev The maximum configurable liquidation incentive multiplier.
+    /// This means liquidator receives 25% bonus collateral compared to the debt repaid.
+    uint16 internal constant MAX_LIQ_INCENTIVE = 1.25e4; // 125%
 }
 
 // OpenZeppelin Contracts v4.4.1 (utils/structs/EnumerableSet.sol)
@@ -2191,10 +1895,7 @@ library EnumerableSet {
     /**
      * @dev Returns true if the value is in the set. O(1).
      */
-    function _contains(
-        Set storage set,
-        bytes32 value
-    ) private view returns (bool) {
+    function _contains(Set storage set, bytes32 value) private view returns (bool) {
         return set._indexes[value] != 0;
     }
 
@@ -2215,10 +1916,7 @@ library EnumerableSet {
      *
      * - `index` must be strictly less than {length}.
      */
-    function _at(
-        Set storage set,
-        uint256 index
-    ) private view returns (bytes32) {
+    function _at(Set storage set, uint256 index) private view returns (bytes32) {
         return set._values[index];
     }
 
@@ -2246,10 +1944,7 @@ library EnumerableSet {
      * Returns true if the value was added to the set, that is if it was not
      * already present.
      */
-    function add(
-        Bytes32Set storage set,
-        bytes32 value
-    ) internal returns (bool) {
+    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {
         return _add(set._inner, value);
     }
 
@@ -2259,20 +1954,14 @@ library EnumerableSet {
      * Returns true if the value was removed from the set, that is if it was
      * present.
      */
-    function remove(
-        Bytes32Set storage set,
-        bytes32 value
-    ) internal returns (bool) {
+    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {
         return _remove(set._inner, value);
     }
 
     /**
      * @dev Returns true if the value is in the set. O(1).
      */
-    function contains(
-        Bytes32Set storage set,
-        bytes32 value
-    ) internal view returns (bool) {
+    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {
         return _contains(set._inner, value);
     }
 
@@ -2293,10 +1982,7 @@ library EnumerableSet {
      *
      * - `index` must be strictly less than {length}.
      */
-    function at(
-        Bytes32Set storage set,
-        uint256 index
-    ) internal view returns (bytes32) {
+    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {
         return _at(set._inner, index);
     }
 
@@ -2308,9 +1994,7 @@ library EnumerableSet {
      * this function has an unbounded cost, and using it as part of a state-changing function may render the function
      * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
      */
-    function values(
-        Bytes32Set storage set
-    ) internal view returns (bytes32[] memory) {
+    function values(Bytes32Set storage set) internal view returns (bytes32[] memory) {
         return _values(set._inner);
     }
 
@@ -2326,10 +2010,7 @@ library EnumerableSet {
      * Returns true if the value was added to the set, that is if it was not
      * already present.
      */
-    function add(
-        AddressSet storage set,
-        address value
-    ) internal returns (bool) {
+    function add(AddressSet storage set, address value) internal returns (bool) {
         return _add(set._inner, bytes32(uint256(uint160(value))));
     }
 
@@ -2339,20 +2020,14 @@ library EnumerableSet {
      * Returns true if the value was removed from the set, that is if it was
      * present.
      */
-    function remove(
-        AddressSet storage set,
-        address value
-    ) internal returns (bool) {
+    function remove(AddressSet storage set, address value) internal returns (bool) {
         return _remove(set._inner, bytes32(uint256(uint160(value))));
     }
 
     /**
      * @dev Returns true if the value is in the set. O(1).
      */
-    function contains(
-        AddressSet storage set,
-        address value
-    ) internal view returns (bool) {
+    function contains(AddressSet storage set, address value) internal view returns (bool) {
         return _contains(set._inner, bytes32(uint256(uint160(value))));
     }
 
@@ -2373,10 +2048,7 @@ library EnumerableSet {
      *
      * - `index` must be strictly less than {length}.
      */
-    function at(
-        AddressSet storage set,
-        uint256 index
-    ) internal view returns (address) {
+    function at(AddressSet storage set, uint256 index) internal view returns (address) {
         return address(uint160(uint256(_at(set._inner, index))));
     }
 
@@ -2388,9 +2060,7 @@ library EnumerableSet {
      * this function has an unbounded cost, and using it as part of a state-changing function may render the function
      * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
      */
-    function values(
-        AddressSet storage set
-    ) internal view returns (address[] memory) {
+    function values(AddressSet storage set) internal view returns (address[] memory) {
         bytes32[] memory store = _values(set._inner);
         address[] memory result;
 
@@ -2423,20 +2093,14 @@ library EnumerableSet {
      * Returns true if the value was removed from the set, that is if it was
      * present.
      */
-    function remove(
-        UintSet storage set,
-        uint256 value
-    ) internal returns (bool) {
+    function remove(UintSet storage set, uint256 value) internal returns (bool) {
         return _remove(set._inner, bytes32(value));
     }
 
     /**
      * @dev Returns true if the value is in the set. O(1).
      */
-    function contains(
-        UintSet storage set,
-        uint256 value
-    ) internal view returns (bool) {
+    function contains(UintSet storage set, uint256 value) internal view returns (bool) {
         return _contains(set._inner, bytes32(value));
     }
 
@@ -2457,10 +2121,7 @@ library EnumerableSet {
      *
      * - `index` must be strictly less than {length}.
      */
-    function at(
-        UintSet storage set,
-        uint256 index
-    ) internal view returns (uint256) {
+    function at(UintSet storage set, uint256 index) internal view returns (uint256) {
         return uint256(_at(set._inner, index));
     }
 
@@ -2472,9 +2133,7 @@ library EnumerableSet {
      * this function has an unbounded cost, and using it as part of a state-changing function may render the function
      * uncallable if the set grows to a point where copying to memory consumes too much gas to fit in a block.
      */
-    function values(
-        UintSet storage set
-    ) internal view returns (uint256[] memory) {
+    function values(UintSet storage set) internal view returns (uint256[] memory) {
         bytes32[] memory store = _values(set._inner);
         uint256[] memory result;
 
@@ -2555,106 +2214,6 @@ function gs() pure returns (GatingState storage state) {
     }
 }
 
-/**
- * @notice Checks if the L2 sequencer is up.
- * 1 means the sequencer is down, 0 means the sequencer is up.
- * @param _uptimeFeed The address of the uptime feed.
- * @param _gracePeriod The grace period in seconds.
- * @return bool returns true/false if the sequencer is up/not.
- */
-function isSequencerUp(
-    address _uptimeFeed,
-    uint256 _gracePeriod
-) view returns (bool) {
-    bool up = true;
-    if (_uptimeFeed != address(0)) {
-        (, int256 answer, uint256 startedAt, , ) = IAggregatorV3(_uptimeFeed)
-            .latestRoundData();
-
-        up = answer == 0;
-        if (!up) {
-            return false;
-        }
-        // Make sure the grace period has passed after the
-        // sequencer is back up.
-        if (block.timestamp - startedAt < _gracePeriod) {
-            return false;
-        }
-    }
-    return up;
-}
-
-bytes12 constant EMPTY_BYTES12 = bytes12("");
-
-/* -------------------------------------------------------------------------- */
-/*                                 Reentrancy                                 */
-/* -------------------------------------------------------------------------- */
-
-/// @dev Set the initial value to 1, (not hindering possible gas refunds by setting it to 0 on exit).
-uint8 constant NOT_ENTERED = 1;
-uint8 constant ENTERED = 2;
-
-/* -------------------------------------------------------------------------- */
-/*                               Access Control                               */
-/* -------------------------------------------------------------------------- */
-
-library Role {
-    /// @dev Meta role for all roles.
-    bytes32 internal constant DEFAULT_ADMIN = 0x00;
-    /// @dev keccak256("kresko.roles.minter.admin")
-    bytes32 internal constant ADMIN =
-        0xb9dacdf02281f2e98ddbadaaf44db270b3d5a916342df47c59f77937a6bcd5d8;
-    /// @dev keccak256("kresko.roles.minter.operator")
-    bytes32 internal constant OPERATOR =
-        0x112e48a576fb3a75acc75d9fcf6e0bc670b27b1dbcd2463502e10e68cf57d6fd;
-    /// @dev keccak256("kresko.roles.minter.manager")
-    bytes32 internal constant MANAGER =
-        0x46925e0f0cc76e485772167edccb8dc449d43b23b55fc4e756b063f49099e6a0;
-    /// @dev keccak256("kresko.roles.minter.safety.council")
-    bytes32 internal constant SAFETY_COUNCIL =
-        0x9c387ecf1663f9144595993e2c602b45de94bf8ba3a110cb30e3652d79b581c0;
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                    MISC                                    */
-/* -------------------------------------------------------------------------- */
-
-library Constants {
-    /// @dev The minimum collateral amount for a kresko asset.
-    uint256 internal constant MIN_KRASSET_COLLATERAL_AMOUNT = 1e12;
-
-    /// @dev The maximum configurable minimum debt USD value. 8 decimals.
-    uint256 internal constant MAX_MIN_DEBT_VALUE = 1_000 * 1e8; // $1,000
-}
-
-library Percents {
-    uint16 internal constant ONE = 0.01e4;
-    uint16 internal constant HUNDRED = 1e4;
-    uint16 internal constant TWENTY_FIVE = 0.25e4;
-    uint16 internal constant FIFTY = 0.50e4;
-
-    uint16 internal constant BASIS_POINT = 1;
-    /// @dev The maximum configurable close fee.
-    uint16 internal constant MAX_CLOSE_FEE = 0.25e4; // 25%
-
-    /// @dev The maximum configurable open fee.
-    uint16 internal constant MAX_OPEN_FEE = 0.25e4; // 25%
-
-    /// @dev The maximum configurable protocol fee per asset for collateral pool swaps.
-    uint16 internal constant MAX_SCDP_FEE = 0.5e4; // 50%
-
-    /// @dev The minimum configurable minimum collateralization ratio.
-    uint16 internal constant MIN_CR = HUNDRED + ONE; // 101%
-
-    /// @dev The minimum configurable liquidation incentive multiplier.
-    /// This means liquidator only receives equal amount of collateral to debt repaid.
-    uint16 internal constant MIN_LIQ_INCENTIVE = HUNDRED;
-
-    /// @dev The maximum configurable liquidation incentive multiplier.
-    /// This means liquidator receives 25% bonus collateral compared to the debt repaid.
-    uint16 internal constant MAX_LIQ_INCENTIVE = 1.25e4; // 125%
-}
-
 library SGlobal {
     using WadRay for uint256;
     using PercentageMath for uint256;
@@ -2665,9 +2224,7 @@ library SGlobal {
      */
     function checkLiquidatableSCDP(SCDPState storage self) internal view {
         uint256 collateralValue = self.totalCollateralValueSCDP(false);
-        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(
-            self.liquidationThreshold
-        );
+        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(self.liquidationThreshold);
         if (collateralValue >= minCollateralValue) {
             revert CError.CANNOT_LIQUIDATE(collateralValue, minCollateralValue);
         }
@@ -2679,9 +2236,7 @@ library SGlobal {
      */
     function checkCoverableSCDP(SCDPState storage self) internal view {
         uint256 collateralValue = self.totalCollateralValueSCDP(false);
-        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(
-            self.minCollateralRatio
-        );
+        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(self.minCollateralRatio);
         if (collateralValue >= minCollateralValue) {
             revert CError.CANNOT_COVER(collateralValue, minCollateralValue);
         }
@@ -2692,20 +2247,11 @@ library SGlobal {
      * @notice Reverts when collateralValue is below minimum required.
      * @param _ratio Ratio to check in 1e4 percentage precision (uint32).
      */
-    function checkCollateralValue(
-        SCDPState storage self,
-        uint32 _ratio
-    ) internal view {
+    function checkCollateralValue(SCDPState storage self, uint32 _ratio) internal view {
         uint256 collateralValue = self.totalCollateralValueSCDP(false);
-        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(
-            _ratio
-        );
+        uint256 minCollateralValue = sdi().effectiveDebtValue().percentMul(_ratio);
         if (collateralValue < minCollateralValue) {
-            revert CError.DEBT_EXCEEDS_COLLATERAL(
-                collateralValue,
-                minCollateralValue,
-                _ratio
-            );
+            revert CError.DEBT_EXCEEDS_COLLATERAL(collateralValue, minCollateralValue, _ratio);
         }
     }
 
@@ -2723,15 +2269,10 @@ library SGlobal {
         address[] memory assets = self.krAssets;
         for (uint256 i; i < assets.length; ) {
             Asset storage asset = cs().assets[assets[i]];
-            uint256 debtAmount = asset.toRebasingAmount(
-                self.assetData[assets[i]].debt
-            );
+            uint256 debtAmount = asset.toRebasingAmount(self.assetData[assets[i]].debt);
             unchecked {
                 if (debtAmount != 0) {
-                    totalValue += asset.debtAmountToValue(
-                        debtAmount,
-                        _ignorekFactor
-                    );
+                    totalValue += asset.debtAmountToValue(debtAmount, _ignorekFactor);
                 }
                 i++;
             }
@@ -2748,20 +2289,14 @@ library SGlobal {
      * @param _ignoreFactors Whether to ignore cFactor.
      * @return totalValue Total value in USD
      */
-    function totalCollateralValueSCDP(
-        SCDPState storage self,
-        bool _ignoreFactors
-    ) internal view returns (uint256 totalValue) {
+    function totalCollateralValueSCDP(SCDPState storage self, bool _ignoreFactors) internal view returns (uint256 totalValue) {
         address[] memory assets = self.collaterals;
         for (uint256 i; i < assets.length; ) {
             Asset storage asset = cs().assets[assets[i]];
             uint256 depositAmount = self.totalDepositAmount(assets[i], asset);
             if (depositAmount != 0) {
                 unchecked {
-                    totalValue += asset.collateralAmountToValue(
-                        depositAmount,
-                        _ignoreFactors
-                    );
+                    totalValue += asset.collateralAmountToValue(depositAmount, _ignoreFactors);
                 }
             }
 
@@ -2789,10 +2324,7 @@ library SGlobal {
             uint256 depositAmount = self.totalDepositAmount(assets[i], asset);
             unchecked {
                 if (depositAmount != 0) {
-                    uint256 value = asset.collateralAmountToValue(
-                        depositAmount,
-                        _ignoreFactors
-                    );
+                    uint256 value = asset.collateralAmountToValue(depositAmount, _ignoreFactors);
                     totalValue += value;
                     if (assets[i] == _collateralAsset) {
                         assetValue = value;
@@ -2814,12 +2346,7 @@ library SGlobal {
         address _assetAddress,
         Asset storage _asset
     ) internal view returns (uint128) {
-        return
-            uint128(
-                _asset.toRebasingAmount(
-                    self.assetData[_assetAddress].totalDeposits
-                )
-            );
+        return uint128(_asset.toRebasingAmount(self.assetData[_assetAddress].totalDeposits));
     }
 
     /**
@@ -2834,10 +2361,7 @@ library SGlobal {
         Asset storage _asset
     ) internal view returns (uint256) {
         return
-            _asset.toRebasingAmount(
-                self.assetData[_assetAddress].totalDeposits -
-                    self.assetData[_assetAddress].swapDeposits
-            );
+            _asset.toRebasingAmount(self.assetData[_assetAddress].totalDeposits - self.assetData[_assetAddress].swapDeposits);
     }
 
     /**
@@ -2851,12 +2375,7 @@ library SGlobal {
         address _assetAddress,
         Asset storage _asset
     ) internal view returns (uint128) {
-        return
-            uint128(
-                _asset.toRebasingAmount(
-                    self.assetData[_assetAddress].swapDeposits
-                )
-            );
+        return uint128(_asset.toRebasingAmount(self.assetData[_assetAddress].swapDeposits));
     }
 }
 
@@ -2871,12 +2390,7 @@ library SDeposits {
      * @param _assetAddr the deposit asset
      * @param _amount amount of collateral asset to deposit
      */
-    function handleDepositSCDP(
-        SCDPState storage self,
-        address _account,
-        address _assetAddr,
-        uint256 _amount
-    ) internal {
+    function handleDepositSCDP(SCDPState storage self, address _account, address _assetAddr, uint256 _amount) internal {
         Asset storage asset = cs().assets[_assetAddr];
         if (!asset.isSCDPDepositAsset) {
             revert CError.INVALID_DEPOSIT_ASSET(_assetAddr);
@@ -2890,18 +2404,10 @@ library SDeposits {
             // Save principal deposits.
             self.depositsPrincipal[_account][_assetAddr] += depositAmount;
             // Save scaled deposits.
-            self.deposits[_account][_assetAddr] += depositAmount
-                .wadToRay()
-                .rayDiv(asset.liquidityIndexSCDP);
+            self.deposits[_account][_assetAddr] += depositAmount.wadToRay().rayDiv(asset.liquidityIndexSCDP);
         }
-        if (
-            self.userDepositAmount(_assetAddr, asset) > asset.depositLimitSCDP
-        ) {
-            revert CError.DEPOSIT_LIMIT(
-                _assetAddr,
-                self.userDepositAmount(_assetAddr, asset),
-                asset.depositLimitSCDP
-            );
+        if (self.userDepositAmount(_assetAddr, asset) > asset.depositLimitSCDP) {
+            revert CError.DEPOSIT_LIMIT(_assetAddr, self.userDepositAmount(_assetAddr, asset), asset.depositLimitSCDP);
         }
     }
 
@@ -2923,11 +2429,7 @@ library SDeposits {
         Asset storage asset = cs().assets[_assetAddr];
 
         // Get accounts principal deposits.
-        uint256 depositsPrincipal = self.accountPrincipalDeposits(
-            _account,
-            _assetAddr,
-            asset
-        );
+        uint256 depositsPrincipal = self.accountPrincipalDeposits(_account, _assetAddr, asset);
 
         if (depositsPrincipal >= _amount) {
             // == Principal can cover possibly rebased `_amount` requested.
@@ -2942,38 +2444,25 @@ library SDeposits {
                 // 5. Reduce principal deposits.
                 self.depositsPrincipal[_account][_assetAddr] -= amountWrite;
                 // 6. Reduce scaled deposits.
-                self.deposits[_account][_assetAddr] -= amountWrite
-                    .wadToRay()
-                    .rayDiv(asset.liquidityIndexSCDP);
+                self.deposits[_account][_assetAddr] -= amountWrite.wadToRay().rayDiv(asset.liquidityIndexSCDP);
             }
         } else {
             // == Principal can't cover possibly rebased `_amount` requested, send full collateral available.
             // 1. We send all collateral.
             amountOut = depositsPrincipal;
             // 2. With fees.
-            uint256 scaledDeposits = self.accountScaledDeposits(
-                _account,
-                _assetAddr,
-                asset
-            );
+            uint256 scaledDeposits = self.accountScaledDeposits(_account, _assetAddr, asset);
             feesOut = scaledDeposits - depositsPrincipal;
             // 3. Ensure this is actually the case.
             if (feesOut == 0) {
-                revert CError.SCDP_WITHDRAWAL_VIOLATION(
-                    _assetAddr,
-                    _amount,
-                    depositsPrincipal,
-                    scaledDeposits
-                );
+                revert CError.SCDP_WITHDRAWAL_VIOLATION(_assetAddr, _amount, depositsPrincipal, scaledDeposits);
             }
 
             // 4. Wipe account collateral deposits.
             self.depositsPrincipal[_account][_assetAddr] = 0;
             self.deposits[_account][_assetAddr] = 0;
             // 5. Reduce global by ONLY by the principal, fees are NOT collateral.
-            self.assetData[_assetAddr].totalDeposits -= uint128(
-                asset.toNonRebasingAmount(depositsPrincipal)
-            );
+            self.assetData[_assetAddr].totalDeposits -= uint128(asset.toNonRebasingAmount(depositsPrincipal));
         }
     }
 
@@ -2993,9 +2482,7 @@ library SDeposits {
         uint128 swapDeposits = self.swapDepositAmount(_sAssetAddr, _sAsset);
 
         if (swapDeposits >= _seizeAmount) {
-            uint128 amountOut = uint128(
-                _sAsset.toNonRebasingAmount(_seizeAmount)
-            );
+            uint128 amountOut = uint128(_sAsset.toNonRebasingAmount(_seizeAmount));
             // swap deposits cover the amount
             unchecked {
                 self.assetData[_sAssetAddr].swapDeposits -= amountOut;
@@ -3006,14 +2493,10 @@ library SDeposits {
             uint256 amountToCover = uint128(_seizeAmount - swapDeposits);
             // reduce everyones deposits by the same ratio
             _sAsset.liquidityIndexSCDP -= uint128(
-                amountToCover.wadToRay().rayDiv(
-                    self.userDepositAmount(_sAssetAddr, _sAsset).wadToRay()
-                )
+                amountToCover.wadToRay().rayDiv(self.userDepositAmount(_sAssetAddr, _sAsset).wadToRay())
             );
             self.assetData[_sAssetAddr].swapDeposits = 0;
-            self.assetData[_sAssetAddr].totalDeposits -= uint128(
-                _sAsset.toNonRebasingAmount(amountToCover)
-            );
+            self.assetData[_sAssetAddr].totalDeposits -= uint128(_sAsset.toNonRebasingAmount(amountToCover));
         }
     }
 }
@@ -3035,9 +2518,7 @@ library SAccounts {
         address _assetAddr,
         Asset storage _asset
     ) internal view returns (uint256) {
-        uint256 deposits = _asset.toRebasingAmount(
-            self.deposits[_account][_assetAddr]
-        );
+        uint256 deposits = _asset.toRebasingAmount(self.deposits[_account][_assetAddr]);
         if (deposits == 0) {
             return 0;
         }
@@ -3058,18 +2539,12 @@ library SAccounts {
         address _assetAddr,
         Asset storage _asset
     ) internal view returns (uint256 principalDeposits) {
-        uint256 scaledDeposits = self.accountScaledDeposits(
-            _account,
-            _assetAddr,
-            _asset
-        );
+        uint256 scaledDeposits = self.accountScaledDeposits(_account, _assetAddr, _asset);
         if (scaledDeposits == 0) {
             return 0;
         }
 
-        uint256 depositsPrincipal = _asset.toRebasingAmount(
-            self.depositsPrincipal[_account][_assetAddr]
-        );
+        uint256 depositsPrincipal = _asset.toRebasingAmount(self.depositsPrincipal[_account][_assetAddr]);
         if (scaledDeposits < depositsPrincipal) {
             return scaledDeposits;
         }
@@ -3089,17 +2564,10 @@ library SAccounts {
         address[] memory assets = self.collaterals;
         for (uint256 i; i < assets.length; ) {
             Asset storage asset = cs().assets[assets[i]];
-            uint256 depositAmount = self.accountPrincipalDeposits(
-                _account,
-                assets[i],
-                asset
-            );
+            uint256 depositAmount = self.accountPrincipalDeposits(_account, assets[i], asset);
             unchecked {
                 if (depositAmount != 0) {
-                    totalValue += asset.collateralAmountToValue(
-                        depositAmount,
-                        _ignoreFactors
-                    );
+                    totalValue += asset.collateralAmountToValue(depositAmount, _ignoreFactors);
                 }
                 i++;
             }
@@ -3118,17 +2586,10 @@ library SAccounts {
         address[] memory assets = self.collaterals;
         for (uint256 i; i < assets.length; ) {
             Asset storage asset = cs().assets[assets[i]];
-            uint256 scaledDeposits = self.accountScaledDeposits(
-                _account,
-                assets[i],
-                asset
-            );
+            uint256 scaledDeposits = self.accountScaledDeposits(_account, assets[i], asset);
             unchecked {
                 if (scaledDeposits != 0) {
-                    totalValue += asset.collateralAmountToValue(
-                        scaledDeposits,
-                        true
-                    );
+                    totalValue += asset.collateralAmountToValue(scaledDeposits, true);
                 }
                 i++;
             }
@@ -3136,307 +2597,155 @@ library SAccounts {
     }
 }
 
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/Address.sol)
+error APPROVE_FAILED(address, address, address, uint256);
+error ETH_TRANSFER_FAILED(address, uint256);
+error TRANSFER_FAILED(address, address, address, uint256);
 
-/**
- * @dev Collection of functions related to the address type
- */
-library Address {
-    /**
-     * @dev The ETH balance of the account is not enough to perform the operation.
-     */
-    error AddressInsufficientBalance(address account);
+/// @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
+/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/SafeTransferLib.sol)
+/// @dev Use with caution! Some functions in this library knowingly create dirty bits at the destination of the free memory pointer.
+/// @dev Note that none of the functions in this library check that a token has code at all! That responsibility is delegated to the caller.
+library SafeTransfer {
+    /*//////////////////////////////////////////////////////////////
+                             ETH OPERATIONS
+    //////////////////////////////////////////////////////////////*/
 
-    /**
-     * @dev There's no code at `target` (it is not a contract).
-     */
-    error AddressEmptyCode(address target);
+    function safeTransferETH(address to, uint256 amount) internal {
+        bool success;
 
-    /**
-     * @dev A call to an address target failed. The target may have reverted.
-     */
-    error FailedInnerCall();
-
-    /**
-     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
-     * `recipient`, forwarding all available gas and reverting on errors.
-     *
-     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
-     * of certain opcodes, possibly making contracts go over the 2300 gas limit
-     * imposed by `transfer`, making them unable to receive funds via
-     * `transfer`. {sendValue} removes this limitation.
-     *
-     * https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/[Learn more].
-     *
-     * IMPORTANT: because control is transferred to `recipient`, care must be
-     * taken to not create reentrancy vulnerabilities. Consider using
-     * {ReentrancyGuard} or the
-     * https://solidity.readthedocs.io/en/v0.8.20/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
-     */
-    function sendValue(address payable recipient, uint256 amount) internal {
-        if (address(this).balance < amount) {
-            revert AddressInsufficientBalance(address(this));
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Transfer the ETH and store if it succeeded or not.
+            success := call(gas(), to, amount, 0, 0, 0, 0)
         }
 
-        (bool success, ) = recipient.call{value: amount}("");
-        if (!success) {
-            revert FailedInnerCall();
-        }
+        if (!success) revert ETH_TRANSFER_FAILED(to, amount);
     }
 
-    /**
-     * @dev Performs a Solidity function call using a low level `call`. A
-     * plain `call` is an unsafe replacement for a function call: use this
-     * function instead.
-     *
-     * If `target` reverts with a revert reason or custom error, it is bubbled
-     * up by this function (like regular Solidity function calls). However, if
-     * the call reverted with no returned reason, this function reverts with a
-     * {FailedInnerCall} error.
-     *
-     * Returns the raw returned data. To convert to the expected return value,
-     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
-     *
-     * Requirements:
-     *
-     * - `target` must be a contract.
-     * - calling `target` with `data` must not revert.
-     */
-    function functionCall(
-        address target,
-        bytes memory data
-    ) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, 0);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but also transferring `value` wei to `target`.
-     *
-     * Requirements:
-     *
-     * - the calling contract must have an ETH balance of at least `value`.
-     * - the called Solidity function must be `payable`.
-     */
-    function functionCallWithValue(
-        address target,
-        bytes memory data,
-        uint256 value
-    ) internal returns (bytes memory) {
-        if (address(this).balance < value) {
-            revert AddressInsufficientBalance(address(this));
-        }
-        (bool success, bytes memory returndata) = target.call{value: value}(
-            data
-        );
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but performing a static call.
-     */
-    function functionStaticCall(
-        address target,
-        bytes memory data
-    ) internal view returns (bytes memory) {
-        (bool success, bytes memory returndata) = target.staticcall(data);
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
-     * but performing a delegate call.
-     */
-    function functionDelegateCall(
-        address target,
-        bytes memory data
-    ) internal returns (bytes memory) {
-        (bool success, bytes memory returndata) = target.delegatecall(data);
-        return verifyCallResultFromTarget(target, success, returndata);
-    }
-
-    /**
-     * @dev Tool to verify that a low level call to smart-contract was successful, and reverts if the target
-     * was not a contract or bubbling up the revert reason (falling back to {FailedInnerCall}) in case of an
-     * unsuccessful call.
-     */
-    function verifyCallResultFromTarget(
-        address target,
-        bool success,
-        bytes memory returndata
-    ) internal view returns (bytes memory) {
-        if (!success) {
-            _revert(returndata);
-        } else {
-            // only check if target is a contract if the call was successful and the return data is empty
-            // otherwise we already know that it was a contract
-            if (returndata.length == 0 && target.code.length == 0) {
-                revert AddressEmptyCode(target);
-            }
-            return returndata;
-        }
-    }
-
-    /**
-     * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
-     * revert reason or with a default {FailedInnerCall} error.
-     */
-    function verifyCallResult(
-        bool success,
-        bytes memory returndata
-    ) internal pure returns (bytes memory) {
-        if (!success) {
-            _revert(returndata);
-        } else {
-            return returndata;
-        }
-    }
-
-    /**
-     * @dev Reverts with returndata if present. Otherwise reverts with {FailedInnerCall}.
-     */
-    function _revert(bytes memory returndata) private pure {
-        // Look for revert reason and bubble it up if present
-        if (returndata.length > 0) {
-            // The easiest way to bubble the revert reason is using memory via assembly
-            /// @solidity memory-safe-assembly
-            assembly {
-                let returndata_size := mload(returndata)
-                revert(add(32, returndata), returndata_size)
-            }
-        } else {
-            revert FailedInnerCall();
-        }
-    }
-}
-
-/**
- * @title SafeERC20Permit
- * @dev Wrappers around ERC20 operations that throw on failure (when the token
- * contract returns false). Tokens that return no value (and instead revert or
- * throw on failure) are also supported, non-reverting calls are assumed to be
- * successful.
- * To use this library you can add a `using SafeERC20Permit for IERC20;` statement to your contract,
- * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
- */
-library SafeERC20Permit {
-    using Address for address;
-
-    function safeTransfer(
-        IERC20Permit token,
-        address to,
-        uint256 value
-    ) internal {
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transfer.selector, to, value)
-        );
-    }
+    /*//////////////////////////////////////////////////////////////
+                            ERC20 OPERATIONS
+    //////////////////////////////////////////////////////////////*/
 
     function safeTransferFrom(
-        IERC20Permit token,
+        IERC20 token,
         address from,
         address to,
-        uint256 value
+        uint256 amount
     ) internal {
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-        );
-    }
+        bool success;
 
-    /**
-     * @dev Deprecated. This function has issues similar to the ones found in
-     * {IERC20-approve}, and its usage is discouraged.
-     *
-     * Whenever possible, use {safeIncreaseAllowance} and
-     * {safeDecreaseAllowance} instead.
-     */
-    function safeApprove(
-        IERC20Permit token,
-        address spender,
-        uint256 value
-    ) internal {
-        // safeApprove should only be called when setting an initial allowance,
-        // or when resetting it to zero. To increase and decrease it, use
-        // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
-        if (value != 0 || token.allowance(address(this), spender) != 0) {
-            revert CError.SAFE_ERC20_PERMIT_APPROVE_NON_ZERO(
-                spender,
-                value,
-                token.allowance(address(this), spender)
-            );
-        }
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.approve.selector, spender, value)
-        );
-    }
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Get a pointer to some free memory.
+            let freeMemoryPointer := mload(0x40)
 
-    function safeIncreaseAllowance(
-        IERC20Permit token,
-        address spender,
-        uint256 value
-    ) internal {
-        uint256 newAllowance = token.allowance(address(this), spender) + value;
-        _callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
+            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            mstore(
+                freeMemoryPointer,
+                0x23b872dd00000000000000000000000000000000000000000000000000000000
             )
-        );
+            mstore(
+                add(freeMemoryPointer, 4),
+                and(from, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "from" argument.
+            mstore(
+                add(freeMemoryPointer, 36),
+                and(to, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "to" argument.
+            mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+
+            success := and(
+                // Set success to whether the call reverted, if not we check it either
+                // returned exactly 1 (can't just be non-zero data), or had no return data.
+                or(
+                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
+                    iszero(returndatasize())
+                ),
+                // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
+                // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+                // Counterintuitively, this call must be positioned second to the or() call in the
+                // surrounding and() call or else returndatasize() will be zero during the computation.
+                call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
+            )
+        }
+
+        if (!success) revert TRANSFER_FAILED(address(token), from, to, amount);
     }
 
-    function safeDecreaseAllowance(
-        IERC20Permit token,
-        address spender,
-        uint256 value
-    ) internal {
-        unchecked {
-            uint256 oldAllowance = token.allowance(address(this), spender);
-            if (value > oldAllowance)
-                revert CError.SAFE_ERC20_PERMIT_DECREASE_BELOW_ZERO(
-                    spender,
-                    value,
-                    oldAllowance
-                );
-            uint256 newAllowance = oldAllowance - value;
-            _callOptionalReturn(
-                token,
-                abi.encodeWithSelector(
-                    token.approve.selector,
-                    spender,
-                    newAllowance
-                )
-            );
+    function safeTransfer(IERC20 token, address to, uint256 amount) internal {
+        bool success;
+
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Get a pointer to some free memory.
+            let freeMemoryPointer := mload(0x40)
+
+            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            mstore(
+                freeMemoryPointer,
+                0xa9059cbb00000000000000000000000000000000000000000000000000000000
+            )
+            mstore(
+                add(freeMemoryPointer, 4),
+                and(to, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "to" argument.
+            mstore(add(freeMemoryPointer, 36), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+
+            success := and(
+                // Set success to whether the call reverted, if not we check it either
+                // returned exactly 1 (can't just be non-zero data), or had no return data.
+                or(
+                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
+                    iszero(returndatasize())
+                ),
+                // We use 68 because the length of our calldata totals up like so: 4 + 32 * 2.
+                // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+                // Counterintuitively, this call must be positioned second to the or() call in the
+                // surrounding and() call or else returndatasize() will be zero during the computation.
+                call(gas(), token, 0, freeMemoryPointer, 68, 0, 32)
+            )
         }
+
+        if (!success)
+            revert TRANSFER_FAILED(address(token), msg.sender, to, amount);
     }
 
-    /**
-     * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
-     * on the return value: the return value is optional (but if data is returned, it must not be false).
-     * @param token The token targeted by the call.
-     * @param data The call data (encoded using abi.encode or one of its variants).
-     */
-    function _callOptionalReturn(
-        IERC20Permit token,
-        bytes memory data
-    ) private {
-        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
-        // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
-        // the target address contains contract code and also asserts for success in the low-level call.
+    function safeApprove(IERC20 token, address to, uint256 amount) internal {
+        bool success;
 
-        bytes memory returndata = address(token).functionCall(data);
-        if (returndata.length > 0) {
-            // Return data is optional
-            if (!abi.decode(returndata, (bool)))
-                revert CError.SAFE_ERC20_PERMIT_ERC20_OPERATION_FAILED(
-                    address(token)
-                );
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Get a pointer to some free memory.
+            let freeMemoryPointer := mload(0x40)
+
+            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            mstore(
+                freeMemoryPointer,
+                0x095ea7b300000000000000000000000000000000000000000000000000000000
+            )
+            mstore(
+                add(freeMemoryPointer, 4),
+                and(to, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "to" argument.
+            mstore(add(freeMemoryPointer, 36), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+
+            success := and(
+                // Set success to whether the call reverted, if not we check it either
+                // returned exactly 1 (can't just be non-zero data), or had no return data.
+                or(
+                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
+                    iszero(returndatasize())
+                ),
+                // We use 68 because the length of our calldata totals up like so: 4 + 32 * 2.
+                // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+                // Counterintuitively, this call must be positioned second to the or() call in the
+                // surrounding and() call or else returndatasize() will be zero during the computation.
+                call(gas(), token, 0, freeMemoryPointer, 68, 0, 32)
+            )
         }
+
+        if (!success)
+            revert APPROVE_FAILED(address(token), msg.sender, to, amount);
     }
 }
 
@@ -3448,11 +2757,7 @@ library SafeERC20Permit {
 /// @param _anchor The anchor token of the asset being burned.
 /// @param _burnAmount The amount being burned
 /// @param _from The account to burn assets from.
-function burnKrAsset(
-    uint256 _burnAmount,
-    address _from,
-    address _anchor
-) returns (uint256 burned) {
+function burnKrAsset(uint256 _burnAmount, address _from, address _anchor) returns (uint256 burned) {
     burned = IKreskoAssetIssuer(_anchor).destroy(_burnAmount, _from);
     if (burned == 0) revert CError.ZERO_BURN(_anchor);
 }
@@ -3461,11 +2766,7 @@ function burnKrAsset(
 /// @param _amount The asset amount being minted
 /// @param _to The account receiving minted assets.
 /// @param _anchor The anchor token of the minted asset.
-function mintKrAsset(
-    uint256 _amount,
-    address _to,
-    address _anchor
-) returns (uint256 minted) {
+function mintKrAsset(uint256 _amount, address _to, address _anchor) returns (uint256 minted) {
     minted = IKreskoAssetIssuer(_anchor).issue(_amount, _to);
     if (minted == 0) revert CError.ZERO_MINT(_anchor);
 }
@@ -3474,11 +2775,7 @@ function mintKrAsset(
 /// @param _asset the asset being repaid
 /// @param _burnAmount the asset amount being burned
 /// @param _from the account to burn assets from
-function burnSCDP(
-    Asset storage _asset,
-    uint256 _burnAmount,
-    address _from
-) returns (uint256 destroyed) {
+function burnSCDP(Asset storage _asset, uint256 _burnAmount, address _from) returns (uint256 destroyed) {
     destroyed = burnKrAsset(_burnAmount, _from, _asset.anchor);
     sdi().totalDebt -= _asset.debtAmountToSDI(destroyed, false);
 }
@@ -3487,11 +2784,7 @@ function burnSCDP(
 /// @param _asset the asset requested
 /// @param _amount the asset amount requested
 /// @param _to the account to mint the assets to
-function mintSCDP(
-    Asset storage _asset,
-    uint256 _amount,
-    address _to
-) returns (uint256 issued) {
+function mintSCDP(Asset storage _asset, uint256 _amount, address _to) returns (uint256 issued) {
     issued = mintKrAsset(_amount, _to, _asset.anchor);
     unchecked {
         sdi().totalDebt += _asset.debtAmountToSDI(issued, false);
@@ -3500,7 +2793,7 @@ function mintSCDP(
 
 library Swap {
     using WadRay for uint256;
-    using SafeERC20Permit for IERC20Permit;
+    using SafeTransfer for IERC20;
 
     /**
      * @notice Records the assets received from account in a swap.
@@ -3540,9 +2833,7 @@ library Swap {
         }
 
         if (collateralIn > 0) {
-            uint128 collateralInWrite = uint128(
-                _assetIn.toNonRebasingAmount(collateralIn)
-            );
+            uint128 collateralInWrite = uint128(_assetIn.toNonRebasingAmount(collateralIn));
             unchecked {
                 // 1. Increase collateral deposits.
                 assetData.totalDeposits += collateralInWrite;
@@ -3579,9 +2870,7 @@ library Swap {
         address _assetsTo
     ) internal returns (uint256 amountOut) {
         SCDPAssetData storage assetData = self.assetData[_assetOutAddr];
-        uint128 swapDeposits = uint128(
-            _assetOut.toRebasingAmount(assetData.swapDeposits)
-        ); // current "swap" collateral
+        uint128 swapDeposits = uint128(_assetOut.toRebasingAmount(assetData.swapDeposits)); // current "swap" collateral
 
         // Calculate amount to send out from value received in.
         amountOut = _assetOut.debtValueToAmount(_valueIn, true);
@@ -3605,9 +2894,7 @@ library Swap {
         }
 
         if (collateralOut > 0) {
-            uint128 amountOutInternal = uint128(
-                _assetOut.toNonRebasingAmount(collateralOut)
-            );
+            uint128 amountOutInternal = uint128(_assetOut.toNonRebasingAmount(collateralOut));
             unchecked {
                 // 1. Decrease collateral deposits.
                 assetData.totalDeposits -= amountOutInternal;
@@ -3616,10 +2903,7 @@ library Swap {
             }
             if (_assetsTo != address(this)) {
                 // 3. Transfer collateral to receiver if it is not this contract.
-                IERC20Permit(_assetOutAddr).safeTransfer(
-                    _assetsTo,
-                    collateralOut
-                );
+                IERC20(_assetOutAddr).safeTransfer(_assetsTo, collateralOut);
             }
         }
 
@@ -3657,21 +2941,16 @@ library Swap {
         // liquidity index increment is calculated this way: `(amount / totalLiquidity)`
         // division `amount / totalLiquidity` done in ray for precision
         unchecked {
-            return (_asset.liquidityIndexSCDP += uint128(
-                (_amount.wadToRay().rayDiv(poolDeposits.wadToRay()))
-            ));
+            return (_asset.liquidityIndexSCDP += uint128((_amount.wadToRay().rayDiv(poolDeposits.wadToRay()))));
         }
     }
 }
 
 library SDebtIndex {
-    using SafeERC20Permit for IERC20Permit;
+    using SafeTransfer for IERC20;
     using WadRay for uint256;
 
-    function valueToSDI(
-        uint256 valueIn,
-        uint8 oracleDecimals
-    ) internal view returns (uint256) {
+    function valueToSDI(uint256 valueIn, uint8 oracleDecimals) internal view returns (uint256) {
         return (valueIn * 10 ** oracleDecimals).wadDiv(SDIPrice());
     }
 
@@ -3683,28 +2962,16 @@ library SDebtIndex {
     ) internal returns (uint256 shares, uint256 value) {
         if (amount == 0) revert CError.ZERO_AMOUNT(coverAssetAddr);
         Asset storage asset = cs().assets[coverAssetAddr];
-        if (!asset.isSCDPCoverAsset)
-            revert CError.ASSET_NOT_ENABLED(coverAssetAddr);
+        if (!asset.isSCDPCoverAsset) revert CError.ASSET_NOT_ENABLED(coverAssetAddr);
 
-        value = wadUSD(
-            amount,
-            asset.decimals,
-            asset.price(),
-            cs().oracleDecimals
-        );
+        value = wadUSD(amount, asset.decimals, asset.price(), cs().oracleDecimals);
         self.totalCover += (shares = valueToSDI(value, cs().oracleDecimals));
 
-        IERC20Permit(coverAssetAddr).safeTransferFrom(
-            msg.sender,
-            self.coverRecipient,
-            amount
-        );
+        IERC20(coverAssetAddr).safeTransferFrom(msg.sender, self.coverRecipient, amount);
     }
 
     /// @notice Returns the total effective debt amount of the SCDP.
-    function effectiveDebt(
-        SDIState storage self
-    ) internal view returns (uint256) {
+    function effectiveDebt(SDIState storage self) internal view returns (uint256) {
         uint256 currentCover = self.totalCoverAmount();
         uint256 totalDebt = self.totalDebt;
         if (currentCover >= totalDebt) {
@@ -3714,31 +2981,24 @@ library SDebtIndex {
     }
 
     /// @notice Returns the total effective debt value of the SCDP.
-    function effectiveDebtValue(
-        SDIState storage self
-    ) internal view returns (uint256) {
+    function effectiveDebtValue(SDIState storage self) internal view returns (uint256) {
         uint256 sdiPrice = SDIPrice();
         uint256 coverValue = self.totalCoverValue();
         uint256 coverAmount = coverValue != 0 ? coverValue.wadDiv(sdiPrice) : 0;
         uint256 totalDebt = self.totalDebt;
-        if (coverValue == 0) {
-            return totalDebt.wadMul(sdiPrice);
-        } else if (coverAmount >= totalDebt) {
-            return 0;
-        }
+
+        if (coverValue == 0) return totalDebt.wadMul(sdiPrice);
+        if (coverAmount >= totalDebt) return 0;
+
         return (totalDebt - coverAmount).wadMul(sdiPrice);
     }
 
-    function totalCoverAmount(
-        SDIState storage self
-    ) internal view returns (uint256) {
+    function totalCoverAmount(SDIState storage self) internal view returns (uint256) {
         return self.totalCoverValue().wadDiv(SDIPrice());
     }
 
     /// @notice Gets the total cover debt value, oracle precision
-    function totalCoverValue(
-        SDIState storage self
-    ) internal view returns (uint256 result) {
+    function totalCoverValue(SDIState storage self) internal view returns (uint256 result) {
         address[] memory assets = self.coverAssets;
         for (uint256 i; i < assets.length; ) {
             unchecked {
@@ -3754,11 +3014,8 @@ library SDebtIndex {
     }
 
     /// @notice Get total deposit value of `asset` in USD, oracle precision.
-    function coverAssetValue(
-        SDIState storage self,
-        address _assetAddr
-    ) internal view returns (uint256) {
-        uint256 bal = IERC20Permit(_assetAddr).balanceOf(self.coverRecipient);
+    function coverAssetValue(SDIState storage self, address _assetAddr) internal view returns (uint256) {
+        uint256 bal = IERC20(_assetAddr).balanceOf(self.coverRecipient);
         if (bal == 0) return 0;
 
         Asset storage asset = cs().assets[_assetAddr];
@@ -3867,10 +3124,7 @@ using Strings for bytes12;
 
 /// @notice Get the price of SDI in USD, oracle precision.
 function SDIPrice() view returns (uint256) {
-    uint256 totalValue = scdp().totalDebtValueAtRatioSCDP(
-        Percents.HUNDRED,
-        false
-    );
+    uint256 totalValue = scdp().totalDebtValueAtRatioSCDP(Percents.HUNDRED, false);
     if (totalValue == 0) {
         return 10 ** sdi().sdiPricePrecision;
     }
@@ -3884,24 +3138,14 @@ function SDIPrice() view returns (uint256) {
  * @param _oracles The list of oracle identifiers
  * @param _oracleDeviationPct the deviation percentage
  */
-function safePrice(
-    bytes12 _assetId,
-    OracleType[2] memory _oracles,
-    uint256 _oracleDeviationPct
-) view returns (uint256) {
-    uint256[2] memory prices = [
-        oraclePrice(_oracles[0], _assetId),
-        oraclePrice(_oracles[1], _assetId)
-    ];
+function safePrice(bytes12 _assetId, OracleType[2] memory _oracles, uint256 _oracleDeviationPct) view returns (uint256) {
+    uint256[2] memory prices = [oraclePrice(_oracles[0], _assetId), oraclePrice(_oracles[1], _assetId)];
     if (prices[0] == 0 && prices[1] == 0) {
         revert CError.ZERO_OR_STALE_PRICE(_assetId.toString());
     }
 
     // OracleType.Vault uses the same check, reverting if the sequencer is down.
-    if (
-        _oracles[0] != OracleType.Vault &&
-        !isSequencerUp(cs().sequencerUptimeFeed, cs().sequencerGracePeriodTime)
-    ) {
+    if (_oracles[0] != OracleType.Vault && !isSequencerUp(cs().sequencerUptimeFeed, cs().sequencerGracePeriodTime)) {
         return handleSequencerDown(_oracles, prices);
     }
 
@@ -3915,10 +3159,7 @@ function safePrice(
  * @return uint256 oracle price.
  * This will return 0 if the oracle is not set.
  */
-function oraclePrice(
-    OracleType _oracleId,
-    bytes12 _assetId
-) view returns (uint256) {
+function oraclePrice(OracleType _oracleId, bytes12 _assetId) view returns (uint256) {
     if (_oracleId == OracleType.Empty) return 0;
     if (_oracleId == OracleType.Redstone) return Redstone.getPrice(_assetId);
 
@@ -3932,20 +3173,14 @@ function oraclePrice(
  * @param _assetId The asset id (bytes12).
  * @return PushPrice The push oracle price and timestamp.
  */
-function pushPrice(
-    OracleType[2] memory _oracles,
-    bytes12 _assetId
-) view returns (PushPrice memory) {
+function pushPrice(OracleType[2] memory _oracles, bytes12 _assetId) view returns (PushPrice memory) {
     for (uint8 i; i < _oracles.length; i++) {
         OracleType oracleType = _oracles[i];
         Oracle storage oracle = cs().oracles[_assetId][_oracles[i]];
 
-        if (oracleType == OracleType.Chainlink)
-            return aggregatorV3PriceWithTimestamp(oracle.feed);
-        if (oracleType == OracleType.API3)
-            return API3PriceWithTimestamp(oracle.feed);
-        if (oracleType == OracleType.Vault)
-            return PushPrice(vaultPrice(oracle.feed), block.timestamp);
+        if (oracleType == OracleType.Chainlink) return aggregatorV3PriceWithTimestamp(oracle.feed);
+        if (oracleType == OracleType.API3) return API3PriceWithTimestamp(oracle.feed);
+        if (oracleType == OracleType.Vault) return PushPrice(vaultPrice(oracle.feed), block.timestamp);
     }
 
     // Revert if no push oracle is found
@@ -3963,16 +3198,11 @@ function pushPrice(
  * = the reference price if primary price is 0.
  * = reverts if price deviates more than `_oracleDeviationPct`
  */
-function deducePrice(
-    uint256 _primaryPrice,
-    uint256 _referencePrice,
-    uint256 _oracleDeviationPct
-) pure returns (uint256) {
+function deducePrice(uint256 _primaryPrice, uint256 _referencePrice, uint256 _oracleDeviationPct) pure returns (uint256) {
     if (_referencePrice == 0 && _primaryPrice != 0) return _primaryPrice;
     if (_primaryPrice == 0 && _referencePrice != 0) return _referencePrice;
     if (
-        (_referencePrice.percentMul(1e4 - _oracleDeviationPct) <=
-            _primaryPrice) &&
+        (_referencePrice.percentMul(1e4 - _oracleDeviationPct) <= _primaryPrice) &&
         (_referencePrice.percentMul(1e4 + _oracleDeviationPct) >= _primaryPrice)
     ) {
         return _primaryPrice;
@@ -3989,10 +3219,7 @@ function deducePrice(
  * @param prices The fetched oracle prices.
  * @return uint256 Usable price of the asset.
  */
-function handleSequencerDown(
-    OracleType[2] memory oracles,
-    uint256[2] memory prices
-) pure returns (uint256) {
+function handleSequencerDown(OracleType[2] memory oracles, uint256[2] memory prices) pure returns (uint256) {
     if (oracles[0] == OracleType.Redstone && prices[0] != 0) {
         return prices[0];
     } else if (oracles[1] == OracleType.Redstone && prices[1] != 0) {
@@ -4016,12 +3243,8 @@ function vaultPrice(address _vaultAddr) view returns (uint256) {
  * @param _feedAddr The feed address.
  * @return uint256 Parsed answer from the feed, 0 if its stale.
  */
-function aggregatorV3Price(
-    address _feedAddr,
-    uint256 _oracleTimeout
-) view returns (uint256) {
-    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr)
-        .latestRoundData();
+function aggregatorV3Price(address _feedAddr, uint256 _oracleTimeout) view returns (uint256) {
+    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr).latestRoundData();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);
     }
@@ -4037,11 +3260,8 @@ function aggregatorV3Price(
  * @param _feedAddr The feed address.
  * @return PushPrice Parsed answer and timestamp.
  */
-function aggregatorV3PriceWithTimestamp(
-    address _feedAddr
-) view returns (PushPrice memory) {
-    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr)
-        .latestRoundData();
+function aggregatorV3PriceWithTimestamp(address _feedAddr) view returns (PushPrice memory) {
+    (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(_feedAddr).latestRoundData();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);
     }
@@ -4053,12 +3273,12 @@ function aggregatorV3PriceWithTimestamp(
 }
 
 /**
- * @notice Gets answer from IProxy type feed.
+ * @notice Gets answer from IAPI3 type feed.
  * @param _feedAddr The feed address.
  * @return uint256 Parsed answer from the feed, 0 if its stale.
  */
 function API3Price(address _feedAddr) view returns (uint256) {
-    (int256 answer, uint256 updatedAt) = IProxy(_feedAddr).read();
+    (int256 answer, uint256 updatedAt) = IAPI3(_feedAddr).read();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);
     }
@@ -4071,14 +3291,12 @@ function API3Price(address _feedAddr) view returns (uint256) {
 }
 
 /**
- * @notice Gets answer from IProxy type feed with timestamp.
+ * @notice Gets answer from IAPI3 type feed with timestamp.
  * @param _feedAddr The feed address.
  * @return PushPrice Parsed answer and timestamp.
  */
-function API3PriceWithTimestamp(
-    address _feedAddr
-) view returns (PushPrice memory) {
-    (int256 answer, uint256 updatedAt) = IProxy(_feedAddr).read();
+function API3PriceWithTimestamp(address _feedAddr) view returns (PushPrice memory) {
+    (int256 answer, uint256 updatedAt) = IAPI3(_feedAddr).read();
     if (answer < 0) {
         revert CError.NEGATIVE_PRICE(_feedAddr, answer);
     }
@@ -4099,36 +3317,25 @@ library CAsset {
     /* -------------------------------------------------------------------------- */
 
     function price(Asset storage self) internal view returns (uint256) {
-        return
-            safePrice(self.underlyingId, self.oracles, cs().oracleDeviationPct);
+        return safePrice(self.underlyingId, self.oracles, cs().oracleDeviationPct);
     }
 
-    function price(
-        Asset storage self,
-        uint256 oracleDeviationPct
-    ) internal view returns (uint256) {
+    function price(Asset storage self, uint256 oracleDeviationPct) internal view returns (uint256) {
         return safePrice(self.underlyingId, self.oracles, oracleDeviationPct);
     }
 
-    function pushedPrice(
-        Asset storage self
-    ) internal view returns (PushPrice memory) {
+    function pushedPrice(Asset storage self) internal view returns (PushPrice memory) {
         return pushPrice(self.oracles, self.underlyingId);
     }
 
-    function checkOracles(
-        Asset memory self
-    ) internal view returns (PushPrice memory) {
+    function checkOracles(Asset memory self) internal view returns (PushPrice memory) {
         return pushPrice(self.oracles, self.underlyingId);
     }
 
     /**
      * @notice Get value for @param _assetAmount of @param self in uint256
      */
-    function uintUSD(
-        Asset storage self,
-        uint256 _amount
-    ) internal view returns (uint256) {
+    function uintUSD(Asset storage self, uint256 _amount) internal view returns (uint256) {
         return self.price().wadMul(_amount);
     }
 
@@ -4215,11 +3422,7 @@ library CAsset {
      * @param _ignoreKFactor Boolean indicating if the asset's k-factor should be ignored.
      * @return value Value for the provided amount of the Kresko asset.
      */
-    function debtAmountToValue(
-        Asset storage self,
-        uint256 _amount,
-        bool _ignoreKFactor
-    ) internal view returns (uint256 value) {
+    function debtAmountToValue(Asset storage self, uint256 _amount, bool _ignoreKFactor) internal view returns (uint256 value) {
         if (_amount == 0) return 0;
         value = self.uintUSD(_amount);
 
@@ -4234,11 +3437,7 @@ library CAsset {
      * @param _ignoreKFactor Boolean indicating if the asset's k-factor should be ignored.
      * @return amount Amount for the provided value of the Kresko asset.
      */
-    function debtValueToAmount(
-        Asset storage self,
-        uint256 _value,
-        bool _ignoreKFactor
-    ) internal view returns (uint256 amount) {
+    function debtValueToAmount(Asset storage self, uint256 _value, bool _ignoreKFactor) internal view returns (uint256 amount) {
         if (_value == 0) return 0;
 
         uint256 assetPrice = self.price();
@@ -4250,13 +3449,8 @@ library CAsset {
     }
 
     /// @notice Preview SDI amount from krAsset amount.
-    function debtAmountToSDI(
-        Asset storage asset,
-        uint256 amount,
-        bool ignoreFactors
-    ) internal view returns (uint256 shares) {
-        return
-            asset.debtAmountToValue(amount, ignoreFactors).wadDiv(SDIPrice());
+    function debtAmountToSDI(Asset storage asset, uint256 amount, bool ignoreFactors) internal view returns (uint256 shares) {
+        return asset.debtAmountToValue(amount, ignoreFactors).wadDiv(SDIPrice());
     }
 
     /* -------------------------------------------------------------------------- */
@@ -4270,18 +3464,11 @@ library CAsset {
      * @param _debtAmount Debt amount before burn.
      * @return amount >= minDebtAmount
      */
-    function checkDust(
-        Asset storage _asset,
-        uint256 _burnAmount,
-        uint256 _debtAmount
-    ) internal view returns (uint256 amount) {
+    function checkDust(Asset storage _asset, uint256 _burnAmount, uint256 _debtAmount) internal view returns (uint256 amount) {
         if (_burnAmount == _debtAmount) return _burnAmount;
         // If the requested burn would put the user's debt position below the minimum
         // debt value, close up to the minimum debt value instead.
-        uint256 krAssetValue = _asset.debtAmountToValue(
-            _debtAmount - _burnAmount,
-            true
-        );
+        uint256 krAssetValue = _asset.debtAmountToValue(_debtAmount - _burnAmount, true);
         uint256 minDebtValue = cs().minDebtValue;
         if (krAssetValue > 0 && krAssetValue < minDebtValue) {
             uint256 minDebtAmount = minDebtValue.wadDiv(_asset.price());
@@ -4297,19 +3484,10 @@ library CAsset {
      * @param _kreskoAsset The kresko asset address.
      * @param _debtAmount The debt amount (uint256).
      */
-    function checkMinDebtValue(
-        Asset storage _asset,
-        address _kreskoAsset,
-        uint256 _debtAmount
-    ) internal view {
+    function checkMinDebtValue(Asset storage _asset, address _kreskoAsset, uint256 _debtAmount) internal view {
         uint256 positionValue = _asset.uintUSD(_debtAmount);
         uint256 minDebtValue = cs().minDebtValue;
-        if (positionValue < minDebtValue)
-            revert CError.MINT_VALUE_LOW(
-                _kreskoAsset,
-                positionValue,
-                minDebtValue
-            );
+        if (positionValue < minDebtValue) revert CError.MINT_VALUE_LOW(_kreskoAsset, positionValue, minDebtValue);
     }
 
     /**
@@ -4341,16 +3519,10 @@ library CAsset {
      * @param _unrebasedAmount Unrebased amount to convert.
      * @return maybeRebasedAmount Possibly rebased amount of asset
      */
-    function toRebasingAmount(
-        Asset storage self,
-        uint256 _unrebasedAmount
-    ) internal view returns (uint256 maybeRebasedAmount) {
+    function toRebasingAmount(Asset storage self, uint256 _unrebasedAmount) internal view returns (uint256 maybeRebasedAmount) {
         if (_unrebasedAmount == 0) return 0;
         if (self.anchor != address(0)) {
-            return
-                IKreskoAssetAnchor(self.anchor).convertToAssets(
-                    _unrebasedAmount
-                );
+            return IKreskoAssetAnchor(self.anchor).convertToAssets(_unrebasedAmount);
         }
         return _unrebasedAmount;
     }
@@ -4368,10 +3540,7 @@ library CAsset {
     ) internal view returns (uint256 maybeUnrebasedAmount) {
         if (_maybeRebasedAmount == 0) return 0;
         if (self.anchor != address(0)) {
-            return
-                IKreskoAssetAnchor(self.anchor).convertToShares(
-                    _maybeRebasedAmount
-                );
+            return IKreskoAssetAnchor(self.anchor).convertToShares(_maybeRebasedAmount);
         }
         return _maybeRebasedAmount;
     }
@@ -4670,10 +3839,7 @@ interface ISCDPConfigFacet {
     function initializeSCDP(SCDPInitArgs memory _init) external;
 
     /// @notice Get the pool configuration.
-    function getCurrentParametersSCDP()
-        external
-        view
-        returns (SCDPInitArgs memory);
+    function getCurrentParametersSCDP() external view returns (SCDPInitArgs memory);
 
     function setFeeAssetSCDP(address asset) external;
 
@@ -4687,10 +3853,7 @@ interface ISCDPConfigFacet {
     function setMaxLiquidationRatioSCDP(uint32 _mlr) external;
 
     /// @notice Set the @param _newliqIncentive for @param _krAsset.
-    function updateLiquidationIncentiveSCDP(
-        address _krAsset,
-        uint16 _newLiquidationIncentive
-    ) external;
+    function updateLiquidationIncentiveSCDP(address _krAsset, uint16 _newLiquidationIncentive) external;
 
     /**
      * @notice Update the deposit asset limit configuration.
@@ -4699,10 +3862,7 @@ interface ISCDPConfigFacet {
      * @param _newDepositLimit The new deposit limit for the collateral
      * emits PoolCollateralUpdated
      */
-    function updateDepositLimitSCDP(
-        address _asset,
-        uint128 _newDepositLimit
-    ) external;
+    function updateDepositLimitSCDP(address _asset, uint128 _newDepositLimit) external;
 
     /**
      * @notice Disable or enable a deposit asset. Reverts if invalid asset.
@@ -4752,12 +3912,7 @@ interface ISCDPConfigFacet {
      * @param _closeFee The new close fee.
      * @param _protocolFee The protocol fee share.
      */
-    function setSwapFee(
-        address _krAsset,
-        uint16 _openFee,
-        uint16 _closeFee,
-        uint16 _protocolFee
-    ) external;
+    function setSwapFee(address _krAsset, uint16 _openFee, uint16 _closeFee, uint16 _protocolFee) external;
 }
 
 interface ISCDPStateFacet {
@@ -4766,61 +3921,42 @@ interface ISCDPStateFacet {
      * @param _account The account.
      * @param _depositAsset The deposit asset.
      */
-    function getAccountScaledDepositsSCDP(
-        address _account,
-        address _depositAsset
-    ) external view returns (uint256);
+    function getAccountScaledDepositsSCDP(address _account, address _depositAsset) external view returns (uint256);
 
     /**
      * @notice Get the total collateral principal deposits for `_account`
      * @param _account The account.
      * @param _depositAsset The deposit asset
      */
-    function getAccountDepositSCDP(
-        address _account,
-        address _depositAsset
-    ) external view returns (uint256);
+    function getAccountDepositSCDP(address _account, address _depositAsset) external view returns (uint256);
 
-    function getAccountDepositFeesGainedSCDP(
-        address _account,
-        address _depositAsset
-    ) external view returns (uint256);
+    function getAccountDepositFeesGainedSCDP(address _account, address _depositAsset) external view returns (uint256);
 
     /**
      * @notice Get the (principal) deposit value for `_account`
      * @param _account The account.
      * @param _depositAsset The deposit asset
      */
-    function getAccountDepositValueSCDP(
-        address _account,
-        address _depositAsset
-    ) external view returns (uint256);
+    function getAccountDepositValueSCDP(address _account, address _depositAsset) external view returns (uint256);
 
     /**
      * @notice Get the full value of account and fees for `_account`
      * @param _account The account.
      * @param _depositAsset The collateral asset
      */
-    function getAccountScaledDepositValueCDP(
-        address _account,
-        address _depositAsset
-    ) external view returns (uint256);
+    function getAccountScaledDepositValueCDP(address _account, address _depositAsset) external view returns (uint256);
 
     /**
      * @notice Get the total collateral deposit value for `_account`
      * @param _account The account.
      */
-    function getAccountTotalDepositsValueSCDP(
-        address _account
-    ) external view returns (uint256);
+    function getAccountTotalDepositsValueSCDP(address _account) external view returns (uint256);
 
     /**
      * @notice Get the full value of account and fees for `_account`
      * @param _account The account.
      */
-    function getAccountTotalScaledDepositsValueSCDP(
-        address _account
-    ) external view returns (uint256);
+    function getAccountTotalScaledDepositsValueSCDP(address _account) external view returns (uint256);
 
     /**
      * @notice Get all pool CollateralAssets
@@ -4831,35 +3967,26 @@ interface ISCDPStateFacet {
      * @notice Get the total collateral deposits for `_collateralAsset`
      * @param _collateralAsset The collateral asset
      */
-    function getDepositsSCDP(
-        address _collateralAsset
-    ) external view returns (uint256);
+    function getDepositsSCDP(address _collateralAsset) external view returns (uint256);
 
     /**
      * @notice Get the total collateral swap deposits for `_collateralAsset`
      * @param _collateralAsset The collateral asset
      */
-    function getSwapDepositsSCDP(
-        address _collateralAsset
-    ) external view returns (uint256);
+    function getSwapDepositsSCDP(address _collateralAsset) external view returns (uint256);
 
     /**
      * @notice Get the total collateral deposit value for `_collateralAsset`
      * @param _depositAsset The collateral asset
      * @param _ignoreFactors Ignore factors when calculating collateral and debt value.
      */
-    function getCollateralValueSCDP(
-        address _depositAsset,
-        bool _ignoreFactors
-    ) external view returns (uint256);
+    function getCollateralValueSCDP(address _depositAsset, bool _ignoreFactors) external view returns (uint256);
 
     /**
      * @notice Get the total collateral value, oracle precision
      * @param _ignoreFactors Ignore factors when calculating collateral value.
      */
-    function getTotalCollateralValueSCDP(
-        bool _ignoreFactors
-    ) external view returns (uint256);
+    function getTotalCollateralValueSCDP(bool _ignoreFactors) external view returns (uint256);
 
     /**
      * @notice Get all pool KreskoAssets
@@ -4877,18 +4004,13 @@ interface ISCDPStateFacet {
      * @param _kreskoAsset The KreskoAsset
      * @param _ignoreFactors Ignore factors when calculating collateral and debt value.
      */
-    function getDebtValueSCDP(
-        address _kreskoAsset,
-        bool _ignoreFactors
-    ) external view returns (uint256);
+    function getDebtValueSCDP(address _kreskoAsset, bool _ignoreFactors) external view returns (uint256);
 
     /**
      * @notice Get the total debt value of krAssets in oracle precision
      * @param _ignoreFactors Ignore factors when calculating debt value.
      */
-    function getTotalDebtValueSCDP(
-        bool _ignoreFactors
-    ) external view returns (uint256);
+    function getTotalDebtValueSCDP(bool _ignoreFactors) external view returns (uint256);
 
     /**
      * @notice Get the swap fee recipient
@@ -4905,10 +4027,7 @@ interface ISCDPStateFacet {
      * @param _assetIn The asset to swap from
      * @param _assetOut The asset to swap to
      */
-    function getSwapEnabledSCDP(
-        address _assetIn,
-        address _assetOut
-    ) external view returns (bool);
+    function getSwapEnabledSCDP(address _assetIn, address _assetOut) external view returns (bool);
 
     function getCollateralRatioSCDP() external view returns (uint256);
 
@@ -4926,11 +4045,7 @@ interface ISCDPFacet {
      * @param _collateralAsset The collateral asset to deposit.
      * @param _amount The amount to deposit.
      */
-    function depositSCDP(
-        address _account,
-        address _collateralAsset,
-        uint256 _amount
-    ) external;
+    function depositSCDP(address _account, address _collateralAsset, uint256 _amount) external;
 
     /**
      * @notice Withdraw collateral for account from the collateral pool.
@@ -4938,11 +4053,7 @@ interface ISCDPFacet {
      * @param _collateralAsset The collateral asset to withdraw.
      * @param _amount The amount to withdraw.
      */
-    function withdrawSCDP(
-        address _account,
-        address _collateralAsset,
-        uint256 _amount
-    ) external;
+    function withdrawSCDP(address _account, address _collateralAsset, uint256 _amount) external;
 
     /**
      * @notice Repay debt for no fees or slippage.
@@ -4951,11 +4062,7 @@ interface ISCDPFacet {
      * @param _repayAmount The amount of the asset to repay the debt with.
      * @param _seizeAssetAddr The collateral asset to seize.
      */
-    function repaySCDP(
-        address _repayAssetAddr,
-        uint256 _repayAmount,
-        address _seizeAssetAddr
-    ) external;
+    function repaySCDP(address _repayAssetAddr, uint256 _repayAmount, address _seizeAssetAddr) external;
 
     /**
      * @notice Liquidate the collateral pool.
@@ -4964,11 +4071,7 @@ interface ISCDPFacet {
      * @param _repayAmount The amount of the asset to repay the debt with.
      * @param _seizeAssetAddr The collateral asset to seize.
      */
-    function liquidateSCDP(
-        address _repayAssetAddr,
-        uint256 _repayAmount,
-        address _seizeAssetAddr
-    ) external;
+    function liquidateSCDP(address _repayAssetAddr, uint256 _repayAmount, address _seizeAssetAddr) external;
 
     /**
      * @dev Calculates the total value that is allowed to be liquidated from SCDP (if it is liquidatable)
@@ -4976,10 +4079,7 @@ interface ISCDPFacet {
      * @param _seizeAssetAddr Address of Collateral to seize
      * @return MaxLiqInfo Calculated information about the maximum liquidation.
      */
-    function getMaxLiqValueSCDP(
-        address _repayAssetAddr,
-        address _seizeAssetAddr
-    ) external view returns (MaxLiqInfo memory);
+    function getMaxLiqValueSCDP(address _repayAssetAddr, address _seizeAssetAddr) external view returns (MaxLiqInfo memory);
 
     function getLiquidatableSCDP() external view returns (bool);
 }
@@ -4995,17 +4095,9 @@ interface ISDIFacet {
 
     function getSDICoverAmount() external view returns (uint256);
 
-    function previewSCDPBurn(
-        address _asset,
-        uint256 _burnAmount,
-        bool _ignoreFactors
-    ) external view returns (uint256 shares);
+    function previewSCDPBurn(address _asset, uint256 _burnAmount, bool _ignoreFactors) external view returns (uint256 shares);
 
-    function previewSCDPMint(
-        address _asset,
-        uint256 _mintAmount,
-        bool _ignoreFactors
-    ) external view returns (uint256 shares);
+    function previewSCDPMint(address _asset, uint256 _mintAmount, bool _ignoreFactors) external view returns (uint256 shares);
 
     /// @notice Simply returns the total supply of SDI.
     function totalSDI() external view returns (uint256);
@@ -5013,10 +4105,7 @@ interface ISDIFacet {
     /// @notice Get the price of SDI in USD, oracle precision.
     function getSDIPrice() external view returns (uint256);
 
-    function SDICover(
-        address _asset,
-        uint256 _amount
-    ) external returns (uint256 shares, uint256 value);
+    function SDICover(address _asset, uint256 _amount) external returns (uint256 shares, uint256 value);
 
     function enableCoverAssetSDI(address _asset) external;
 
@@ -5039,10 +4128,7 @@ interface ISCDPSwapFacet {
         address _assetIn,
         address _assetOut,
         uint256 _amountIn
-    )
-        external
-        view
-        returns (uint256 amountOut, uint256 feeAmount, uint256 protocolFee);
+    ) external view returns (uint256 amountOut, uint256 feeAmount, uint256 protocolFee);
 
     /**
      * @notice Swap kresko assets with KISS using the shared collateral pool.
@@ -5053,13 +4139,7 @@ interface ISCDPSwapFacet {
      * @param _amountIn The amount of _assetIn to pay.
      * @param _amountOutMin The minimum amount of _assetOut to receive, this is due to possible oracle price change.
      */
-    function swapSCDP(
-        address _account,
-        address _assetIn,
-        address _assetOut,
-        uint256 _amountIn,
-        uint256 _amountOutMin
-    ) external;
+    function swapSCDP(address _account, address _assetIn, address _assetOut, uint256 _amountIn, uint256 _amountOutMin) external;
 
     /**
      * @notice Accumulates fees to deposits as a fixed, instantaneous income.
@@ -5067,10 +4147,7 @@ interface ISCDPSwapFacet {
      * @param _incomeAmount Amount to accumulate
      * @return nextLiquidityIndex Next liquidity index for the asset.
      */
-    function cumulateIncomeSCDP(
-        address _depositAssetAddr,
-        uint256 _incomeAmount
-    ) external returns (uint256 nextLiquidityIndex);
+    function cumulateIncomeSCDP(address _depositAssetAddr, uint256 _incomeAmount) external returns (uint256 nextLiquidityIndex);
 }
 
 interface IBurnFacet {
@@ -5152,20 +4229,14 @@ interface IConfigurationFacet {
      * @param _collateralAsset The collateral asset to update.
      * @param _newLiquidationIncentive The new liquidation incentive multiplier for the asset.
      */
-    function updateLiquidationIncentive(
-        address _collateralAsset,
-        uint16 _newLiquidationIncentive
-    ) external;
+    function updateLiquidationIncentive(address _collateralAsset, uint16 _newLiquidationIncentive) external;
 
     /**
      * @notice  Updates the cFactor of a KreskoAsset.
      * @param _collateralAsset The collateral asset.
      * @param _newFactor The new collateral factor.
      */
-    function updateCollateralFactor(
-        address _collateralAsset,
-        uint16 _newFactor
-    ) external;
+    function updateCollateralFactor(address _collateralAsset, uint16 _newFactor) external;
 
     /**
      * @notice Updates the kFactor of a KreskoAsset.
@@ -5201,11 +4272,7 @@ interface IMintFacet {
      * @param _kreskoAsset The address of the Kresko asset.
      * @param _mintAmount The amount of the Kresko asset to be minted.
      */
-    function mintKreskoAsset(
-        address _account,
-        address _kreskoAsset,
-        uint256 _mintAmount
-    ) external;
+    function mintKreskoAsset(address _account, address _kreskoAsset, uint256 _mintAmount) external;
 }
 
 interface IDepositWithdrawFacet {
@@ -5215,11 +4282,7 @@ interface IDepositWithdrawFacet {
      * @param _collateralAsset The address of the collateral asset.
      * @param _depositAmount The amount of the collateral asset to deposit.
      */
-    function depositCollateral(
-        address _account,
-        address _collateralAsset,
-        uint256 _depositAmount
-    ) external;
+    function depositCollateral(address _account, address _collateralAsset, uint256 _depositAmount) external;
 
     /**
      * @notice Withdraws sender's collateral from the protocol.
@@ -5270,9 +4333,7 @@ interface IStateFacet {
     function getKrAssetExists(address _krAsset) external view returns (bool);
 
     /// @notice simple check if collateral asset exists
-    function getCollateralExists(
-        address _collateralAsset
-    ) external view returns (bool);
+    function getCollateralExists(address _collateralAsset) external view returns (bool);
 
     /// @notice get all meaningful protocol parameters
     function getMinterParameters() external view returns (MinterParams memory);
@@ -5288,10 +4349,7 @@ interface IStateFacet {
     function getCollateralValueWithPrice(
         address _collateralAsset,
         uint256 _amount
-    )
-        external
-        view
-        returns (uint256 value, uint256 adjustedValue, uint256 price);
+    ) external view returns (uint256 value, uint256 adjustedValue, uint256 price);
 
     /**
      * @notice Gets the USD value for a single Kresko asset and amount.
@@ -5304,10 +4362,7 @@ interface IStateFacet {
     function getDebtValueWithPrice(
         address _kreskoAsset,
         uint256 _amount
-    )
-        external
-        view
-        returns (uint256 value, uint256 adjustedValue, uint256 price);
+    ) external view returns (uint256 value, uint256 adjustedValue, uint256 price);
 }
 
 interface ILiquidationFacet {
@@ -5377,27 +4432,21 @@ interface IAccountStateFacet {
      * @param _account The account to check.
      * @return bool Indicates if the account can be liquidated.
      */
-    function getAccountLiquidatable(
-        address _account
-    ) external view returns (bool);
+    function getAccountLiquidatable(address _account) external view returns (bool);
 
     /**
      * @notice Get accounts state in the Minter.
      * @param _account Account address to get the state for.
      * @return MinterAccountState Total debt value, total collateral value and collateral ratio.
      */
-    function getAccountState(
-        address _account
-    ) external view returns (MinterAccountState memory);
+    function getAccountState(address _account) external view returns (MinterAccountState memory);
 
     /**
      * @notice Gets an array of Kresko assets the account has minted.
      * @param _account The account to get the minted Kresko assets for.
      * @return address[] Array of Kresko Asset addresses the account has minted.
      */
-    function getAccountMintedAssets(
-        address _account
-    ) external view returns (address[] memory);
+    function getAccountMintedAssets(address _account) external view returns (address[] memory);
 
     /**
      * @notice Gets an index for the Kresko asset the account has minted.
@@ -5405,10 +4454,7 @@ interface IAccountStateFacet {
      * @param _kreskoAsset The asset lookup address.
      * @return index The index of asset in the minted assets array.
      */
-    function getAccountMintIndex(
-        address _account,
-        address _kreskoAsset
-    ) external view returns (uint256);
+    function getAccountMintIndex(address _account, address _kreskoAsset) external view returns (uint256);
 
     /**
      * @notice Gets the total Kresko asset debt value in USD for an account.
@@ -5417,18 +4463,14 @@ interface IAccountStateFacet {
      * @return value The unadjusted value of debt.
      * @return valueAdjusted The kFactor adjusted value of debt.
      */
-    function getAccountTotalDebtValues(
-        address _account
-    ) external view returns (uint256 value, uint256 valueAdjusted);
+    function getAccountTotalDebtValues(address _account) external view returns (uint256 value, uint256 valueAdjusted);
 
     /**
      * @notice Gets the total Kresko asset debt value in USD for an account.
      * @param _account The account to calculate the Kresko asset value for.
      * @return uint256 Total debt value of `_account`.
      */
-    function getAccountTotalDebtValue(
-        address _account
-    ) external view returns (uint256);
+    function getAccountTotalDebtValue(address _account) external view returns (uint256);
 
     /**
      * @notice Get `_account` debt amount for `_asset`
@@ -5436,10 +4478,7 @@ interface IAccountStateFacet {
      * @param _account The account to query amount for
      * @return uint256 Amount of debt for `_asset`
      */
-    function getAccountDebtAmount(
-        address _account,
-        address _asset
-    ) external view returns (uint256);
+    function getAccountDebtAmount(address _account, address _asset) external view returns (uint256);
 
     /**
      * @notice Get the unadjusted and the adjusted value of collateral deposits of `_asset` for `_account`.
@@ -5453,19 +4492,14 @@ interface IAccountStateFacet {
     function getAccountCollateralValues(
         address _account,
         address _asset
-    )
-        external
-        view
-        returns (uint256 value, uint256 valueAdjusted, uint256 price);
+    ) external view returns (uint256 value, uint256 valueAdjusted, uint256 price);
 
     /**
      * @notice Gets the adjusted collateral value of a particular account.
      * @param _account Account to calculate the collateral value for.
      * @return valueAdjusted Collateral value of a particular account.
      */
-    function getAccountTotalCollateralValue(
-        address _account
-    ) external view returns (uint256 valueAdjusted);
+    function getAccountTotalCollateralValue(address _account) external view returns (uint256 valueAdjusted);
 
     /**
      * @notice Gets the adjusted and unadjusted collateral value of `_account`.
@@ -5474,9 +4508,7 @@ interface IAccountStateFacet {
      * @return value Unadjusted total value of the collateral deposits.
      * @return valueAdjusted cFactor adjusted total value of the collateral deposits.
      */
-    function getAccountTotalCollateralValues(
-        address _account
-    ) external view returns (uint256 value, uint256 valueAdjusted);
+    function getAccountTotalCollateralValues(address _account) external view returns (uint256 value, uint256 valueAdjusted);
 
     /**
      * @notice Get an account's minimum collateral value required
@@ -5487,26 +4519,19 @@ interface IAccountStateFacet {
      * @param _ratio Collateralization ratio required: higher ratio = more collateral required
      * @return uint256 Minimum collateral value of a particular account.
      */
-    function getAccountMinCollateralAtRatio(
-        address _account,
-        uint32 _ratio
-    ) external view returns (uint256);
+    function getAccountMinCollateralAtRatio(address _account, uint32 _ratio) external view returns (uint256);
 
     /**
      * @notice Get a list of accounts and their collateral ratios
      * @return ratio The collateral ratio of `_account`
      */
-    function getAccountCollateralRatio(
-        address _account
-    ) external view returns (uint256 ratio);
+    function getAccountCollateralRatio(address _account) external view returns (uint256 ratio);
 
     /**
      * @notice Get a list of account collateral ratios
      * @return ratios Collateral ratios of the `_accounts`
      */
-    function getAccountCollateralRatios(
-        address[] memory _accounts
-    ) external view returns (uint256[] memory);
+    function getAccountCollateralRatios(address[] memory _accounts) external view returns (uint256[] memory);
 
     /**
      * @notice Gets an index for the collateral asset the account has deposited.
@@ -5514,19 +4539,14 @@ interface IAccountStateFacet {
      * @param _collateralAsset Asset address.
      * @return i Index of the minted collateral asset.
      */
-    function getAccountDepositIndex(
-        address _account,
-        address _collateralAsset
-    ) external view returns (uint256 i);
+    function getAccountDepositIndex(address _account, address _collateralAsset) external view returns (uint256 i);
 
     /**
      * @notice Gets an array of collateral assets the account has deposited.
      * @param _account The account to get the deposited collateral assets for.
      * @return address[] Array of collateral asset addresses the account has deposited.
      */
-    function getAccountCollateralAssets(
-        address _account
-    ) external view returns (address[] memory);
+    function getAccountCollateralAssets(address _account) external view returns (address[] memory);
 
     /**
      * @notice Get `_account` collateral deposit amount for `_asset`
@@ -5534,10 +4554,7 @@ interface IAccountStateFacet {
      * @param _account The account to query amount for
      * @return uint256 Amount of collateral deposited for `_asset`
      */
-    function getAccountCollateralAmount(
-        address _account,
-        address _asset
-    ) external view returns (uint256);
+    function getAccountCollateralAmount(address _account, address _asset) external view returns (uint256);
 
     /**
      * @notice Calculates the expected fee to be taken from a user's deposited collateral assets,
@@ -5581,10 +4598,7 @@ interface IAuthorizationFacet {
      * - Since when EnumSet member is deleted it is replaced with the highest index.
      * @return address with the `role`
      */
-    function getRoleMember(
-        bytes32 role,
-        uint256 index
-    ) external view returns (address);
+    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
 
     /**
      * @dev Returns the number of accounts that have `role`. Can be used
@@ -5616,10 +4630,7 @@ interface IAuthorizationFacet {
     /**
      * @dev Returns true if `account` has been granted `role`.
      */
-    function hasRole(
-        bytes32 role,
-        address account
-    ) external view returns (bool);
+    function hasRole(bytes32 role, address account) external view returns (bool);
 
     /**
      * @dev Revokes `role` from the calling account.
@@ -5662,12 +4673,7 @@ interface ISafetyCouncilFacet {
      * @param _withDuration Set a duration for this pause - @todo: implement it if required
      * @param _duration Duration for the pause if `_withDuration` is true
      */
-    function toggleAssetsPaused(
-        address[] memory _assets,
-        Action _action,
-        bool _withDuration,
-        uint256 _duration
-    ) external;
+    function toggleAssetsPaused(address[] memory _assets, Action _action, bool _withDuration, uint256 _duration) external;
 
     /**
      * @notice set the safetyStateSet flag
@@ -5690,10 +4696,7 @@ interface ISafetyCouncilFacet {
      *  Borrow = 3,
      *  Liquidate = 4
      */
-    function safetyStateFor(
-        address _asset,
-        Action _action
-    ) external view returns (SafetyState memory);
+    function safetyStateFor(address _asset, Action _action) external view returns (SafetyState memory);
 
     /**
      * @notice Check if `_asset` has a pause enabled for `_action`
@@ -5705,10 +4708,7 @@ interface ISafetyCouncilFacet {
      *  Liquidate = 4
      * @return true if `_action` is paused
      */
-    function assetActionPaused(
-        Action _action,
-        address _asset
-    ) external view returns (bool);
+    function assetActionPaused(Action _action, address _asset) external view returns (bool);
 }
 
 interface ICommonConfigurationFacet {
@@ -5746,9 +4746,7 @@ interface ICommonConfigurationFacet {
      * @notice Sets sequencer grace period time
      * @param _sequencerGracePeriodTime grace period time
      */
-    function updateSequencerGracePeriodTime(
-        uint32 _sequencerGracePeriodTime
-    ) external;
+    function updateSequencerGracePeriodTime(uint32 _sequencerGracePeriodTime) external;
 
     /**
      * @notice Sets oracle timeout
@@ -5829,10 +4827,7 @@ interface IAssetStateFacet {
      * @custom:signature getValue(address,uint256)
      * @custom:selector 0xc7bf8cf5
      */
-    function getValue(
-        address _assetAddr,
-        uint256 _amount
-    ) external view returns (uint256);
+    function getValue(address _assetAddr, uint256 _amount) external view returns (uint256);
 
     /**
      * @notice Gets the feed address for this underlying + oracle type.
@@ -5842,10 +4837,7 @@ interface IAssetStateFacet {
      * @custom:signature getFeedForId(bytes12,uint8)
      * @custom:selector 0x708a9e64
      */
-    function getFeedForId(
-        bytes12 _underlyingId,
-        OracleType _oracleType
-    ) external view returns (address feedAddr);
+    function getFeedForId(bytes12 _underlyingId, OracleType _oracleType) external view returns (address feedAddr);
 
     /**
      * @notice Gets corresponding feed address for the oracle type and asset address.
@@ -5853,10 +4845,7 @@ interface IAssetStateFacet {
      * @param _oracleType The oracle type.
      * @return feedAddr Feed address that the asset uses with the oracle type.
      */
-    function getFeedForAddress(
-        address _assetAddr,
-        OracleType _oracleType
-    ) external view returns (address feedAddr);
+    function getFeedForAddress(address _assetAddr, OracleType _oracleType) external view returns (address feedAddr);
 
     /**
      * @notice Price getter for Vault based asset.
@@ -5878,9 +4867,7 @@ interface IAssetStateFacet {
      * @custom:signature getChainlinkPrice(address)
      * @custom:selector 0xbd58fe56
      */
-    function getChainlinkPrice(
-        address _feedAddr
-    ) external view returns (uint256);
+    function getChainlinkPrice(address _feedAddr) external view returns (uint256);
 
     /**
      * @notice Price getter for Redstone, extracting the price from the supplied "hidden" calldata.
@@ -5895,10 +4882,7 @@ interface IAssetStateFacet {
      * @custom:signature redstonePrice(bytes12,address)
      * @custom:selector 0xcc3c1f12
      */
-    function redstonePrice(
-        bytes12 _underlyingId,
-        address
-    ) external view returns (uint256);
+    function redstonePrice(bytes12 _underlyingId, address) external view returns (uint256);
 
     /**
      * @notice Price getter for IProxy/API3 type feeds.
@@ -5925,12 +4909,7 @@ interface IAssetConfigurationFacet {
      * @custom:signature addAsset(address,(bytes12,address,uint8[2],uint16,uint16,uint16,uint16,uint16,uint128,uint128,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool),(uint8[2],address[2]),bool)
      * @custom:selector 0x3027bfba
      */
-    function addAsset(
-        address _assetAddr,
-        Asset memory _config,
-        FeedConfiguration memory _feedConfig,
-        bool _setFeeds
-    ) external;
+    function addAsset(address _assetAddr, Asset memory _config, FeedConfiguration memory _feedConfig, bool _setFeeds) external;
 
     /**
      * @notice Update asset config.
@@ -5949,10 +4928,7 @@ interface IAssetConfigurationFacet {
      * @custom:signature updateFeeds(bytes12,(uint8[2],address[2]))
      * @custom:selector 0x4d58b9c3
      */
-    function updateFeeds(
-        bytes12 _assetId,
-        FeedConfiguration memory _feedConfig
-    ) external;
+    function updateFeeds(bytes12 _assetId, FeedConfiguration memory _feedConfig) external;
 
     /**
      * @notice Validate supplied asset config. Reverts with information if invalid.
@@ -5961,10 +4937,7 @@ interface IAssetConfigurationFacet {
      * @custom:signature validateAssetConfig(address,(bytes12,address,uint8[2],uint16,uint16,uint16,uint16,uint16,uint128,uint128,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool))
      * @custom:selector 0x2fb2c6b5
      */
-    function validateAssetConfig(
-        address _assetAddr,
-        Asset memory _config
-    ) external view;
+    function validateAssetConfig(address _assetAddr, Asset memory _config) external view;
 
     /**
      * @notice Set chainlink feeds for assetIds.
@@ -5972,10 +4945,7 @@ interface IAssetConfigurationFacet {
      * @param _assetIds List of asset id's.
      * @param _feeds List of feed addresses.
      */
-    function setChainlinkFeeds(
-        bytes12[] calldata _assetIds,
-        address[] calldata _feeds
-    ) external;
+    function setChainlinkFeeds(bytes12[] calldata _assetIds, address[] calldata _feeds) external;
 
     /**
      * @notice Set api3 feeds for assetIds.
@@ -5983,10 +4953,7 @@ interface IAssetConfigurationFacet {
      * @param _assetIds List of asset id's.
      * @param _feeds List of feed addresses.
      */
-    function setApi3Feeds(
-        bytes12[] calldata _assetIds,
-        address[] calldata _feeds
-    ) external;
+    function setApi3Feeds(bytes12[] calldata _assetIds, address[] calldata _feeds) external;
 
     /**
      * @notice Set a vault feed for assetId.
@@ -6021,10 +4988,7 @@ interface IAssetConfigurationFacet {
      * @custom:signature updateOracleOrder(address,uint8[2])
      * @custom:selector 0x8b6a306c
      */
-    function updateOracleOrder(
-        address _assetAddr,
-        OracleType[2] memory _newOracleOrder
-    ) external;
+    function updateOracleOrder(address _assetAddr, OracleType[2] memory _newOracleOrder) external;
 }
 
 /// These functions are expected to be called frequently
@@ -6073,11 +5037,7 @@ interface IDiamondCutFacet {
      * @param _calldata A function call, including function selector and arguments
      *                  _calldata is executed with delegatecall on _init
      */
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external;
+    function diamondCut(FacetCut[] calldata _diamondCut, address _init, bytes calldata _calldata) external;
 
     /**
      * @notice Use an initializer contract without doing modifications
@@ -6098,24 +5058,17 @@ interface IDiamondLoupeFacet {
     /// @notice Gets all the function selectors supported by a specific facet.
     /// @param _facet The facet address.
     /// @return facetFunctionSelectors_
-    function facetFunctionSelectors(
-        address _facet
-    ) external view returns (bytes4[] memory facetFunctionSelectors_);
+    function facetFunctionSelectors(address _facet) external view returns (bytes4[] memory facetFunctionSelectors_);
 
     /// @notice Get all the facet addresses used by a diamond.
     /// @return facetAddresses_
-    function facetAddresses()
-        external
-        view
-        returns (address[] memory facetAddresses_);
+    function facetAddresses() external view returns (address[] memory facetAddresses_);
 
     /// @notice Gets the facet that supports the given selector.
     /// @dev If facet is not found return address(0).
     /// @param _functionSelector The function selector.
     /// @return facetAddress_ The facet address.
-    function facetAddress(
-        bytes4 _functionSelector
-    ) external view returns (address facetAddress_);
+    function facetAddress(bytes4 _functionSelector) external view returns (address facetAddress_);
 }
 
 /// @title Contract Ownership
