@@ -33,23 +33,22 @@ library addr {
     address internal constant GMX = 0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a;
     address internal constant GNS = 0x18c11FD286C5EC11c3b683Caa813B77f5163A122;
 
-    address internal constant V3Router =
+    address internal constant V3_Router =
         0xE592427A0AEce92De3Edee1F18E0157C05861564;
-    address internal constant V3Router02 =
+    address internal constant V3_Router02 =
         0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45;
-    address internal constant V3QuoterV2 =
+    address internal constant V3_QuoterV2 =
         0x61fFE014bA17989E743c5F6cB21bF9697530B21e;
-    address internal constant V3Factory =
+    address internal constant V3_Factory =
         0x1F98431c8aD98523631AE4a59f267346ea31F984;
-    address internal constant V3NFT =
+    address internal constant V3_NFT =
         0xC36442b4a4522E871399CD717aBDD847Ab11FE88;
-    address internal constant V3TickLens =
+    address internal constant V3_TickLens =
         0xbfd8137f7d1516D3ea5cA83523914859ec47F573;
-    address internal constant V3NFTPosDescriptor =
+    address internal constant V3_NFTPosDescriptor =
         0x91ae842A5Ffd8d12023116943e72A606179294f3;
-    address internal constant V3NFTDescriptor =
+    address internal constant V3_NFTDescriptor =
         0x42B24A95702b9986e82d421cC3568932790A48Ec;
-
     address internal constant V3_USDCe_USDT_100 =
         0x8c9D230D45d6CfeE39a6680Fb7CB7E8DE7Ea8E71;
     address internal constant V3_USDCe_USDC_100 =
@@ -71,6 +70,8 @@ library addr {
     address internal constant V3_GMX_WETH_500 =
         0x80A9ae39310abf666A87C743d6ebBD0E8C42158E;
 
+    address internal constant CL_SEQ_UPTIME =
+        0xFdB631F5EE196F0ed6FAa767959853A9F217697D;
     address internal constant CL_ARB =
         0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6;
     address internal constant CL_EUR =
@@ -139,8 +140,6 @@ library addr {
         0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7;
     address internal constant CL_USDC =
         0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3;
-    address internal constant CL_SEQ =
-        0xFdB631F5EE196F0ed6FAa767959853A9F217697D;
 
     address internal constant API3_EUR =
         0xA37F6f5a04b7D5eB8DF71799e09D683f8CeC22F3;
@@ -159,11 +158,11 @@ library addr {
         0x000000000000000000000000000000000000006C;
     address internal constant ARB_STATISTICS =
         0x000000000000000000000000000000000000006F;
-    address internal constant L1_GOERLI_BRIDGE =
+    address internal constant ARB_L1_GOERLI_BRIDGE =
         0x6BEbC4925716945D46F0Ec336D5C2564F419682C;
-    address internal constant L1_MAINNET_BRIDGE =
+    address internal constant ARB_L1_MAINNET_BRIDGE =
         0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f;
-    address internal constant L1_MAINNET_BRIDGE_NOVA =
+    address internal constant ARB_L1_MAINNET_BRIDGE_NOVA =
         0xc4448b71118c9071Bcb9734A0EAc55D18A153949;
 
     address internal constant DAI_L1 =
@@ -177,18 +176,18 @@ library addr {
 }
 
 library tokens {
-    ERC20 internal constant gDAI = ERC20(Address.gDAI);
-    ERC20 internal constant ARB = ERC20(Address.ARB);
-    ERC20 internal constant FRAX = ERC20(Address.FRAX);
-    ERC20 internal constant DAI = ERC20(Address.DAI);
-    ERC20 internal constant USDC = ERC20(Address.USDC);
-    ERC20 internal constant USDCe = ERC20(Address.USDCe);
-    ERC20 internal constant LINK = ERC20(Address.LINK);
-    ERC20 internal constant WBTC = ERC20(Address.WBTC);
-    IWETH9 internal constant WETH = IWETH9(Address.WETH);
-    ERC20 internal constant USDT = ERC20(Address.USDT);
-    ERC20 internal constant GMX = ERC20(Address.GMX);
-    ERC20 internal constant GNS = ERC20(Address.GNS);
+    ERC20 internal constant gDAI = ERC20(addr.gDAI);
+    ERC20 internal constant ARB = ERC20(addr.ARB);
+    ERC20 internal constant FRAX = ERC20(addr.FRAX);
+    ERC20 internal constant DAI = ERC20(addr.DAI);
+    ERC20 internal constant USDC = ERC20(addr.USDC);
+    ERC20 internal constant USDCe = ERC20(addr.USDCe);
+    ERC20 internal constant LINK = ERC20(addr.LINK);
+    ERC20 internal constant WBTC = ERC20(addr.WBTC);
+    IWETH9 internal constant WETH = IWETH9(addr.WETH);
+    ERC20 internal constant USDT = ERC20(addr.USDT);
+    ERC20 internal constant GMX = ERC20(addr.GMX);
+    ERC20 internal constant GNS = ERC20(addr.GNS);
 }
 
 interface IArbitrumBridge {
@@ -225,15 +224,15 @@ interface L1DaiGateway {
 
 library bridges {
     L1DaiGateway internal constant DAI_L1_GATEWAY =
-        L1DaiGateway(Address.DAI_L1_GATEWAY);
+        L1DaiGateway(addr.DAI_L1_GATEWAY);
     L2DaiGateway internal constant DAI_L2_GATEWAY =
-        L2DaiGateway(Address.DAI_L2_GATEWAY);
-    IArbitrumBridge internal constant L1_GOERLI_BRIDGE =
-        IArbitrumBridge(Address.L1_GOERLI_BRIDGE);
-    IArbitrumBridge internal constant L1_MAINNET_BRIDGE =
-        IArbitrumBridge(Address.L1_MAINNET_BRIDGE);
-    IArbitrumBridge internal constant L1_MAINNET_BRIDGE_NOVA =
-        IArbitrumBridge(Address.L1_MAINNET_BRIDGE_NOVA);
+        L2DaiGateway(addr.DAI_L2_GATEWAY);
+    IArbitrumBridge internal constant ARB_L1_GOERLI=
+        IArbitrumBridge(addr.ARB_L1_GOERLI_BRIDGE);
+    IArbitrumBridge internal constant ARB_L1_MAINNET=
+        IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE);
+    IArbitrumBridge internal constant ARB_L1_MAINNET_NOVA =
+        IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE_NOVA);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -241,21 +240,21 @@ library bridges {
 /* -------------------------------------------------------------------------- */
 library uniswap {
     uint24 internal constant defaultFee = 3000;
-    ISwapRouter internal constant Router02 = ISwapRouter(Address.V3Router02);
-    IQuoterV2 internal constant QuoterV2 = IQuoterV2(Address.V3QuoterV2);
+    ISwapRouter internal constant Router02 = ISwapRouter(addr.V3_Router02);
+    IQuoterV2 internal constant QuoterV2 = IQuoterV2(addr.V3_QuoterV2);
     IUniswapV3NFTManager internal constant NFT =
-        IUniswapV3NFTManager(Address.V3NFT);
+        IUniswapV3NFTManager(addr.V3_NFT);
     IUniswapV3Factory internal constant V3Factory =
-        IUniswapV3Factory(Address.V3Factory);
+        IUniswapV3Factory(addr.V3_Factory);
 }
 
 library api3 {
-    IProxy internal constant ARB = IProxy(Address.API3_ARB);
-    IProxy internal constant EUR = IProxy(Address.API3_EUR);
-    IProxy internal constant BTC = IProxy(Address.API3_BTC);
-    IProxy internal constant ETH = IProxy(Address.API3_ETH);
-    IProxy internal constant CNY = IProxy(Address.API3_CNY);
-    IProxy internal constant GBP = IProxy(Address.API3_GBP);
+    IProxy internal constant ARB = IProxy(addr.API3_ARB);
+    IProxy internal constant EUR = IProxy(addr.API3_EUR);
+    IProxy internal constant BTC = IProxy(addr.API3_BTC);
+    IProxy internal constant ETH = IProxy(addr.API3_ETH);
+    IProxy internal constant CNY = IProxy(addr.API3_CNY);
+    IProxy internal constant GBP = IProxy(addr.API3_GBP);
 
     function price(IProxy proxy) internal view returns (uint256) {
         (int224 value, ) = proxy.read();
@@ -292,51 +291,51 @@ library cl {
     }
 
     AggregatorV3Interface internal constant BTC =
-        AggregatorV3Interface(Address.CL_BTC);
+        AggregatorV3Interface(addr.CL_BTC);
     AggregatorV3Interface internal constant DAI =
-        AggregatorV3Interface(Address.CL_DAI);
+        AggregatorV3Interface(addr.CL_DAI);
     AggregatorV3Interface internal constant ETH =
-        AggregatorV3Interface(Address.CL_ETH);
+        AggregatorV3Interface(addr.CL_ETH);
     AggregatorV3Interface internal constant JPY =
-        AggregatorV3Interface(Address.CL_JPY);
+        AggregatorV3Interface(addr.CL_JPY);
     AggregatorV3Interface internal constant USDT =
-        AggregatorV3Interface(Address.CL_USDT);
+        AggregatorV3Interface(addr.CL_USDT);
     AggregatorV3Interface internal constant USDC =
-        AggregatorV3Interface(Address.CL_USDC);
-    AggregatorV3Interface internal constant SEQ =
-        AggregatorV3Interface(Address.CL_SEQ);
+        AggregatorV3Interface(addr.CL_USDC);
+    AggregatorV3Interface internal constant SEQ_UPTIME =
+        AggregatorV3Interface(addr.CL_SEQ_UPTIME);
     AggregatorV3Interface internal constant EUR =
-        AggregatorV3Interface(Address.CL_EUR);
+        AggregatorV3Interface(addr.CL_EUR);
     AggregatorV3Interface internal constant ARB =
-        AggregatorV3Interface(Address.CL_ARB);
+        AggregatorV3Interface(addr.CL_ARB);
     AggregatorV3Interface internal constant FRAX =
-        AggregatorV3Interface(Address.CL_FRAX);
+        AggregatorV3Interface(addr.CL_FRAX);
     AggregatorV3Interface internal constant LINK =
-        AggregatorV3Interface(Address.CL_LINK);
+        AggregatorV3Interface(addr.CL_LINK);
     AggregatorV3Interface internal constant KRW =
-        AggregatorV3Interface(Address.CL_KRW);
+        AggregatorV3Interface(addr.CL_KRW);
     AggregatorV3Interface internal constant SGD =
-        AggregatorV3Interface(Address.CL_SGD);
+        AggregatorV3Interface(addr.CL_SGD);
     AggregatorV3Interface internal constant WBTC =
-        AggregatorV3Interface(Address.CL_WBTC);
+        AggregatorV3Interface(addr.CL_WBTC);
     AggregatorV3Interface internal constant WETH =
-        AggregatorV3Interface(Address.CL_ETH);
+        AggregatorV3Interface(addr.CL_ETH);
     AggregatorV3Interface internal constant WETH_BTC =
-        AggregatorV3Interface(Address.CL_WBTC_BTC);
+        AggregatorV3Interface(addr.CL_WBTC_BTC);
     AggregatorV3Interface internal constant AAPL =
-        AggregatorV3Interface(Address.CL_AAPL);
+        AggregatorV3Interface(addr.CL_AAPL);
     AggregatorV3Interface internal constant AMZN =
-        AggregatorV3Interface(Address.CL_AMZN);
+        AggregatorV3Interface(addr.CL_AMZN);
     AggregatorV3Interface internal constant META =
-        AggregatorV3Interface(Address.CL_META);
+        AggregatorV3Interface(addr.CL_META);
     AggregatorV3Interface internal constant TSLA =
-        AggregatorV3Interface(Address.CL_TSLA);
+        AggregatorV3Interface(addr.CL_TSLA);
     AggregatorV3Interface internal constant MSFT =
-        AggregatorV3Interface(Address.CL_MSFT);
+        AggregatorV3Interface(addr.CL_MSFT);
     AggregatorV3Interface internal constant SPY =
-        AggregatorV3Interface(Address.CL_SPY);
+        AggregatorV3Interface(addr.CL_SPY);
     AggregatorV3Interface internal constant GOOGL =
-        AggregatorV3Interface(Address.CL_GOOGL);
+        AggregatorV3Interface(addr.CL_GOOGL);
     AggregatorV3Interface internal constant CBETH_USD =
-        AggregatorV3Interface(Address.CL_CBETH_USD);
+        AggregatorV3Interface(addr.CL_CBETH_USD);
 }
