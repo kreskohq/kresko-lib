@@ -8,7 +8,7 @@ import {IUniswapV3NFTManager} from "../vendor/IUniswapV3NFTManager.sol";
 import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 import {IERC20} from "../token/IERC20.sol";
 import {IAPI3} from "../vendor/IAPI3.sol";
-import {IWETH9} from "../vendor/IWETH9.sol";
+import {IWETH9} from "../token/IWETH9.sol";
 
 library addr {
     address internal constant ZERO = address(0);

@@ -7,35 +7,31 @@ import {IERC20Permit} from "./IERC20Permit.sol";
 /// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)
 /// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
 contract ERC20 is IERC20Permit {
-    /*//////////////////////////////////////////////////////////////
-                            METADATA STORAGE
-    //////////////////////////////////////////////////////////////*/
+    /* -------------------------------------------------------------------------- */
+    /*                                ERC20 Storage                               */
+    /* -------------------------------------------------------------------------- */
 
     string public name;
-
     string public symbol;
-
     uint8 public immutable decimals;
 
-    /*//////////////////////////////////////////////////////////////
-                              ERC20 STORAGE
-    //////////////////////////////////////////////////////////////*/
-
     uint256 internal _totalSupply;
+    mapping(address => uint256) internal _balances;
+    mapping(address => mapping(address => uint256)) internal _allowances;
 
-    mapping(address => uint256) public balanceOf;
+    /* -------------------------------------------------------------------------- */
+    /*                                  EIP-2612                                  */
+    /* -------------------------------------------------------------------------- */
 
-    mapping(address => mapping(address => uint256)) public allowance;
+    mapping(address => uint256) public nonces;
 
-    /*//////////////////////////////////////////////////////////////
-                            EIP-2612 STORAGE
-    //////////////////////////////////////////////////////////////*/
+    /* -------------------------------------------------------------------------- */
+    /*                                 Immutables                                 */
+    /* -------------------------------------------------------------------------- */
 
     uint256 internal immutable INITIAL_CHAIN_ID;
 
     bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;
-
-    mapping(address => uint256) public nonces;
 
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
@@ -50,19 +46,34 @@ contract ERC20 is IERC20Permit {
         INITIAL_DOMAIN_SEPARATOR = computeDomainSeparator();
     }
 
-    /*//////////////////////////////////////////////////////////////
-                               ERC20 LOGIC
-    //////////////////////////////////////////////////////////////*/
+    /* -------------------------------------------------------------------------- */
+    /*                                    READ                                    */
+    /* -------------------------------------------------------------------------- */
+
+    function balanceOf(address _account) public view virtual returns (uint256) {
+        return _balances[_account];
+    }
 
     function totalSupply() public view virtual returns (uint256) {
         return _totalSupply;
     }
 
+    function allowance(
+        address _owner,
+        address _spender
+    ) public view virtual returns (uint256) {
+        return _allowances[_owner][_spender];
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                 ERC20 Logic                                */
+    /* -------------------------------------------------------------------------- */
+
     function approve(
         address spender,
         uint256 amount
     ) public virtual returns (bool) {
-        allowance[msg.sender][spender] = amount;
+        _allowances[msg.sender][spender] = amount;
 
         emit Approval(msg.sender, spender, amount);
 
@@ -73,12 +84,12 @@ contract ERC20 is IERC20Permit {
         address to,
         uint256 amount
     ) public virtual returns (bool) {
-        balanceOf[msg.sender] -= amount;
+        _balances[msg.sender] -= amount;
 
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            balanceOf[to] += amount;
+            _balances[to] += amount;
         }
 
         emit Transfer(msg.sender, to, amount);
@@ -91,17 +102,17 @@ contract ERC20 is IERC20Permit {
         address to,
         uint256 amount
     ) public virtual returns (bool) {
-        uint256 allowed = allowance[from][msg.sender]; // Saves gas for limited approvals.
+        uint256 allowed = _allowances[from][msg.sender]; // Saves gas for limited approvals.
 
         if (allowed != type(uint256).max)
-            allowance[from][msg.sender] = allowed - amount;
+            _allowances[from][msg.sender] = allowed - amount;
 
-        balanceOf[from] -= amount;
+        _balances[from] -= amount;
 
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            balanceOf[to] += amount;
+            _balances[to] += amount;
         }
 
         emit Transfer(from, to, amount);
@@ -109,9 +120,9 @@ contract ERC20 is IERC20Permit {
         return true;
     }
 
-    /*//////////////////////////////////////////////////////////////
-                             EIP-2612 LOGIC
-    //////////////////////////////////////////////////////////////*/
+    /* -------------------------------------------------------------------------- */
+    /*                               EIP-2612 Logic                               */
+    /* -------------------------------------------------------------------------- */
 
     function permit(
         address owner,
@@ -156,11 +167,10 @@ contract ERC20 is IERC20Permit {
                 r,
                 s
             );
-
             if (recoveredAddress == address(0) || recoveredAddress != owner)
                 revert INVALID_SIGNER(owner, recoveredAddress);
 
-            allowance[recoveredAddress][spender] = value;
+            _allowances[recoveredAddress][spender] = value;
         }
 
         emit Approval(owner, spender, value);
@@ -188,9 +198,9 @@ contract ERC20 is IERC20Permit {
             );
     }
 
-    /*//////////////////////////////////////////////////////////////
-                        INTERNAL MINT/BURN LOGIC
-    //////////////////////////////////////////////////////////////*/
+    /* -------------------------------------------------------------------------- */
+    /*                                  Internals                                 */
+    /* -------------------------------------------------------------------------- */
 
     function _mint(address to, uint256 amount) internal virtual {
         _totalSupply += amount;
@@ -198,14 +208,14 @@ contract ERC20 is IERC20Permit {
         // Cannot overflow because the sum of all user
         // balances can't exceed the max uint256 value.
         unchecked {
-            balanceOf[to] += amount;
+            _balances[to] += amount;
         }
 
         emit Transfer(address(0), to, amount);
     }
 
     function _burn(address from, uint256 amount) internal virtual {
-        balanceOf[from] -= amount;
+        _balances[from] -= amount;
 
         // Cannot underflow because a user's balance
         // will never be larger than the total supply.
