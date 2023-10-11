@@ -6,7 +6,6 @@ remappings = [
     '@oz-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/',
     '@oz/=lib/openzeppelin-contracts/contracts/',
     "forge-std/=lib/forge-std/src",
-    "solmate/=lib/solmate/src"
 ]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
