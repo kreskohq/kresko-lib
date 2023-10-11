@@ -227,9 +227,9 @@ library bridges {
         L1DaiGateway(addr.DAI_L1_GATEWAY);
     L2DaiGateway internal constant DAI_L2_GATEWAY =
         L2DaiGateway(addr.DAI_L2_GATEWAY);
-    IArbitrumBridge internal constant ARB_L1_GOERLI=
+    IArbitrumBridge internal constant ARB_L1_GOERLI =
         IArbitrumBridge(addr.ARB_L1_GOERLI_BRIDGE);
-    IArbitrumBridge internal constant ARB_L1_MAINNET=
+    IArbitrumBridge internal constant ARB_L1_MAINNET =
         IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE);
     IArbitrumBridge internal constant ARB_L1_MAINNET_NOVA =
         IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE_NOVA);
