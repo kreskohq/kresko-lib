@@ -13,12 +13,12 @@ interface IERC165 {
 
 /// @title KreskoAsset issuer interface
 /// @author Kresko
-/// @notice Contract that can issue/destroy Kresko Assets through Kresko
-/// @dev This interface is used by KISS & KreskoAssetAnchor
+/// @notice Contract that allows minting and burning through Kresko.
+/// @dev All mintable assets in Kresko must implement this. (enforced through introspection)
 interface IKreskoAssetIssuer {
     /**
      * @notice Mints @param _assets of krAssets for @param _to,
-     * @notice Mints relative @return _shares of wkrAssets
+     * @notice Mints relative @return _shares of anchor tokens.
      */
     function issue(
         uint256 _assets,
@@ -27,7 +27,7 @@ interface IKreskoAssetIssuer {
 
     /**
      * @notice Burns @param _assets of krAssets from @param _from,
-     * @notice Burns relative @return _shares of wkrAssets
+     * @notice Burns relative @return _shares of anchor tokens.
      */
     function destroy(
         uint256 _assets,
@@ -35,18 +35,32 @@ interface IKreskoAssetIssuer {
     ) external returns (uint256 shares);
 
     /**
-     * @notice Returns the total amount of anchor tokens out
+     * @notice Preview conversion from KrAsset amount: @param assets to matching amount of Anchor tokens: @return shares
      */
     function convertToShares(
         uint256 assets
     ) external view returns (uint256 shares);
 
     /**
-     * @notice Returns the total amount of krAssets out
+     * @notice Preview conversion from Anchor token amount: @param shares to matching KrAsset amount: @return assets
      */
     function convertToAssets(
         uint256 shares
     ) external view returns (uint256 assets);
+
+    /**
+     * @notice Preview conversion from Anchor token amounts: @param shares to matching amounts of KrAssets: @return assets
+     */
+    function convertManyToAssets(
+        uint256[] calldata shares
+    ) external view returns (uint256[] memory assets);
+
+    /**
+     * @notice Preview conversion from KrAsset amounts: @param assets to matching amounts of Anchor tokens: @return shares
+     */
+    function convertManyToShares(
+        uint256[] calldata assets
+    ) external view returns (uint256[] memory shares);
 }
 
 interface IVaultExtender {
@@ -55,43 +69,43 @@ interface IVaultExtender {
 
     /**
      * @notice Deposit tokens to vault for shares and convert them to equal amount of extender token.
-     * @param _asset Supported vault asset address
-     * @param _assets amount of `_asset` to deposit
+     * @param _assetAddr Supported vault asset address
+     * @param _assets amount of `_assetAddr` to deposit
      * @param _receiver Address receive extender tokens
      * @return sharesOut amount of shares/extender tokens minted
-     * @return assetFee amount of `_asset` vault took as fee
+     * @return assetFee amount of `_assetAddr` vault took as fee
      */
     function vaultDeposit(
-        address _asset,
+        address _assetAddr,
         uint256 _assets,
         address _receiver
     ) external returns (uint256 sharesOut, uint256 assetFee);
 
     /**
      * @notice Deposit supported vault assets to receive `_shares`, depositing the shares for equal amount of extender token.
-     * @param _asset Supported vault asset address
+     * @param _assetAddr Supported vault asset address
      * @param _receiver Address receive extender tokens
      * @param _shares Amount of shares to receive
      * @return assetsIn Amount of assets for `_shares`
-     * @return assetFee Amount of `_asset` vault took as fee
+     * @return assetFee Amount of `_assetAddr` vault took as fee
      */
     function vaultMint(
-        address _asset,
+        address _assetAddr,
         uint256 _shares,
         address _receiver
     ) external returns (uint256 assetsIn, uint256 assetFee);
 
     /**
      * @notice Withdraw supported vault asset, burning extender tokens and withdrawing shares from vault.
-     * @param _asset Supported vault asset address
-     * @param _assets amount of `_asset` to deposit
+     * @param _assetAddr Supported vault asset address
+     * @param _assets amount of `_assetAddr` to deposit
      * @param _receiver Address receive extender tokens
      * @param _owner Owner of extender tokens
      * @return sharesIn amount of shares/extender tokens burned
-     * @return assetFee amount of `_asset` vault took as fee
+     * @return assetFee amount of `_assetAddr` vault took as fee
      */
     function vaultWithdraw(
-        address _asset,
+        address _assetAddr,
         uint256 _assets,
         address _receiver,
         address _owner
@@ -99,16 +113,16 @@ interface IVaultExtender {
 
     /**
      * @notice  Withdraw supported vault asset for  `_shares` of extender tokens.
-     * @param _asset Token to deposit into vault for shares.
+     * @param _assetAddr Token to deposit into vault for shares.
      * @param _shares amount of extender tokens to burn
      * @param _receiver Address to receive assets withdrawn
      * @param _owner Owner of extender tokens
      * @return sharesIn amount of shares/extender tokens minted
-     * @return assetFee amount of `_asset` vault took as fee
+     * @return assetFee amount of `_assetAddr` vault took as fee
      * @dev Does not return a value
      */
     function vaultRedeem(
-        address _asset,
+        address _assetAddr,
         uint256 _shares,
         address _receiver,
         address _owner
