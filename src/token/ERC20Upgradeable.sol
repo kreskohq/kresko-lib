@@ -35,17 +35,8 @@ abstract contract ERC20Upgradeable is Initializable, IERC20Permit {
     mapping(address => uint256) public nonces;
 
     /* -------------------------------------------------------------------------- */
-    /*                                 Immutables                                 */
+    /*                                 Constructor                                */
     /* -------------------------------------------------------------------------- */
-
-    uint256 internal immutable INITIAL_CHAIN_ID;
-    bytes32 internal immutable INITIAL_DOMAIN_SEPARATOR;
-
-    constructor() payable {
-        INITIAL_CHAIN_ID = block.chainid;
-        INITIAL_DOMAIN_SEPARATOR = computeDomainSeparator();
-    }
-
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
@@ -200,10 +191,7 @@ abstract contract ERC20Upgradeable is Initializable, IERC20Permit {
     }
 
     function DOMAIN_SEPARATOR() public view virtual returns (bytes32) {
-        return
-            block.chainid == INITIAL_CHAIN_ID
-                ? INITIAL_DOMAIN_SEPARATOR
-                : computeDomainSeparator();
+        return computeDomainSeparator();
     }
 
     function computeDomainSeparator() internal view virtual returns (bytes32) {
