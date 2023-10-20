@@ -1212,7 +1212,7 @@ library LibTest {
         (, msgSender, txOrigin) = vm().readCallers();
     }
 
-    function vm() internal returns (Vm) {
+    function vm() internal pure returns (Vm) {
         return Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
     }
 }
