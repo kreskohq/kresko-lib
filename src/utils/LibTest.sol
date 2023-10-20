@@ -1,5 +1,5 @@
 import {stdMath} from "forge-std/StdMath.sol";
-
+import {Vm, VmSafe} from "forge-std/Vm.sol";
 pragma solidity ^0.8.0;
 
 // solhint-disable event-name-camelcase
@@ -1040,245 +1040,6 @@ library LibTest {
         return !s()._failed;
     }
 
-    function closeToRel(
-        uint256 a,
-        uint256 b,
-        uint256 maxPercentDelta // An 18 decimal fixed point number, where 1e18 == 100%
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log("Error: a ~= b not satisfied [uint]");
-            emit log_named_uint("        Left", a);
-            emit log_named_uint("       Right", b);
-            emit log_named_decimal_uint(
-                " Max % Delta",
-                maxPercentDelta * 100,
-                18
-            );
-            emit log_named_decimal_uint("     % Delta", percentDelta * 100, 18);
-            fail();
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRel(
-        uint256 a,
-        uint256 b,
-        uint256 maxPercentDelta, // An 18 decimal fixed point number, where 1e18 == 100%
-        string memory err
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b, err); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log_named_string("Error", err);
-            closeToRel(a, b, maxPercentDelta);
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRelDecimal(
-        uint256 a,
-        uint256 b,
-        uint256 maxPercentDelta, // An 18 decimal fixed point number, where 1e18 == 100%
-        uint256 decimals
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log("Error: a ~= b not satisfied [uint]");
-            emit log_named_decimal_uint("        Left", a, decimals);
-            emit log_named_decimal_uint("       Right", b, decimals);
-            emit log_named_decimal_uint(
-                " Max % Delta",
-                maxPercentDelta * 100,
-                18
-            );
-            emit log_named_decimal_uint("     % Delta", percentDelta * 100, 18);
-            fail();
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRelDecimal(
-        uint256 a,
-        uint256 b,
-        uint256 maxPercentDelta, // An 18 decimal fixed point number, where 1e18 == 100%
-        uint256 decimals,
-        string memory err
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b, err); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log_named_string("Error", err);
-            closeToRelDecimal(a, b, maxPercentDelta, decimals);
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRel(
-        int256 a,
-        int256 b,
-        uint256 maxPercentDelta
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log("Error: a ~= b not satisfied [int]");
-            emit log_named_int("        Left", a);
-            emit log_named_int("       Right", b);
-            emit log_named_decimal_uint(
-                " Max % Delta",
-                maxPercentDelta * 100,
-                18
-            );
-            emit log_named_decimal_uint("     % Delta", percentDelta * 100, 18);
-            fail();
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRel(
-        int256 a,
-        int256 b,
-        uint256 maxPercentDelta,
-        string memory err
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b, err); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log_named_string("Error", err);
-            closeToRel(a, b, maxPercentDelta);
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRelDecimal(
-        int256 a,
-        int256 b,
-        uint256 maxPercentDelta,
-        uint256 decimals
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log("Error: a ~= b not satisfied [int]");
-            emit log_named_decimal_int("        Left", a, decimals);
-            emit log_named_decimal_int("       Right", b, decimals);
-            emit log_named_decimal_uint(
-                " Max % Delta",
-                maxPercentDelta * 100,
-                18
-            );
-            emit log_named_decimal_uint("     % Delta", percentDelta * 100, 18);
-            fail();
-        }
-
-        return !s()._failed;
-    }
-
-    function closeToRelDecimal(
-        int256 a,
-        int256 b,
-        uint256 maxPercentDelta,
-        uint256 decimals,
-        string memory err
-    ) internal returns (bool) {
-        if (b == 0) return equals(a, b, err); // If the left is 0, right must be too.
-
-        uint256 percentDelta = stdMath.percentDelta(a, b);
-
-        if (percentDelta > maxPercentDelta) {
-            emit log_named_string("Error", err);
-            closeToRelDecimal(a, b, maxPercentDelta, decimals);
-        }
-
-        return !s()._failed;
-    }
-
-    function equalsCall(
-        address target,
-        bytes memory callDataA,
-        bytes memory callDataB
-    ) internal {
-        equalsCall(target, callDataA, target, callDataB, true);
-    }
-
-    function equalsCall(
-        address targetA,
-        bytes memory callDataA,
-        address targetB,
-        bytes memory callDataB
-    ) internal {
-        equalsCall(targetA, callDataA, targetB, callDataB, true);
-    }
-
-    function equalsCall(
-        address target,
-        bytes memory callDataA,
-        bytes memory callDataB,
-        bool strictRevertData
-    ) internal {
-        equalsCall(target, callDataA, target, callDataB, strictRevertData);
-    }
-
-    function equalsCall(
-        address targetA,
-        bytes memory callDataA,
-        address targetB,
-        bytes memory callDataB,
-        bool strictRevertData
-    ) internal {
-        (bool successA, bytes memory returnDataA) = address(targetA).call(
-            callDataA
-        );
-        (bool successB, bytes memory returnDataB) = address(targetB).call(
-            callDataB
-        );
-
-        if (successA && successB) {
-            equals(returnDataA, returnDataB, "Call return data does not match");
-        }
-
-        if (!successA && !successB && strictRevertData) {
-            equals(returnDataA, returnDataB, "Call revert data does not match");
-        }
-
-        if (!successA && successB) {
-            emit log("Error: Calls were not equal");
-            emit log_named_bytes("  Left call revert data", returnDataA);
-            emit log_named_bytes(" Right call return data", returnDataB);
-            fail();
-        }
-
-        if (successA && !successB) {
-            emit log("Error: Calls were not equal");
-            emit log_named_bytes("  Left call return data", returnDataA);
-            emit log_named_bytes(" Right call revert data", returnDataB);
-            fail();
-        }
-    }
-
     function equals(
         function() external view returns (uint256) a,
         uint256 b
@@ -1427,5 +1188,31 @@ library LibTest {
 
     function clg(uint256 val, string memory str, uint8 dec) internal {
         emit log_named_decimal_uint(str, (val), dec);
+    }
+
+    function log_caller() internal {
+        (VmSafe.CallerMode mode, address msgSender, address txOrigin) = vm()
+            .readCallers();
+        emit log_named_address("msg.sender", msgSender);
+        emit log_named_address("tx.origin", txOrigin);
+        emit log_named_uint(
+            "Mode [None,Broadcast,RecurrentBroadcast,Prank,RecurrentPrank]",
+            uint256(uint8(mode))
+        );
+    }
+
+    function peekSender() internal returns (address msgSender) {
+        (, msgSender, ) = vm().readCallers();
+    }
+
+    function peekCallers()
+        internal
+        returns (address msgSender, address txOrigin)
+    {
+        (, msgSender, txOrigin) = vm().readCallers();
+    }
+
+    function vm() internal returns (Vm) {
+        return Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
     }
 }

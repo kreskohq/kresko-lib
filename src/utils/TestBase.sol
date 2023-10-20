@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import {TestWallet} from "./TestWallet.sol";
 
 abstract contract TestBase is TestWallet {
-    address public user0;
-    address public user1;
-    address public user2;
+    address internal user0;
+    address internal user1;
+    address internal user2;
 
     modifier fork(string memory f) {
         vm.createSelectFork(f);
@@ -14,8 +14,6 @@ abstract contract TestBase is TestWallet {
     }
 
     constructor(string memory _mnemonicId) TestWallet(_mnemonicId) {}
-
-    uint256 internal constant MAX = type(uint256).max;
 
     modifier usersMnemonic(
         uint32 a,
