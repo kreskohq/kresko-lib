@@ -2,6 +2,12 @@
 pragma solidity ^0.8.0;
 
 contract GnosisSafeL2Mock {
+    address internal owner;
+
+    constructor(address _owner) {
+        owner = _owner;
+    }
+
     function setup(
         address[] memory _owners,
         uint256 _threshold,
@@ -12,13 +18,13 @@ contract GnosisSafeL2Mock {
         uint256 _payment
     ) public {}
 
-    function isOwner(address) external pure returns (bool) {
-        return true;
+    function isOwner(address who) external view returns (bool) {
+        return who == owner;
     }
 
-    function getOwners() external pure returns (address[] memory) {
+    function getOwners() external view returns (address[] memory) {
         address[] memory owners = new address[](6);
-        owners[0] = address(0x0);
+        owners[0] = address(owner);
         owners[1] = address(0x011);
         owners[2] = address(0x022);
         owners[3] = address(0x033);
@@ -35,7 +41,7 @@ library LibSafe {
     address public constant USER4 = address(0x044);
 
     function createSafe(address admin) internal returns (GnosisSafeL2Mock) {
-        return new GnosisSafeL2Mock();
+        return new GnosisSafeL2Mock(admin);
     }
     //     GnosisSafeL2 masterCopy = new GnosisSafeL2();
     //     GnosisSafeProxyFactory proxyFactory = new GnosisSafeProxy();
