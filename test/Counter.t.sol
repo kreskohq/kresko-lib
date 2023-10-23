@@ -14,7 +14,7 @@ contract CounterTest is TestWallet("MNEMONIC") {
 
     function testStuff() public {
         prank(address(5));
-        log_caller();
+        logCallers();
         thing.func();
     }
 }

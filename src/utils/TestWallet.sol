@@ -21,42 +21,42 @@ abstract contract TestWallet is Wallet, Test {
     // solhint-disable-next-line no-empty-blocks
     constructor(string memory _mnemonicId) Wallet(_mnemonicId) {}
 
-    modifier pranked(uint32 index) {
-        address who = getAddr(index);
+    modifier pranked(uint32 _mnemonicIndex) {
+        address who = getAddr(_mnemonicIndex);
         vm.startPrank(who, who);
         _;
         vm.stopPrank();
     }
 
-    modifier prankedKey(string memory key) {
-        address who = getAddr(key);
+    modifier prankedKey(string memory _pkEnv) {
+        address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
         vm.stopPrank();
     }
 
-    modifier prankedAddr(address addr) {
-        vm.startPrank(addr, addr);
+    modifier prankedAddr(address _senderAndTxOrigin) {
+        vm.startPrank(_senderAndTxOrigin, _senderAndTxOrigin);
         _;
         vm.stopPrank();
     }
 
-    modifier prankedLabel(string memory label) {
-        Account memory who = prankMake(label);
+    modifier prankedMake(string memory _label) {
+        Account memory who = prankMake(_label);
         vm.startPrank(who.addr, who.addr);
         _;
         vm.stopPrank();
     }
 
     /// @notice Pranks mnemonic index, restores original prank after
-    modifier repranked(uint32 index) {
+    modifier repranked(uint32 _mnemonicIndex) {
         (
             VmSafe.CallerMode mode,
             address msgSender,
             address txOrigin
         ) = unprank();
 
-        address who = getAddr(index);
+        address who = getAddr(_mnemonicIndex);
         vm.startPrank(who, who);
         _;
         vm.stopPrank();
@@ -64,27 +64,27 @@ abstract contract TestWallet is Wallet, Test {
     }
 
     /// @notice Pranks address, restores original prank after
-    modifier reprankedAddr(address who) {
+    modifier reprankedAddr(address _senderAndTxOrigin) {
         (
             VmSafe.CallerMode mode,
             address msgSender,
             address txOrigin
         ) = unprank();
-        vm.startPrank(who, who);
+        vm.startPrank(_senderAndTxOrigin, _senderAndTxOrigin);
         _;
         vm.stopPrank();
         reprank(mode, msgSender, txOrigin);
     }
 
     /// @notice Pranks private key, restores original prank after
-    modifier reprankedKey(string memory pk) {
+    modifier reprankedKey(string memory _pkEnv) {
         (
             VmSafe.CallerMode mode,
             address msgSender,
             address txOrigin
         ) = unprank();
 
-        address who = getAddr(pk);
+        address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
         vm.stopPrank();
@@ -92,14 +92,14 @@ abstract contract TestWallet is Wallet, Test {
     }
 
     /// @notice Pranks with a new account from label, restores original prank after
-    modifier reprankedLabel(string memory label) {
+    modifier reprankedLabel(string memory _label) {
         (
             VmSafe.CallerMode mode,
             address msgSender,
             address txOrigin
         ) = unprank();
 
-        prankMake(label);
+        prankMake(_label);
         _;
         vm.stopPrank();
         reprank(mode, msgSender, txOrigin);
@@ -122,117 +122,42 @@ abstract contract TestWallet is Wallet, Test {
         reprank(mode, msgSender, txOrigin);
     }
 
-    // just clear even if no call.
-    function unprank()
-        internal
-        returns (VmSafe.CallerMode mode, address msgSender, address txOrigin)
-    {
-        (mode, msgSender, txOrigin) = vm.readCallers();
-        if (
-            mode == VmSafe.CallerMode.Prank ||
-            mode == VmSafe.CallerMode.RecurrentPrank
-        ) {
-            vm.stopPrank();
-        }
-    }
-
     /// @notice Check if some prank is active and restore it.
     function reprank(
         VmSafe.CallerMode mode,
-        address msgSender,
-        address txOrigin
+        address _storedSender,
+        address _storedTxOrigin
     ) private {
         if (mode == VmSafe.CallerMode.Prank) {
-            msgSender == txOrigin
-                ? vm.prank(msgSender, txOrigin)
-                : vm.prank(msgSender);
+            _storedSender == _storedTxOrigin
+                ? vm.prank(_storedSender, _storedTxOrigin)
+                : vm.prank(_storedSender);
         } else if (mode == VmSafe.CallerMode.RecurrentPrank) {
-            msgSender == txOrigin
-                ? vm.startPrank(msgSender, txOrigin)
-                : vm.startPrank(msgSender);
+            _storedSender == _storedTxOrigin
+                ? vm.startPrank(_storedSender, _storedTxOrigin)
+                : vm.startPrank(_storedSender);
         }
     }
 
     /* ------------------------- vm.startPrank shortcuts ------------------------ */
-    function prank(address who) internal {
-        vm.startPrank(who, who);
-    }
-
-    function prank(address who, address origin) internal {
-        vm.startPrank(who, origin);
-    }
-
-    /// @notice Pranks using a mnemonic index.
-    function prank(uint32 index) internal {
-        address who = getAddr(index);
-        vm.startPrank(who, who);
-    }
-
-    /// @notice Pranks using a private key
-    function prank(string memory pk) internal {
-        address who = getAddr(pk);
-        vm.startPrank(who, who);
-    }
-
-    /// @notice Pranks using a private key
-    function prank(string memory pk, string memory label) internal {
-        address who = getAddr(pk);
-        vm.label(who, label);
-        vm.startPrank(who, who);
-    }
-
-    /// @notice Pranks using an address and label.
-    function prank(address who, string memory label) internal {
-        vm.label(who, label);
-        vm.startPrank(who, who);
-    }
-
-    /// @notice Pranks using a mnemonic index and label
-    function prank(uint32 index, string memory label) internal {
-        address who = getAddr(index);
-        vm.label(who, label);
-        vm.startPrank(who, who);
-    }
 
     /// @notice Pranks sender only with mnemonic index.
-    function prankSender(uint32 index) internal {
-        vm.startPrank(getAddr(index));
+    function prankSender(uint32 _mnemonicIndex) internal {
+        vm.startPrank(getAddr(_mnemonicIndex));
     }
 
     /// @notice Pranks sender only with private key
-    function prankSender(string memory pk) internal {
-        vm.startPrank(getAddr(pk));
+    function prankSender(string memory _pkEnv) internal {
+        vm.startPrank(getAddr(_pkEnv));
     }
 
     /// @notice Pranks with a new account derived from label with ether (and the label).
     function prankMake(
-        string memory label
+        string memory _label
     ) internal returns (Account memory who) {
-        who = makeAccount(label);
+        who = makeAccount(_label);
         vm.deal(who.addr, 420.69 ether);
-        vm.label(who.addr, label);
+        vm.label(who.addr, _label);
         vm.startPrank(who.addr, who.addr);
-    }
-
-    function log_caller() internal {
-        (VmSafe.CallerMode mode, address msgSender, address txOrigin) = vm
-            .readCallers();
-        emit log_named_address("msg.sender", msgSender);
-        emit log_named_address("tx.origin", txOrigin);
-        emit log_named_uint(
-            "Mode [None,Broadcast,RecurrentBroadcast,Prank,RecurrentPrank]",
-            uint256(uint8(mode))
-        );
-    }
-
-    function peekSender() internal returns (address msgSender) {
-        (, msgSender, ) = vm.readCallers();
-    }
-
-    function peekCallers()
-        internal
-        returns (address msgSender, address txOrigin)
-    {
-        (, msgSender, txOrigin) = vm.readCallers();
     }
 }
