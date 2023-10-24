@@ -1100,10 +1100,7 @@ library Log {
         emit log_named_string(_pre(_lbl), _val);
     }
 
-    function clg2bytes32(
-        string memory _val,
-        string memory _lbl
-    ) internal check {
+    function clg2bytes(string memory _val, string memory _lbl) internal check {
         emit log_named_bytes(_pre(_lbl), bytes(_val));
     }
 
