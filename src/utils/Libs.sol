@@ -120,6 +120,13 @@ library LibVm {
 }
 
 library Help {
+    enum OracleType {
+        Empty,
+        Redstone,
+        Chainlink,
+        API3,
+        Vault
+    }
     Vm constant vm = VM;
     error ELEMENT_DOES_NOT_MATCH_PROVIDED_INDEX(
         ID element,
@@ -358,6 +365,18 @@ library Help {
             _arr.push(_val[i]);
         }
         return _arr;
+    }
+
+    function u8(
+        OracleType[2] memory _val
+    ) internal pure returns (uint8[2] memory) {
+        return [uint8(_val[0]), uint8(_val[1])];
+    }
+
+    function toEnum(
+        uint8[2] memory _val
+    ) internal pure returns (OracleType[2] memory) {
+        return [OracleType(_val[0]), OracleType(_val[1])];
     }
 
     function toArray(
@@ -1415,6 +1434,10 @@ library Log {
     }
 
     function clg(string memory _lbl, uint8 _val1, uint8 _val2) internal check {
+        emit log_named_array(_pre(_lbl), [_val1, _val2].dyn256());
+    }
+
+    function clg(uint8 _val1, uint8 _val2, string memory _lbl) internal check {
         emit log_named_array(_pre(_lbl), [_val1, _val2].dyn256());
     }
 
