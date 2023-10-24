@@ -9,7 +9,8 @@ contract Sandbox is TestWallet("MNEMONIC") {
     TestContract internal thing;
     using LibVm for *;
     using Log for *;
-    using Help for *;
+
+    // using Help for *;
 
     function setUp() public {
         emit log_string("setUp");
@@ -22,6 +23,22 @@ contract Sandbox is TestWallet("MNEMONIC") {
         prank(address(5));
         logCallers();
         thing.func();
+        uint16 a = 150e2;
+        a.pct("pct");
+
+        uint32 b = 150e2;
+        b.pct("pct");
+
+        uint256 c = 150e2;
+        c.pct("pct");
+
+        string memory s = "hello";
+        bytes memory bts = bytes(s);
+        bytes32 bts32 = bytes32("val");
+        s.clg();
+        s.blg(bts);
+        bts.blg();
+        bts32.blg(s);
     }
 }
 

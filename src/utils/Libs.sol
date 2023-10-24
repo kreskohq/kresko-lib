@@ -265,20 +265,8 @@ library Help {
         return _addresses[0] == address(0) && _addresses[1] == address(0);
     }
 
-    function isEmpty(address[] memory _addresses) internal pure returns (bool) {
-        return _addresses.length == 0;
-    }
-
-    function isEmpty(bytes32[] memory _bytes32s) internal pure returns (bool) {
-        return _bytes32s.length == 0;
-    }
-
-    function isEmpty(string[] memory _strings) internal pure returns (bool) {
-        return _strings.length == 0;
-    }
-
-    function isEmpty(string memory _str) internal pure returns (bool) {
-        return bytes(_str).length == 0;
+    function isEmpty(string memory _val) internal pure returns (bool) {
+        return bytes(_val).length == 0;
     }
 
     function equals(
@@ -313,15 +301,15 @@ library Help {
         return vm.toString(_val);
     }
 
-    function addr(string memory _val) internal pure returns (address) {
+    function toAddr(string memory _val) internal pure returns (address) {
         return vm.parseAddress(_val);
     }
 
-    function num(string memory _val) internal pure returns (uint256) {
+    function toUint(string memory _val) internal pure returns (uint256) {
         return vm.parseUint(_val);
     }
 
-    function b32(string memory _val) internal pure returns (bytes32) {
+    function toB32(string memory _val) internal pure returns (bytes32) {
         return vm.parseBytes32(_val);
     }
 
@@ -329,7 +317,7 @@ library Help {
         return vm.parseBytes(_val);
     }
 
-    function boolean(string memory _val) internal pure returns (bool) {
+    function toBool(string memory _val) internal pure returns (bool) {
         return vm.parseBool(_val);
     }
 
@@ -360,26 +348,14 @@ library Help {
         return _arr;
     }
 
-    function u8(
-        Enums.OracleType[2] memory _val
-    ) internal pure returns (uint8[2] memory) {
-        return [uint8(_val[0]), uint8(_val[1])];
-    }
-
-    function toEnum(
-        uint8[2] memory _val
-    ) internal pure returns (Enums.OracleType[2] memory) {
-        return [Enums.OracleType(_val[0]), Enums.OracleType(_val[1])];
-    }
-
-    function toArray(
+    function arr(
         address _value1
     ) internal pure returns (address[] memory dynamic_) {
         dynamic_ = new address[](1);
         dynamic_[0] = _value1;
     }
 
-    function toArray(
+    function arr(
         address _value1,
         address _value2
     ) internal pure returns (address[] memory dynamic_) {
@@ -388,7 +364,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toArray(
+    function arr(
         address _value1,
         address _value2,
         address _value3
@@ -399,7 +375,7 @@ library Help {
         dynamic_[2] = _value3;
     }
 
-    function toArray(
+    function arr(
         address _value1,
         address _value2,
         address _value3,
@@ -412,14 +388,14 @@ library Help {
         dynamic_[3] = _value4;
     }
 
-    function toArray(
+    function arr(
         uint16 _value
     ) internal pure returns (uint16[] memory dynamic_) {
         dynamic_ = new uint16[](1);
         dynamic_[0] = _value;
     }
 
-    function toArray(
+    function arr(
         uint16 _value1,
         uint16 _value2
     ) internal pure returns (uint16[] memory dynamic_) {
@@ -428,7 +404,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toArray(
+    function arr(
         uint16 _value1,
         uint16 _value2,
         uint16 _value3
@@ -439,14 +415,14 @@ library Help {
         dynamic_[2] = _value3;
     }
 
-    function toArray(
+    function arr(
         uint32 _value
     ) internal pure returns (uint32[] memory dynamic_) {
         dynamic_ = new uint32[](1);
         dynamic_[0] = _value;
     }
 
-    function toArray(
+    function arr(
         uint32 _value1,
         uint32 _value2
     ) internal pure returns (uint32[] memory dynamic_) {
@@ -455,7 +431,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toArray(
+    function arr(
         uint32 _value1,
         uint32 _value2,
         uint32 _value3
@@ -466,14 +442,14 @@ library Help {
         dynamic_[2] = _value3;
     }
 
-    function toArray(
+    function arr(
         uint256 _value
     ) internal pure returns (uint256[] memory dynamic_) {
         dynamic_ = new uint256[](1);
         dynamic_[0] = _value;
     }
 
-    function toArray(
+    function arr(
         uint256 _value1,
         uint256 _value2
     ) internal pure returns (uint256[] memory dynamic_) {
@@ -482,7 +458,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toArray(
+    function arr(
         uint256 _value1,
         uint256 _value2,
         uint256 _value3
@@ -493,7 +469,7 @@ library Help {
         dynamic_[2] = _value3;
     }
 
-    function toArray(
+    function arr(
         uint256 _value1,
         uint256 _value2,
         uint256 _value3,
@@ -506,7 +482,7 @@ library Help {
         dynamic_[3] = _value4;
     }
 
-    function toArray(
+    function arr(
         uint256 _value1,
         uint256 _value2,
         uint256 _value3,
@@ -610,7 +586,7 @@ library Help {
         return dynamic_;
     }
 
-    function toArray(
+    function arr(
         uint8 _value1,
         uint8 _value2
     ) internal pure returns (uint8[] memory dynamic_) {
@@ -619,7 +595,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toArray256(
+    function arr256(
         uint8 _value1,
         uint8 _value2
     ) internal pure returns (uint256[] memory dynamic_) {
@@ -628,7 +604,7 @@ library Help {
         dynamic_[1] = _value2;
     }
 
-    function toStatic(
+    function fix(
         uint8[] memory _fixed
     ) internal pure returns (uint8[2] memory) {
         require(_fixed.length >= 2, "LibHelp: invalid length");
@@ -1136,28 +1112,20 @@ library Log {
         emit log("**************************************************");
     }
 
+    function log_bool(bool _val) internal {
+        emit log_string(_pre(_val ? "true" : "false"));
+    }
+
     function log_named_bool(string memory _str, bool _val) internal {
         emit log_named_string(_pre(_str), _val ? "true" : "false");
     }
 
-    function log_pct(uint16 _val) internal {
+    function log_pct(uint256 _val) internal {
         emit log_named_decimal_uint(_pre(""), _val, 2);
-    }
-
-    function log_pct(uint16 _val, string memory _str) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function log_pct(uint32 _val, string memory _str) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
     }
 
     function log_pct(uint256 _val, string memory _str) internal {
         emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function log_bool(bool _val) internal {
-        emit log_string(_pre(_val ? "true" : "false"));
     }
 
     function log_decimal_balance(address _account, address _token) internal {
@@ -1181,79 +1149,6 @@ library Log {
         }
     }
 
-    function clgBal(address _account, address[] memory _tokens) internal {
-        log_decimal_balances(_account, _tokens);
-    }
-
-    function clgBal(address _account, address _token) internal {
-        log_decimal_balance(_account, _token);
-    }
-
-    function clg(bool _val, string memory _str) internal {
-        log_named_bool(_pre(_str), _val);
-    }
-
-    function clg(bool _val) internal {
-        log_bool(_val);
-    }
-
-    function disable() internal {
-        store().logDisabled = true;
-    }
-
-    function enable() internal {
-        store().logDisabled = false;
-    }
-
-    modifier check() {
-        if (store().logDisabled) return;
-        _;
-    }
-
-    function blg2str(bytes32 _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val.str());
-    }
-
-    function blg2txt(bytes32 _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val.txt());
-    }
-
-    function clg2str(address _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val.str());
-    }
-
-    function blg2str(bytes memory _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val.str());
-    }
-
-    function blg2txt(bytes memory _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val.txt());
-    }
-
-    function clg(address[] memory _val, string memory _str) internal check {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function clg(address[] memory _val) internal check {
-        emit log_array(_val);
-    }
-
-    function clg(uint256[] memory _val) internal check {
-        if (!_hasPrefix()) {
-            emit log_array(_val);
-        } else {
-            emit log_named_array(_pre(""), _val);
-        }
-    }
-
-    function clg(int256[] memory _val) internal check {
-        if (!_hasPrefix()) {
-            emit log_array(_val);
-        } else {
-            emit log_named_array(_pre(""), _val);
-        }
-    }
-
     function clg(address _val) internal check {
         if (!_hasPrefix()) {
             emit log_address(_val);
@@ -1262,16 +1157,12 @@ library Log {
         }
     }
 
-    function blg32(bytes32 _val) internal check {
+    function blg(bytes32 _val) internal check {
         if (!_hasPrefix()) {
             emit log_bytes32(_val);
         } else {
             emit log_named_bytes32(_pre(""), _val);
         }
-    }
-
-    function clg(address _val, string memory _str) internal check {
-        emit log_named_address(_pre(_str), _val);
     }
 
     function clg(int256 _val) internal check {
@@ -1296,46 +1187,6 @@ library Log {
         } else {
             emit log_named_bytes(_pre(""), _val);
         }
-    }
-
-    function clg(uint256[] memory _val, string memory _str) internal check {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function clg(int256[] memory _val, string memory _str) internal check {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function blg32(bytes32 _val, string memory _str) internal check {
-        emit log_named_bytes32(_pre(_str), _val);
-    }
-
-    function blg(bytes memory _val, string memory _str) internal check {
-        emit log_named_bytes(_pre(_str), _val);
-    }
-
-    function clg(int256 _val, string memory _str) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
-    }
-
-    function clg(int256 _val, string memory _str, uint256 dec) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, dec);
-    }
-
-    function pct(uint16 _val, string memory _str) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function pct(uint32 _val, string memory _str) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function clg(uint256 _val, string memory _str) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
-    }
-
-    function clg(uint256 _val, string memory _str, uint256 dec) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
     function clg(string memory _val) internal check {
@@ -1378,40 +1229,136 @@ library Log {
         emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
-    function blg32(string memory _str, bytes32 _val) internal check {
+    function clg(string memory _lbl, uint8[2] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn256());
+    }
+
+    function clg(string memory _lbl, uint8 _val1, uint8 _val2) internal check {
+        emit log_named_array(_pre(_lbl), [_val1, _val2].dyn256());
+    }
+
+    function clg(string memory _lbl, uint256[2] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn());
+    }
+
+    function blg(string memory _str, bytes32 _val) internal check {
         emit log_named_bytes32(_pre(_str), _val);
-    }
-
-    function pct(string memory _str, uint16 _val) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function pct(string memory _str, uint32 _val) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
     }
 
     function blg2txt(string memory _lbl, bytes32 _val) internal check {
         emit log_named_string(_pre(_lbl), _val.txt());
     }
 
-    function clg2str(string memory _lbl, address _val) internal check {
+    function blg2str(string memory _lbl, bytes memory _val) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function blg2str(string memory _lbl, bytes memory _val) internal check {
+    function blg2txt(string memory _lbl, bytes memory _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
+    }
+
+    function blg2str(bytes32 _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function blg2txt(bytes32 _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
+    }
+
+    function blg2str(bytes memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function blg2txt(bytes memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
     }
 
     function clg2bytes(string memory _val, string memory _lbl) internal check {
         emit log_named_bytes(_pre(_lbl), bytes(_val));
     }
 
-    function clg2txt(string memory _lbl, bytes memory _val) internal check {
-        emit log_named_string(_pre(_lbl), _val.txt());
+    function clg2str(address _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg(string memory _lbl, uint256[2] memory _val) internal check {
-        emit log_named_array(_pre(_lbl), _val.dyn());
+    function clg2str(string memory _lbl, address _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function clg(address[] memory _val, string memory _str) internal check {
+        emit log_named_array(_pre(_str), _val);
+    }
+
+    function clg(address _val, string memory _str) internal check {
+        emit log_named_address(_pre(_str), _val);
+    }
+
+    function clg(bool _val, string memory _str) internal {
+        log_named_bool(_pre(_str), _val);
+    }
+
+    function clg(bool _val) internal {
+        log_bool(_val);
+    }
+
+    function clg(address[] memory _val) internal check {
+        emit log_array(_val);
+    }
+
+    function clg(uint256[] memory _val) internal check {
+        if (!_hasPrefix()) {
+            emit log_array(_val);
+        } else {
+            emit log_named_array(_pre(""), _val);
+        }
+    }
+
+    function clg(int256[] memory _val) internal check {
+        if (!_hasPrefix()) {
+            emit log_array(_val);
+        } else {
+            emit log_named_array(_pre(""), _val);
+        }
+    }
+
+    function clg(uint256[] memory _val, string memory _str) internal check {
+        emit log_named_array(_pre(_str), _val);
+    }
+
+    function clg(int256[] memory _val, string memory _str) internal check {
+        emit log_named_array(_pre(_str), _val);
+    }
+
+    function blg(bytes32 _val, string memory _str) internal check {
+        emit log_named_bytes32(_pre(_str), _val);
+    }
+
+    function blg(bytes memory _val, string memory _str) internal check {
+        emit log_named_bytes(_pre(_str), _val);
+    }
+
+    function clg(int256 _val, string memory _str) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, 18);
+    }
+
+    function clg(int256 _val, string memory _str, uint256 dec) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, dec);
+    }
+
+    function pct(uint256 _val, string memory _str) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function pct(string memory _str, uint256 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function clg(uint256 _val, string memory _str) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    }
+
+    function clg(uint256 _val, string memory _str, uint256 dec) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
     function clg(uint256[2] memory _val, string memory _lbl) internal check {
@@ -1420,14 +1367,6 @@ library Log {
 
     function clg(uint8[2] memory _val, string memory _lbl) internal check {
         emit log_named_array(_pre(_lbl), _val.dyn256());
-    }
-
-    function clg(string memory _lbl, uint8[2] memory _val) internal check {
-        emit log_named_array(_pre(_lbl), _val.dyn256());
-    }
-
-    function clg(string memory _lbl, uint8 _val1, uint8 _val2) internal check {
-        emit log_named_array(_pre(_lbl), [_val1, _val2].dyn256());
     }
 
     function clg(uint8 _val1, uint8 _val2, string memory _lbl) internal check {
@@ -1462,6 +1401,14 @@ library Log {
         emit log_named_array(_pre(_lbl), _tmp);
     }
 
+    function clgBal(address _account, address[] memory _tokens) internal {
+        log_decimal_balances(_account, _tokens);
+    }
+
+    function clgBal(address _account, address _token) internal {
+        log_decimal_balance(_account, _token);
+    }
+
     function clg_callers() internal check {
         LibVm.Callers memory current = LibVm.callers();
         emit log_named_string(
@@ -1472,6 +1419,19 @@ library Log {
         emit log_named_address("msg.sender", current.msgSender);
         emit log_named_address("tx.origin", current.txOrigin);
         emit log_named_string("mode", current.mode);
+    }
+
+    function disable() internal {
+        store().logDisabled = true;
+    }
+
+    function enable() internal {
+        store().logDisabled = false;
+    }
+
+    modifier check() {
+        if (store().logDisabled) return;
+        _;
     }
 }
 
