@@ -1071,11 +1071,11 @@ library Log {
         log_decimal_balance(_account, _token);
     }
 
-    function clgBool(bool _val, string memory _str) internal {
+    function clg(bool _val, string memory _str) internal {
         log_named_bool(_pre(_str), _val);
     }
 
-    function clgBool(bool _val) internal {
+    function clg(bool _val) internal {
         log_bool(_val);
     }
 
