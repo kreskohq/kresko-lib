@@ -1250,7 +1250,7 @@ library Log {
         }
     }
 
-    function clg32(bytes32 _val) internal check {
+    function blg32(bytes32 _val) internal check {
         if (!_hasPrefix()) {
             emit log_bytes32(_val);
         } else {
@@ -1278,7 +1278,7 @@ library Log {
         }
     }
 
-    function clg(bytes memory _val) internal check {
+    function blg(bytes memory _val) internal check {
         if (!_hasPrefix()) {
             emit log_bytes(_val);
         } else {
@@ -1294,11 +1294,11 @@ library Log {
         emit log_named_array(_pre(_str), _val);
     }
 
-    function clg32(bytes32 _val, string memory _str) internal check {
+    function blg32(bytes32 _val, string memory _str) internal check {
         emit log_named_bytes32(_pre(_str), _val);
     }
 
-    function clg(bytes memory _val, string memory _str) internal check {
+    function blg(bytes memory _val, string memory _str) internal check {
         emit log_named_bytes(_pre(_str), _val);
     }
 
@@ -1354,7 +1354,7 @@ library Log {
         emit log_named_array(_pre(_str), _val);
     }
 
-    function clg(string memory _str, bytes memory _val) internal check {
+    function blg(string memory _str, bytes memory _val) internal check {
         emit log_named_bytes(_pre(_str), _val);
     }
 
@@ -1366,7 +1366,7 @@ library Log {
         emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
-    function clg32(string memory _str, bytes32 _val) internal check {
+    function blg32(string memory _str, bytes32 _val) internal check {
         emit log_named_bytes32(_pre(_str), _val);
     }
 
@@ -1378,7 +1378,7 @@ library Log {
         emit log_named_decimal_uint(_pre(_str), _val, 2);
     }
 
-    function clg2txt(string memory _lbl, bytes32 _val) internal check {
+    function blg2txt(string memory _lbl, bytes32 _val) internal check {
         emit log_named_string(_pre(_lbl), _val.txt());
     }
 
@@ -1386,7 +1386,7 @@ library Log {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg2str(string memory _lbl, bytes memory _val) internal check {
+    function blg2str(string memory _lbl, bytes memory _val) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
