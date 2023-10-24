@@ -1189,6 +1189,62 @@ library Log {
         }
     }
 
+    function pct(uint256 _val, string memory _str) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function pct(string memory _str, uint256 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function dlg(int256 _val, string memory _str) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, 18);
+    }
+
+    function dlg(int256 _val, string memory _str, uint256 dec) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, dec);
+    }
+
+    function dlg(string memory _str, int256 _val) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, 18);
+    }
+
+    function dlg(string memory _str, uint256 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    }
+
+    function dlg(string memory _str, int256 _val, uint256 dec) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, dec);
+    }
+
+    function dlg(string memory _str, uint256 _val, uint256 dec) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    }
+
+    function dlg(uint256 _val, string memory _str) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    }
+
+    function dlg(uint256 _val, string memory _str, uint256 dec) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    }
+
+    function clg(string memory _str, uint256 _val) internal check {
+        emit log_named_uint(_pre(_str), _val);
+    }
+
+    function clg(uint256 _val, string memory _str) internal check {
+        emit log_named_uint(_pre(_str), _val);
+    }
+
+    function clg(string memory _str, int256 _val) internal check {
+        emit log_named_int(_pre(_str), _val);
+    }
+
+    function clg(int256 _val, string memory _str) internal check {
+        emit log_named_int(_pre(_str), _val);
+    }
+
     function clg(string memory _val) internal check {
         emit log_string(_pre(_val));
     }
@@ -1197,36 +1253,20 @@ library Log {
         emit log_named_string(_pre(_lbl), _val);
     }
 
-    function clg(string memory _str, int256 _val) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
+    function clg(string memory _lbl, address _val) internal check {
+        emit log_named_address(_pre(_lbl), _val);
     }
 
-    function clg(string memory _str, address _val) internal check {
-        emit log_named_address(_pre(_str), _val);
+    function clg(string memory _lbl, uint256[] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val);
     }
 
-    function clg(string memory _str, uint256 _val) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    function clg(string memory _lbl, int256[] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val);
     }
 
-    function clg(string memory _str, uint256[] memory _val) internal check {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function clg(string memory _str, int256[] memory _val) internal check {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function blg(string memory _str, bytes memory _val) internal check {
-        emit log_named_bytes(_pre(_str), _val);
-    }
-
-    function clg(string memory _str, int256 _val, uint256 dec) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, dec);
-    }
-
-    function clg(string memory _str, uint256 _val, uint256 dec) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    function blg(string memory _lbl, bytes memory _val) internal check {
+        emit log_named_bytes(_pre(_lbl), _val);
     }
 
     function clg(string memory _lbl, uint8[2] memory _val) internal check {
@@ -1241,8 +1281,8 @@ library Log {
         emit log_named_array(_pre(_lbl), _val.dyn());
     }
 
-    function blg(string memory _str, bytes32 _val) internal check {
-        emit log_named_bytes32(_pre(_str), _val);
+    function blg(string memory _lbl, bytes32 _val) internal check {
+        emit log_named_bytes32(_pre(_lbl), _val);
     }
 
     function blg2txt(string memory _lbl, bytes32 _val) internal check {
@@ -1335,30 +1375,6 @@ library Log {
 
     function blg(bytes memory _val, string memory _str) internal check {
         emit log_named_bytes(_pre(_str), _val);
-    }
-
-    function clg(int256 _val, string memory _str) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
-    }
-
-    function clg(int256 _val, string memory _str, uint256 dec) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, dec);
-    }
-
-    function pct(uint256 _val, string memory _str) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function pct(string memory _str, uint256 _val) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function clg(uint256 _val, string memory _str) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
-    }
-
-    function clg(uint256 _val, string memory _str, uint256 dec) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
     function clg(uint256[2] memory _val, string memory _lbl) internal check {
