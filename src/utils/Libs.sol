@@ -301,6 +301,14 @@ library Help {
         return vm.toString(_val);
     }
 
+    function txt(bytes32 _val) internal pure returns (string memory) {
+        return string(abi.encodePacked(_val));
+    }
+
+    function txt(bytes memory _val) internal pure returns (string memory) {
+        return string(abi.encodePacked(_val));
+    }
+
     function str(bytes memory _val) internal pure returns (string memory) {
         return vm.toString(_val);
     }
@@ -973,7 +981,10 @@ library Log {
     event log_named_array(string key, uint256[] val);
     event log_named_array(string key, int256[] val);
     event log_named_array(string key, address[] val);
+    using Help for bytes32;
     using Help for string;
+    using Help for address;
+    using Help for bytes;
 
     function prefix(string memory _prefix) internal {
         store().logPrefix = _prefix;
@@ -1090,15 +1101,19 @@ library Log {
     }
 
     function clg2str(bytes32 _val, string memory _val2) internal check {
-        emit log_named_string(_pre(vm.toString(_val)), _val2);
+        emit log_named_string(_pre(_val.str()), _val2);
+    }
+
+    function clg2txt(bytes32 _val, string memory _val2) internal check {
+        emit log_named_string(_pre(_val.txt()), _val2);
     }
 
     function clg2str(address _val, string memory _val2) internal check {
-        emit log_named_string(_pre(vm.toString(_val)), _val2);
+        emit log_named_string(_pre(_val.str()), _val2);
     }
 
     function clg2str(bytes memory _val, string memory _val2) internal check {
-        emit log_named_string(_pre(vm.toString(_val)), _val2);
+        emit log_named_string(_pre(_val.str()), _val2);
     }
 
     function clg(address[] memory _val, string memory _str) internal check {
