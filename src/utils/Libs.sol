@@ -1414,6 +1414,10 @@ library Log {
         emit log_named_array(_pre(_lbl), _val.dyn256());
     }
 
+    function clg(string memory _lbl, uint8 _val1, uint8 _val2) internal check {
+        emit log_named_array(_pre(_lbl), [_val1, _val2].dyn256());
+    }
+
     function clg(
         string memory _lbl,
         string memory _mnemonicId,
