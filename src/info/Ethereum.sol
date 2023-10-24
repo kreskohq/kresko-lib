@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // solhint-disable
 
-library addr {
+library Addr {
     address internal constant ZERO = address(0);
     address internal constant KRESKO_SAFE =
         0x31d866AAf9D8588B1295e3A34B6B714a62fE2989;

@@ -1,45 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
-
-interface IERC20 {
-    /* -------------------------------------------------------------------------- */
-    /*                                   Events                                   */
-    /* -------------------------------------------------------------------------- */
-
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 amount
-    );
-
-    /* -------------------------------------------------------------------------- */
-    /*                                    ERC20                                   */
-    /* -------------------------------------------------------------------------- */
-
-    function allowance(address, address) external view returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function balanceOf(address) external view returns (uint256);
-
-    function decimals() external view returns (uint8);
-
-    function name() external view returns (string memory);
-
-    function symbol() external view returns (string memory);
-
-    function totalSupply() external view returns (uint256);
-
-    function transfer(address to, uint256 amount) external returns (bool);
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
-}
+import {IERC20} from "../token/IERC20.sol";
 
 interface IAggregatorV3 {
     function decimals() external view returns (uint8);
@@ -225,6 +186,8 @@ interface IVault {
      */
     function assets(address) external view returns (VaultAsset memory asset);
 
+    function assetPrice(address assetAddr) external view returns (uint256);
+
     /**
      * @notice This function is used for previewing the amount of shares minted for `assetsIn` of `asset`.
      * @param assetAddr Supported asset address
@@ -329,7 +292,9 @@ interface IVault {
      * @notice Adds a new asset to the vault
      * @param assetConfig Asset to add
      */
-    function addAsset(VaultAsset memory assetConfig) external;
+    function addAsset(
+        VaultAsset memory assetConfig
+    ) external returns (VaultAsset memory);
 
     /**
      * @notice Removes an asset from the vault

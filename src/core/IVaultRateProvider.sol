@@ -13,3 +13,4 @@ interface IVaultRateProvider {
      */
     function exchangeRate() external view returns (uint256);
 }
+

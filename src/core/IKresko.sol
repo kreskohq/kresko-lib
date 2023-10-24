@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
+import {IERC20} from "../token/IERC20.sol";
+import {IERC20Permit} from "../token/IERC20Permit.sol";
 
 // OpenZeppelin Contracts (last updated v5.0.0) (access/extensions/IAccessControlEnumerable.sol)
 
@@ -152,66 +154,7 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-interface IERC20 {
-    /* -------------------------------------------------------------------------- */
-    /*                                   Events                                   */
-    /* -------------------------------------------------------------------------- */
-
-    event Transfer(address indexed from, address indexed to, uint256 amount);
-
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 amount
-    );
-
-    /* -------------------------------------------------------------------------- */
-    /*                                    ERC20                                   */
-    /* -------------------------------------------------------------------------- */
-
-    function allowance(address, address) external view returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function balanceOf(address) external view returns (uint256);
-
-    function decimals() external view returns (uint8);
-
-    function name() external view returns (string memory);
-
-    function symbol() external view returns (string memory);
-
-    function totalSupply() external view returns (uint256);
-
-    function transfer(address to, uint256 amount) external returns (bool);
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
-}
-
 /* solhint-disable func-name-mixedcase */
-
-interface IERC20Permit is IERC20 {
-    error PERMIT_DEADLINE_EXPIRED(address, address, uint256, uint256);
-    error INVALID_SIGNER(address, address);
-
-    function DOMAIN_SEPARATOR() external view returns (bytes32);
-
-    function nonces(address) external view returns (uint256);
-
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
-}
 
 /// @title KreskoAsset issuer interface
 /// @author Kresko
@@ -306,7 +249,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @param _decimals Decimals for the asset.
      * @param _admin The adminstrator of this contract.
      * @param _kresko The protocol, can perform mint and burn.
-     * @param _ticker The underlying token if available.
+     * @param _underlyingAddr The underlying token if available.
      * @param _feeRecipient Fee recipient for synth wraps.
      * @param _openFee Synth warp open fee.
      * @param _closeFee Synth wrap close fee.
@@ -317,7 +260,7 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
         uint8 _decimals,
         address _admin,
         address _kresko,
-        address _ticker,
+        address _underlyingAddr,
         address _feeRecipient,
         uint48 _openFee,
         uint40 _closeFee
@@ -445,9 +388,9 @@ interface IKreskoAsset is IERC20Permit, IAccessControlEnumerable, IERC165 {
      * @notice Sets underlying token address (and its decimals)
      * @notice Zero address will disable functionality provided for the underlying.
      * @dev Has modifiers: onlyRole.
-     * @param _ticker The underlying address.
+     * @param _underlyingAddr The underlying address.
      */
-    function setUnderlying(address _ticker) external;
+    function setUnderlying(address _underlyingAddr) external;
 }
 
 interface IERC4626Upgradeable {
@@ -747,6 +690,7 @@ library Errors {
     }
 
     error ADDRESS_HAS_NO_CODE(address);
+    error NOT_INITIALIZING();
     error COMMON_ALREADY_INITIALIZED();
     error MINTER_ALREADY_INITIALIZED();
     error SCDP_ALREADY_INITIALIZED();
@@ -971,7 +915,7 @@ library Errors {
         uint256 allowed
     );
     error NOT_ENOUGH_BALANCE(address who, uint256 requested, uint256 available);
-    error SENDER_NOT_KRESKO(ID, address sender, address kresko);
+    error SENDER_NOT_OPERATOR(ID, address sender, address kresko);
     error ZERO_SHARES_FROM_ASSETS(ID, uint256 assets, ID);
     error ZERO_SHARES_OUT(ID, uint256 assets);
     error ZERO_SHARES_IN(ID, uint256 assets);
@@ -1044,8 +988,10 @@ library NumericArrayLib {
  * @author The Redstone Oracles team
  */
 library RedstoneDefaultsLib {
-    uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 minutes;
-    uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 minutes;
+    uint256 internal constant DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS =
+        3 minutes;
+    uint256 internal constant DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS =
+        1 minutes;
 
     error TimestampFromTooLongFuture(
         uint256 receivedTimestampSeconds,
@@ -1110,8 +1056,8 @@ library BitmapLib {
 }
 
 library SignatureLib {
-    uint256 constant ECDSA_SIG_R_BS = 32;
-    uint256 constant ECDSA_SIG_S_BS = 32;
+    uint256 internal constant ECDSA_SIG_R_BS = 32;
+    uint256 internal constant ECDSA_SIG_S_BS = 32;
 
     function recoverSignerAddress(
         bytes32 signedHash,
@@ -1988,6 +1934,8 @@ library Constants {
     /// @dev Set the initial value to 1, (not hindering possible gas refunds by setting it to 0 on exit).
     uint8 internal constant NOT_ENTERED = 1;
     uint8 internal constant ENTERED = 2;
+    uint8 internal constant NOT_INITIALIZING = 1;
+    uint8 internal constant INITIALIZING = 2;
 
     bytes32 internal constant ZERO_BYTES32 = bytes32("");
     /// @dev The min oracle decimal precision
@@ -2743,6 +2691,86 @@ library EnumerableSet {
     }
 }
 
+/// These functions are expected to be called frequently
+/// by tools.
+
+struct Facet {
+    address facetAddress;
+    bytes4[] functionSelectors;
+}
+
+struct FacetAddressAndPosition {
+    address facetAddress;
+    // position in facetFunctionSelectors.functionSelectors array
+    uint96 functionSelectorPosition;
+}
+
+struct FacetFunctionSelectors {
+    bytes4[] functionSelectors;
+    // position of facetAddress in facetAddresses array
+    uint256 facetAddressPosition;
+}
+
+/// @dev  Add=0, Replace=1, Remove=2
+enum FacetCutAction {
+    Add,
+    Replace,
+    Remove
+}
+
+struct FacetCut {
+    address facetAddress;
+    FacetCutAction action;
+    bytes4[] functionSelectors;
+}
+
+struct Initializer {
+    address initContract;
+    bytes initData;
+}
+
+struct DiamondState {
+    /// @notice Maps function selector to the facet address and
+    /// the position of the selector in the facetFunctionSelectors.selectors array
+    mapping(bytes4 => FacetAddressAndPosition) selectorToFacetAndPosition;
+    /// @notice Maps facet addresses to function selectors
+    mapping(address => FacetFunctionSelectors) facetFunctionSelectors;
+    /// @notice Facet addresses
+    address[] facetAddresses;
+    /// @notice ERC165 query implementation
+    mapping(bytes4 => bool) supportedInterfaces;
+    /// @notice address(this) replacement for FF
+    address self;
+    /// @notice Diamond initialized
+    bool initialized;
+    /// @notice Diamond initializing
+    uint8 initializing;
+    /// @notice Domain field separator
+    bytes32 diamondDomainSeparator;
+    /// @notice Current owner of the diamond
+    address contractOwner;
+    /// @notice Pending new diamond owner
+    address pendingOwner;
+    /// @notice Storage version
+    uint96 storageVersion;
+}
+
+// Storage position
+bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("kresko.diamond.storage");
+
+/**
+ * @notice Ds, a pure free function.
+ * @return state A DiamondState value.
+ * @custom:signature ds()
+ * @custom:selector 0x30dce62b
+ */
+function ds() pure returns (DiamondState storage state) {
+    bytes32 position = DIAMOND_STORAGE_POSITION;
+    assembly {
+        state.slot := position
+    }
+}
+
 /* solhint-disable no-inline-assembly */
 
 library Meta {
@@ -2933,7 +2961,7 @@ library Auth {
                 _councilAddress,
                 getRoleMember(Role.SAFETY_COUNCIL, 0)
             );
-        if (!IGnosisSafeL2(_councilAddress).isOwner(msg.sender))
+        if (!IGnosisSafeL2(_councilAddress).isOwner(ds().contractOwner))
             revert Errors.SAFETY_COUNCIL_SETTER_IS_NOT_ITS_OWNER(
                 _councilAddress
             );
@@ -2950,7 +2978,6 @@ library Auth {
         if (owners < 5)
             revert Errors.MULTISIG_NOT_ENOUGH_OWNERS(_newCouncil, owners, 5);
 
-        // As this is called by the multisig - just check that it's not an EOA
         cs()._roles[Role.SAFETY_COUNCIL].members[msg.sender] = false;
         cs()._roleMembers[Role.SAFETY_COUNCIL].remove(msg.sender);
 
@@ -4260,6 +4287,20 @@ library LibModifiers {
 }
 
 contract Modifiers {
+    /**
+     * @dev Modifier that checks if the contract is initializing and if so, gives the caller the ADMIN role
+     */
+    modifier initializeAsAdmin() {
+        if (ds().initializing != Constants.INITIALIZING)
+            revert Errors.NOT_INITIALIZING();
+        if (!Auth.hasRole(Role.ADMIN, msg.sender)) {
+            Auth._grantRole(Role.ADMIN, msg.sender);
+            _;
+            Auth._revokeRole(Role.ADMIN, msg.sender);
+        } else {
+            _;
+        }
+    }
     /**
      * @dev Modifier that checks that an account has a specific role. Reverts
      * with a standardized message including the required role.
@@ -6404,12 +6445,6 @@ interface ICommonConfigurationFacet {
 }
 
 interface ICommonStateFacet {
-    /// @notice The EIP-712 typehash for the contract's domain.
-    function domainSeparator() external view returns (bytes32);
-
-    /// @notice amount of times the storage has been upgraded
-    function getStorageVersion() external view returns (uint96);
-
     /// @notice The recipient of protocol fees.
     function getFeeRecipient() external view returns (address);
 
@@ -6488,7 +6523,7 @@ interface ICommonStateFacet {
     ) external view returns (uint256);
 
     /**
-     * @notice Price getter for IProxy/API3 type feeds.
+     * @notice Price getter for API3 type feeds.
      * @notice Decimal precision is NOT the same as other sources.
      * @notice Returns 0-price if answer is stale.This triggers the use of a secondary provider if available.
      * @dev Valid call will revert if the answer is negative.
@@ -6519,6 +6554,17 @@ interface IAssetStateFacet {
      * @custom:selector 0x41976e09
      */
     function getPrice(address _assetAddr) external view returns (uint256);
+
+    /**
+     * @notice Get push price for an asset from address.
+     * @param _assetAddr Asset address.
+     * @return RawPrice Current raw price for the asset.
+     * @custom:signature getPushPrice(address)
+     * @custom:selector 0xc72f3dd7
+     */
+    function getPushPrice(
+        address _assetAddr
+    ) external view returns (RawPrice memory);
 
     /**
      * @notice Get value for an asset amount using the current price.
@@ -6553,14 +6599,15 @@ interface IAssetConfigurationFacet {
      * @param _assetAddr Asset address.
      * @param _config Configuration struct to save for the asset.
      * @param _feeds Feed addresses, if both are address(0) they are ignored.
-     * @custom:signature addAsset(address,(bytes32,address,uint8[2],uint16,uint16,uint16,uint16,uint16,uint256,uint256,uint256,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool),address[2])
-     * @custom:selector 0x4bc7e683
+     * @return Asset Result of addAsset.
+     * @custom:signature addAsset(address,(bytes32,address,,uint16,uint16,uint16,uint16,uint16,uint256,uint256,uint256,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool),address[2])
+     * @custom:selector 0x73320167
      */
     function addAsset(
         address _assetAddr,
         Asset memory _config,
         address[2] memory _feeds
-    ) external;
+    ) external returns (Asset memory);
 
     /**
      * @notice Update asset config.
@@ -6568,10 +6615,13 @@ interface IAssetConfigurationFacet {
      * @dev Use validateAssetConfig / static call this for validation.
      * @param _assetAddr The asset address.
      * @param _config Configuration struct to apply for the asset.
-     * @custom:signature updateAsset(address,(bytes32,address,uint8[2],uint16,uint16,uint16,uint16,uint16,uint256,uint256,uint256,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool))
-     * @custom:selector 0xf8ff2fe6
+     * @custom:signature updateAsset(address,(bytes32,address,,uint16,uint16,uint16,uint16,uint16,uint256,uint256,uint256,uint128,uint16,uint16,uint16,uint16,uint8,bool,bool,bool,bool,bool,bool))
+     * @custom:selector 0xe2f08b19
      */
-    function updateAsset(address _assetAddr, Asset memory _config) external;
+    function updateAsset(
+        address _assetAddr,
+        Asset memory _config
+    ) external returns (Asset memory);
 
     /**
      * @notice  Updates the cFactor of a KreskoAsset. Convenience.
@@ -6611,44 +6661,6 @@ interface IAssetConfigurationFacet {
         address _assetAddr,
         Enums.OracleType[2] memory _newOracleOrder
     ) external;
-}
-
-/// These functions are expected to be called frequently
-/// by tools.
-
-struct Facet {
-    address facetAddress;
-    bytes4[] functionSelectors;
-}
-
-struct FacetAddressAndPosition {
-    address facetAddress;
-    // position in facetFunctionSelectors.functionSelectors array
-    uint96 functionSelectorPosition;
-}
-
-struct FacetFunctionSelectors {
-    bytes4[] functionSelectors;
-    // position of facetAddress in facetAddresses array
-    uint256 facetAddressPosition;
-}
-
-/// @dev  Add=0, Replace=1, Remove=2
-enum FacetCutAction {
-    Add,
-    Replace,
-    Remove
-}
-
-struct FacetCut {
-    address facetAddress;
-    FacetCutAction action;
-    bytes4[] functionSelectors;
-}
-
-struct Initializer {
-    address initContract;
-    bytes initData;
 }
 
 interface IDiamondCutFacet {
@@ -6712,8 +6724,19 @@ interface IDiamondLoupeFacet {
     ) external view returns (address facetAddress_);
 }
 
-/// @title Contract Ownership
-interface IDiamondOwnershipFacet {
+/// @title IDiamondStateFacet
+/// @notice Functions for the diamond state itself.
+interface IDiamondStateFacet {
+    /// @notice Whether the diamond is initialized.
+    function initialized() external view returns (bool);
+
+    /// @notice The EIP-712 typehash for the contract's domain.
+    function domainSeparator() external view returns (bytes32);
+
+    /// @notice Get the storage version (amount of times the storage has been upgraded)
+    /// @return uint256 The storage version.
+    function getStorageVersion() external view returns (uint256);
+
     /**
      * @notice Get the address of the owner
      * @return owner_ The address of the owner.
@@ -6741,12 +6764,6 @@ interface IDiamondOwnershipFacet {
      * @notice emits a {OwnershipTransferred} event
      */
     function acceptOwnership() external;
-
-    /**
-     * @notice Check if the contract is initialized
-     * @return initialized_ bool True if the contract is initialized, false otherwise.
-     */
-    function initialized() external view returns (bool initialized_);
 }
 
 // import {IMinterBurnHelperFacet} from "periphery/facets/IMinterBurnHelperFacet.sol";
@@ -6755,7 +6772,7 @@ interface IDiamondOwnershipFacet {
 interface IKresko is
     IDiamondCutFacet,
     IDiamondLoupeFacet,
-    IDiamondOwnershipFacet,
+    IDiamondStateFacet,
     IAuthorizationFacet,
     ICommonConfigurationFacet,
     ICommonStateFacet,

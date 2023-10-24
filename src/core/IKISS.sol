@@ -20,47 +20,33 @@ interface IKreskoAssetIssuer {
      * @notice Mints @param _assets of krAssets for @param _to,
      * @notice Mints relative @return _shares of anchor tokens.
      */
-    function issue(
-        uint256 _assets,
-        address _to
-    ) external returns (uint256 shares);
+    function issue(uint256 _assets, address _to) external returns (uint256 shares);
 
     /**
      * @notice Burns @param _assets of krAssets from @param _from,
      * @notice Burns relative @return _shares of anchor tokens.
      */
-    function destroy(
-        uint256 _assets,
-        address _from
-    ) external returns (uint256 shares);
+    function destroy(uint256 _assets, address _from) external returns (uint256 shares);
 
     /**
      * @notice Preview conversion from KrAsset amount: @param assets to matching amount of Anchor tokens: @return shares
      */
-    function convertToShares(
-        uint256 assets
-    ) external view returns (uint256 shares);
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
 
     /**
      * @notice Preview conversion from Anchor token amount: @param shares to matching KrAsset amount: @return assets
      */
-    function convertToAssets(
-        uint256 shares
-    ) external view returns (uint256 assets);
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
 
     /**
      * @notice Preview conversion from Anchor token amounts: @param shares to matching amounts of KrAssets: @return assets
      */
-    function convertManyToAssets(
-        uint256[] calldata shares
-    ) external view returns (uint256[] memory assets);
+    function convertManyToAssets(uint256[] calldata shares) external view returns (uint256[] memory assets);
 
     /**
      * @notice Preview conversion from KrAsset amounts: @param assets to matching amounts of Anchor tokens: @return shares
      */
-    function convertManyToShares(
-        uint256[] calldata assets
-    ) external view returns (uint256[] memory shares);
+    function convertManyToShares(uint256[] calldata assets) external view returns (uint256[] memory shares);
 }
 
 interface IVaultExtender {
@@ -166,10 +152,7 @@ interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
      * @param _to address to mint tokens to
      * @return uint256 amount minted
      */
-    function issue(
-        uint256 _amount,
-        address _to
-    ) external override returns (uint256);
+    function issue(uint256 _amount, address _to) external override returns (uint256);
 
     /**
      * @notice This function removes KISS from circulation
@@ -180,10 +163,7 @@ interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
      *
      * @inheritdoc IKreskoAssetIssuer
      */
-    function destroy(
-        uint256 _amount,
-        address _from
-    ) external override returns (uint256);
+    function destroy(uint256 _amount, address _from) external override returns (uint256);
 
     /**
      * @notice Triggers stopped state.
@@ -219,3 +199,4 @@ interface IKISS is IVaultExtender, IKreskoAssetIssuer, IERC165 {
      */
     function grantRole(bytes32 _role, address _to) external;
 }
+

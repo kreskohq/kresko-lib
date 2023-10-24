@@ -12,7 +12,7 @@ import {IWETH9} from "../token/IWETH9.sol";
 
 // solhint-disable
 
-library addr {
+library Addr {
     address internal constant ZERO = address(0);
     address internal constant KRESKO_SAFE =
         0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
@@ -177,19 +177,19 @@ library addr {
         0x467194771dAe2967Aef3ECbEDD3Bf9a310C76C65;
 }
 
-library tokens {
-    IERC20 internal constant gDAI = IERC20(addr.gDAI);
-    IERC20 internal constant ARB = IERC20(addr.ARB);
-    IERC20 internal constant FRAX = IERC20(addr.FRAX);
-    IERC20 internal constant DAI = IERC20(addr.DAI);
-    IERC20 internal constant USDC = IERC20(addr.USDC);
-    IERC20 internal constant USDCe = IERC20(addr.USDCe);
-    IERC20 internal constant LINK = IERC20(addr.LINK);
-    IERC20 internal constant WBTC = IERC20(addr.WBTC);
-    IWETH9 internal constant WETH = IWETH9(addr.WETH);
-    IERC20 internal constant USDT = IERC20(addr.USDT);
-    IERC20 internal constant GMX = IERC20(addr.GMX);
-    IERC20 internal constant GNS = IERC20(addr.GNS);
+library Tokens {
+    IERC20 internal constant gDAI = IERC20(Addr.gDAI);
+    IERC20 internal constant ARB = IERC20(Addr.ARB);
+    IERC20 internal constant FRAX = IERC20(Addr.FRAX);
+    IERC20 internal constant DAI = IERC20(Addr.DAI);
+    IERC20 internal constant USDC = IERC20(Addr.USDC);
+    IERC20 internal constant USDCe = IERC20(Addr.USDCe);
+    IERC20 internal constant LINK = IERC20(Addr.LINK);
+    IERC20 internal constant WBTC = IERC20(Addr.WBTC);
+    IWETH9 internal constant WETH = IWETH9(Addr.WETH);
+    IERC20 internal constant USDT = IERC20(Addr.USDT);
+    IERC20 internal constant GMX = IERC20(Addr.GMX);
+    IERC20 internal constant GNS = IERC20(Addr.GNS);
 }
 
 interface IArbitrumBridge {
@@ -226,37 +226,37 @@ interface L1DaiGateway {
 
 library bridges {
     L1DaiGateway internal constant DAI_L1_GATEWAY =
-        L1DaiGateway(addr.DAI_L1_GATEWAY);
+        L1DaiGateway(Addr.DAI_L1_GATEWAY);
     L2DaiGateway internal constant DAI_L2_GATEWAY =
-        L2DaiGateway(addr.DAI_L2_GATEWAY);
+        L2DaiGateway(Addr.DAI_L2_GATEWAY);
     IArbitrumBridge internal constant ARB_L1_GOERLI =
-        IArbitrumBridge(addr.ARB_L1_GOERLI_BRIDGE);
+        IArbitrumBridge(Addr.ARB_L1_GOERLI_BRIDGE);
     IArbitrumBridge internal constant ARB_L1_MAINNET =
-        IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE);
+        IArbitrumBridge(Addr.ARB_L1_MAINNET_BRIDGE);
     IArbitrumBridge internal constant ARB_L1_MAINNET_NOVA =
-        IArbitrumBridge(addr.ARB_L1_MAINNET_BRIDGE_NOVA);
+        IArbitrumBridge(Addr.ARB_L1_MAINNET_BRIDGE_NOVA);
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                     EXT                                    */
 /* -------------------------------------------------------------------------- */
-library uniswap {
+library UniswapV3 {
     uint24 internal constant defaultFee = 3000;
-    ISwapRouter internal constant Router02 = ISwapRouter(addr.V3_Router02);
-    IQuoterV2 internal constant QuoterV2 = IQuoterV2(addr.V3_QuoterV2);
+    ISwapRouter internal constant Router02 = ISwapRouter(Addr.V3_Router02);
+    IQuoterV2 internal constant QuoterV2 = IQuoterV2(Addr.V3_QuoterV2);
     IUniswapV3NFTManager internal constant NFT =
-        IUniswapV3NFTManager(addr.V3_NFT);
+        IUniswapV3NFTManager(Addr.V3_NFT);
     IUniswapV3Factory internal constant V3Factory =
-        IUniswapV3Factory(addr.V3_Factory);
+        IUniswapV3Factory(Addr.V3_Factory);
 }
 
-library api3 {
-    IAPI3 internal constant ARB = IAPI3(addr.API3_ARB);
-    IAPI3 internal constant EUR = IAPI3(addr.API3_EUR);
-    IAPI3 internal constant BTC = IAPI3(addr.API3_BTC);
-    IAPI3 internal constant ETH = IAPI3(addr.API3_ETH);
-    IAPI3 internal constant CNY = IAPI3(addr.API3_CNY);
-    IAPI3 internal constant GBP = IAPI3(addr.API3_GBP);
+library API3 {
+    IAPI3 internal constant ARB = IAPI3(Addr.API3_ARB);
+    IAPI3 internal constant EUR = IAPI3(Addr.API3_EUR);
+    IAPI3 internal constant BTC = IAPI3(Addr.API3_BTC);
+    IAPI3 internal constant ETH = IAPI3(Addr.API3_ETH);
+    IAPI3 internal constant CNY = IAPI3(Addr.API3_CNY);
+    IAPI3 internal constant GBP = IAPI3(Addr.API3_GBP);
 
     function price(IAPI3 proxy) internal view returns (uint256) {
         (int224 value, ) = proxy.read();
@@ -274,7 +274,7 @@ library api3 {
     }
 }
 
-library cl {
+library ChainLink {
     function price(IAggregatorV3 feed) internal view returns (uint256) {
         (, int256 answer, , , ) = feed.latestRoundData();
         return uint256(answer);
@@ -290,30 +290,30 @@ library cl {
         return block.timestamp - updatedAt > 1 days;
     }
 
-    IAggregatorV3 internal constant BTC = IAggregatorV3(addr.CL_BTC);
-    IAggregatorV3 internal constant DAI = IAggregatorV3(addr.CL_DAI);
-    IAggregatorV3 internal constant ETH = IAggregatorV3(addr.CL_ETH);
-    IAggregatorV3 internal constant JPY = IAggregatorV3(addr.CL_JPY);
-    IAggregatorV3 internal constant USDT = IAggregatorV3(addr.CL_USDT);
-    IAggregatorV3 internal constant USDC = IAggregatorV3(addr.CL_USDC);
+    IAggregatorV3 internal constant BTC = IAggregatorV3(Addr.CL_BTC);
+    IAggregatorV3 internal constant DAI = IAggregatorV3(Addr.CL_DAI);
+    IAggregatorV3 internal constant ETH = IAggregatorV3(Addr.CL_ETH);
+    IAggregatorV3 internal constant JPY = IAggregatorV3(Addr.CL_JPY);
+    IAggregatorV3 internal constant USDT = IAggregatorV3(Addr.CL_USDT);
+    IAggregatorV3 internal constant USDC = IAggregatorV3(Addr.CL_USDC);
     IAggregatorV3 internal constant SEQ_UPTIME =
-        IAggregatorV3(addr.CL_SEQ_UPTIME);
-    IAggregatorV3 internal constant EUR = IAggregatorV3(addr.CL_EUR);
-    IAggregatorV3 internal constant ARB = IAggregatorV3(addr.CL_ARB);
-    IAggregatorV3 internal constant FRAX = IAggregatorV3(addr.CL_FRAX);
-    IAggregatorV3 internal constant LINK = IAggregatorV3(addr.CL_LINK);
-    IAggregatorV3 internal constant KRW = IAggregatorV3(addr.CL_KRW);
-    IAggregatorV3 internal constant SGD = IAggregatorV3(addr.CL_SGD);
-    IAggregatorV3 internal constant WBTC = IAggregatorV3(addr.CL_WBTC);
-    IAggregatorV3 internal constant WETH = IAggregatorV3(addr.CL_ETH);
-    IAggregatorV3 internal constant WETH_BTC = IAggregatorV3(addr.CL_WBTC_BTC);
-    IAggregatorV3 internal constant AAPL = IAggregatorV3(addr.CL_AAPL);
-    IAggregatorV3 internal constant AMZN = IAggregatorV3(addr.CL_AMZN);
-    IAggregatorV3 internal constant META = IAggregatorV3(addr.CL_META);
-    IAggregatorV3 internal constant TSLA = IAggregatorV3(addr.CL_TSLA);
-    IAggregatorV3 internal constant MSFT = IAggregatorV3(addr.CL_MSFT);
-    IAggregatorV3 internal constant SPY = IAggregatorV3(addr.CL_SPY);
-    IAggregatorV3 internal constant GOOGL = IAggregatorV3(addr.CL_GOOGL);
+        IAggregatorV3(Addr.CL_SEQ_UPTIME);
+    IAggregatorV3 internal constant EUR = IAggregatorV3(Addr.CL_EUR);
+    IAggregatorV3 internal constant ARB = IAggregatorV3(Addr.CL_ARB);
+    IAggregatorV3 internal constant FRAX = IAggregatorV3(Addr.CL_FRAX);
+    IAggregatorV3 internal constant LINK = IAggregatorV3(Addr.CL_LINK);
+    IAggregatorV3 internal constant KRW = IAggregatorV3(Addr.CL_KRW);
+    IAggregatorV3 internal constant SGD = IAggregatorV3(Addr.CL_SGD);
+    IAggregatorV3 internal constant WBTC = IAggregatorV3(Addr.CL_WBTC);
+    IAggregatorV3 internal constant WETH = IAggregatorV3(Addr.CL_ETH);
+    IAggregatorV3 internal constant WETH_BTC = IAggregatorV3(Addr.CL_WBTC_BTC);
+    IAggregatorV3 internal constant AAPL = IAggregatorV3(Addr.CL_AAPL);
+    IAggregatorV3 internal constant AMZN = IAggregatorV3(Addr.CL_AMZN);
+    IAggregatorV3 internal constant META = IAggregatorV3(Addr.CL_META);
+    IAggregatorV3 internal constant TSLA = IAggregatorV3(Addr.CL_TSLA);
+    IAggregatorV3 internal constant MSFT = IAggregatorV3(Addr.CL_MSFT);
+    IAggregatorV3 internal constant SPY = IAggregatorV3(Addr.CL_SPY);
+    IAggregatorV3 internal constant GOOGL = IAggregatorV3(Addr.CL_GOOGL);
     IAggregatorV3 internal constant CBETH_USD =
-        IAggregatorV3(addr.CL_CBETH_USD);
+        IAggregatorV3(Addr.CL_CBETH_USD);
 }
