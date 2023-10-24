@@ -1063,19 +1063,19 @@ library Log {
         }
     }
 
-    function bal(address _account, address[] memory _tokens) internal {
+    function clgBal(address _account, address[] memory _tokens) internal {
         log_decimal_balances(_account, _tokens);
     }
 
-    function bal(address _account, address _token) internal {
+    function clgBal(address _account, address _token) internal {
         log_decimal_balance(_account, _token);
     }
 
-    function clg(bool _val, string memory _str) internal {
+    function clgBool(bool _val, string memory _str) internal {
         log_named_bool(_pre(_str), _val);
     }
 
-    function clg(bool _val) internal {
+    function clgBool(bool _val) internal {
         log_bool(_val);
     }
 
@@ -1092,11 +1092,11 @@ library Log {
         _;
     }
 
-    function clg(string memory _val) internal check {
+    function clog(string memory _val) internal check {
         emit log_string(_pre(_val));
     }
 
-    function clg(string memory _val, string memory _lbl) internal check {
+    function clog(string memory _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val);
     }
 
