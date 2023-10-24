@@ -1,3 +1,4 @@
+// solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -9,8 +10,6 @@ import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 import {IERC20} from "../token/IERC20.sol";
 import {IAPI3} from "../vendor/IAPI3.sol";
 import {IWETH9} from "../token/IWETH9.sol";
-
-// solhint-disable
 
 library Addr {
     address internal constant ZERO = address(0);

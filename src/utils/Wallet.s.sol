@@ -1,4 +1,4 @@
-// solhint-disable state-visibility, max-states-count, var-name-mixedcase, no-global-import, const-name-snakecase, no-empty-blocks, no-console
+// solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
