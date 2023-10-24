@@ -120,13 +120,6 @@ library LibVm {
 }
 
 library Help {
-    enum OracleType {
-        Empty,
-        Redstone,
-        Chainlink,
-        API3,
-        Vault
-    }
     Vm constant vm = VM;
     error ELEMENT_DOES_NOT_MATCH_PROVIDED_INDEX(
         ID element,
@@ -368,15 +361,15 @@ library Help {
     }
 
     function u8(
-        OracleType[2] memory _val
+        Enums.OracleType[2] memory _val
     ) internal pure returns (uint8[2] memory) {
         return [uint8(_val[0]), uint8(_val[1])];
     }
 
     function toEnum(
         uint8[2] memory _val
-    ) internal pure returns (OracleType[2] memory) {
-        return [OracleType(_val[0]), OracleType(_val[1])];
+    ) internal pure returns (Enums.OracleType[2] memory) {
+        return [Enums.OracleType(_val[0]), Enums.OracleType(_val[1])];
     }
 
     function toArray(
@@ -1479,5 +1472,67 @@ library Log {
         emit log_named_address("msg.sender", current.msgSender);
         emit log_named_address("tx.origin", current.txOrigin);
         emit log_named_string("mode", current.mode);
+    }
+}
+
+library Enums {
+    /**
+     * @dev Minter fees for minting and burning.
+     * Open = 0
+     * Close = 1
+     */
+    enum MinterFee {
+        Open,
+        Close
+    }
+    /**
+     * @notice Swap fee types for shared collateral debt pool swaps.
+     * Open = 0
+     * Close = 1
+     */
+    enum SwapFee {
+        In,
+        Out
+    }
+    /**
+     * @notice Configurable oracle types for assets.
+     * Empty = 0
+     * Redstone = 1,
+     * Chainlink = 2,
+     * API3 = 3,
+     * Vault = 4
+     */
+    enum OracleType {
+        Empty,
+        Redstone,
+        Chainlink,
+        API3,
+        Vault
+    }
+
+    /**
+     * @notice Protocol core actions.
+     * Deposit = 0
+     * Withdraw = 1,
+     * Repay = 2,
+     * Borrow = 3,
+     * Liquidate = 4
+     * SCDPDeposit = 5,
+     * SCDPSwap = 6,
+     * SCDPWithdraw = 7,
+     * SCDPRepay = 8,
+     * SCDPLiquidation = 9
+     */
+    enum Action {
+        Deposit,
+        Withdraw,
+        Repay,
+        Borrow,
+        Liquidation,
+        SCDPDeposit,
+        SCDPSwap,
+        SCDPWithdraw,
+        SCDPRepay,
+        SCDPLiquidation
     }
 }
