@@ -9,6 +9,7 @@ contract Sandbox is TestWallet("MNEMONIC") {
     TestContract internal thing;
     using LibVm for *;
     using Log for *;
+    using Help for *;
 
     function setUp() public {
         emit log_string("setUp");

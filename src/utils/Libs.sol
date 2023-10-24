@@ -573,6 +573,63 @@ library Help {
     }
 
     function dyn(
+        uint8[1] memory _fixed
+    ) internal pure returns (uint8[] memory dynamic_) {
+        dynamic_ = new uint8[](1);
+        dynamic_[0] = _fixed[0];
+        return dynamic_;
+    }
+
+    function dyn(
+        uint8[2] memory _fixed
+    ) internal pure returns (uint8[] memory dynamic_) {
+        dynamic_ = new uint8[](2);
+        dynamic_[0] = _fixed[0];
+        dynamic_[1] = _fixed[1];
+        return dynamic_;
+    }
+
+    function dyn256(
+        uint8[2] memory _fixed
+    ) internal pure returns (uint256[] memory dynamic_) {
+        dynamic_ = new uint256[](2);
+        dynamic_[0] = _fixed[0];
+        dynamic_[1] = _fixed[1];
+        return dynamic_;
+    }
+
+    function toArray(
+        uint8 _value1,
+        uint8 _value2
+    ) internal pure returns (uint8[] memory dynamic_) {
+        dynamic_ = new uint8[](2);
+        dynamic_[0] = _value1;
+        dynamic_[1] = _value2;
+    }
+
+    function toArray256(
+        uint8 _value1,
+        uint8 _value2
+    ) internal pure returns (uint256[] memory dynamic_) {
+        dynamic_ = new uint256[](2);
+        dynamic_[0] = _value1;
+        dynamic_[1] = _value2;
+    }
+
+    function toStatic(
+        uint8[] memory _fixed
+    ) internal pure returns (uint8[2] memory) {
+        require(_fixed.length >= 2, "LibHelp: invalid length");
+        return [_fixed[0], _fixed[1]];
+    }
+
+    function flip(
+        uint8[2] memory _fixed
+    ) internal pure returns (uint8[2] memory) {
+        return [_fixed[1], _fixed[0]];
+    }
+
+    function dyn(
         uint16[1] memory _fixed
     ) internal pure returns (uint16[] memory dynamic_) {
         dynamic_ = new uint16[](1);
@@ -670,6 +727,51 @@ library Help {
         dynamic_[3] = _fixed[3];
         dynamic_[4] = _fixed[4];
         dynamic_[5] = _fixed[5];
+        return dynamic_;
+    }
+
+    function dyn(
+        uint32[7] memory _fixed
+    ) internal pure returns (uint32[] memory dynamic_) {
+        dynamic_ = new uint32[](7);
+        dynamic_[0] = _fixed[0];
+        dynamic_[1] = _fixed[1];
+        dynamic_[2] = _fixed[2];
+        dynamic_[3] = _fixed[3];
+        dynamic_[4] = _fixed[4];
+        dynamic_[5] = _fixed[5];
+        dynamic_[6] = _fixed[6];
+        return dynamic_;
+    }
+
+    function dyn(
+        uint32[8] memory _fixed
+    ) internal pure returns (uint32[] memory dynamic_) {
+        dynamic_ = new uint32[](8);
+        dynamic_[0] = _fixed[0];
+        dynamic_[1] = _fixed[1];
+        dynamic_[2] = _fixed[2];
+        dynamic_[3] = _fixed[3];
+        dynamic_[4] = _fixed[4];
+        dynamic_[5] = _fixed[5];
+        dynamic_[6] = _fixed[6];
+        dynamic_[7] = _fixed[7];
+        return dynamic_;
+    }
+
+    function dyn(
+        uint32[9] memory _fixed
+    ) internal pure returns (uint32[] memory dynamic_) {
+        dynamic_ = new uint32[](9);
+        dynamic_[0] = _fixed[0];
+        dynamic_[1] = _fixed[1];
+        dynamic_[2] = _fixed[2];
+        dynamic_[3] = _fixed[3];
+        dynamic_[4] = _fixed[4];
+        dynamic_[5] = _fixed[5];
+        dynamic_[6] = _fixed[6];
+        dynamic_[7] = _fixed[7];
+        dynamic_[8] = _fixed[8];
         return dynamic_;
     }
 
@@ -985,6 +1087,10 @@ library Log {
     using Help for string;
     using Help for address;
     using Help for bytes;
+    using Help for uint256[2];
+    using Help for uint8[2];
+    using Help for uint32[2];
+    using Help for uint16[2];
 
     function prefix(string memory _prefix) internal {
         store().logPrefix = _prefix;
@@ -1092,18 +1198,6 @@ library Log {
         _;
     }
 
-    function clog(string memory _val) internal check {
-        emit log_string(_pre(_val));
-    }
-
-    function clog(string memory _val, string memory _lbl) internal check {
-        emit log_named_string(_pre(_lbl), _val);
-    }
-
-    function clg2bytes(string memory _val, string memory _lbl) internal check {
-        emit log_named_bytes(_pre(_lbl), bytes(_val));
-    }
-
     function clg2str(bytes32 _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
     }
@@ -1156,7 +1250,7 @@ library Log {
         }
     }
 
-    function clg(bytes32 _val) internal check {
+    function clg32(bytes32 _val) internal check {
         if (!_hasPrefix()) {
             emit log_bytes32(_val);
         } else {
@@ -1200,20 +1294,12 @@ library Log {
         emit log_named_array(_pre(_str), _val);
     }
 
-    function clg(bytes32 _val, string memory _str) internal check {
+    function clg32(bytes32 _val, string memory _str) internal check {
         emit log_named_bytes32(_pre(_str), _val);
     }
 
     function clg(bytes memory _val, string memory _str) internal check {
         emit log_named_bytes(_pre(_str), _val);
-    }
-
-    function clg(string memory _str, int256 _val) internal check {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
-    }
-
-    function clg(string memory _str, uint256 _val) internal check {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
     }
 
     function clg(int256 _val, string memory _str) internal check {
@@ -1238,6 +1324,122 @@ library Log {
 
     function clg(uint256 _val, string memory _str, uint256 dec) internal check {
         emit log_named_decimal_uint(_pre(_str), _val, dec);
+    }
+
+    function clg(string memory _val) internal check {
+        emit log_string(_pre(_val));
+    }
+
+    function clg(string memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val);
+    }
+
+    function clg(string memory _str, int256 _val) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, 18);
+    }
+
+    function clg(string memory _str, address _val) internal check {
+        emit log_named_address(_pre(_str), _val);
+    }
+
+    function clg(string memory _str, uint256 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    }
+
+    function clg(string memory _str, uint256[] memory _val) internal check {
+        emit log_named_array(_pre(_str), _val);
+    }
+
+    function clg(string memory _str, int256[] memory _val) internal check {
+        emit log_named_array(_pre(_str), _val);
+    }
+
+    function clg(string memory _str, bytes memory _val) internal check {
+        emit log_named_bytes(_pre(_str), _val);
+    }
+
+    function clg(string memory _str, int256 _val, uint256 dec) internal check {
+        emit log_named_decimal_int(_pre(_str), _val, dec);
+    }
+
+    function clg(string memory _str, uint256 _val, uint256 dec) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    }
+
+    function clg32(string memory _str, bytes32 _val) internal check {
+        emit log_named_bytes32(_pre(_str), _val);
+    }
+
+    function pct(string memory _str, uint16 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function pct(string memory _str, uint32 _val) internal check {
+        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    }
+
+    function clg2txt(string memory _lbl, bytes32 _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
+    }
+
+    function clg2str(string memory _lbl, address _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function clg2str(string memory _lbl, bytes memory _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function clg2bytes(string memory _val, string memory _lbl) internal check {
+        emit log_named_bytes(_pre(_lbl), bytes(_val));
+    }
+
+    function clg2txt(string memory _lbl, bytes memory _val) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
+    }
+
+    function clg(string memory _lbl, uint256[2] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn());
+    }
+
+    function clg(uint256[2] memory _val, string memory _lbl) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn());
+    }
+
+    function clg(uint8[2] memory _val, string memory _lbl) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn256());
+    }
+
+    function clg(string memory _lbl, uint8[2] memory _val) internal check {
+        emit log_named_array(_pre(_lbl), _val.dyn256());
+    }
+
+    function clg(
+        string memory _lbl,
+        string memory _mnemonicId,
+        uint32[] memory _indexes
+    ) internal check {
+        address[] memory _tmp = new address[](_indexes.length);
+        for (uint256 i; i < _indexes.length; i++) {
+            _tmp[i] = vm.rememberKey(
+                vm.deriveKey(vm.envString(_mnemonicId), _indexes[i])
+            );
+        }
+        emit log_named_array(_pre(_lbl), _tmp);
+    }
+
+    function clg(
+        uint32[] memory _indexes,
+        string memory _mnemonicId,
+        string memory _lbl
+    ) internal check {
+        address[] memory _tmp = new address[](_indexes.length);
+        for (uint256 i; i < _indexes.length; i++) {
+            _tmp[i] = vm.rememberKey(
+                vm.deriveKey(vm.envString(_mnemonicId), _indexes[i])
+            );
+        }
+        emit log_named_array(_pre(_lbl), _tmp);
     }
 
     function clg_callers() internal check {
