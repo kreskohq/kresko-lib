@@ -1085,6 +1085,22 @@ library Log {
         emit log_string(_pre(_val));
     }
 
+    function clg(string memory _val, string memory _val2) internal check {
+        emit log_named_string(_pre(_val), _val2);
+    }
+
+    function clg2str(bytes32 _val, string memory _val2) internal check {
+        emit log_named_string(_pre(vm.toString(_val)), _val2);
+    }
+
+    function clg2str(address _val, string memory _val2) internal check {
+        emit log_named_string(_pre(vm.toString(_val)), _val2);
+    }
+
+    function clg2str(bytes memory _val, string memory _val2) internal check {
+        emit log_named_string(_pre(vm.toString(_val)), _val2);
+    }
+
     function clg(address[] memory _val, string memory _str) internal check {
         emit log_named_array(_pre(_str), _val);
     }
@@ -1094,7 +1110,7 @@ library Log {
     }
 
     function clg(uint256[] memory _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_array(_val);
         } else {
             emit log_named_array(_pre(""), _val);
@@ -1102,7 +1118,7 @@ library Log {
     }
 
     function clg(int256[] memory _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_array(_val);
         } else {
             emit log_named_array(_pre(""), _val);
@@ -1110,7 +1126,7 @@ library Log {
     }
 
     function clg(address _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_address(_val);
         } else {
             emit log_named_address(_pre(""), _val);
@@ -1118,7 +1134,7 @@ library Log {
     }
 
     function clg(bytes32 _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_bytes32(_val);
         } else {
             emit log_named_bytes32(_pre(""), _val);
@@ -1130,7 +1146,7 @@ library Log {
     }
 
     function clg(int256 _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_int(_val);
         } else {
             emit log_named_int(_pre(""), _val);
@@ -1138,7 +1154,7 @@ library Log {
     }
 
     function clg(uint256 _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_uint(_val);
         } else {
             emit log_named_uint(_pre(""), _val);
@@ -1146,7 +1162,7 @@ library Log {
     }
 
     function clg(bytes memory _val) internal check {
-        if (_hasPrefix()) {
+        if (!_hasPrefix()) {
             emit log_bytes(_val);
         } else {
             emit log_named_bytes(_pre(""), _val);
