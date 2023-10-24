@@ -1096,24 +1096,35 @@ library Log {
         emit log_string(_pre(_val));
     }
 
-    function clg(string memory _val, string memory _val2) internal check {
-        emit log_named_string(_pre(_val), _val2);
+    function clg(string memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val);
     }
 
-    function clg2str(bytes32 _val, string memory _val2) internal check {
-        emit log_named_string(_pre(_val.str()), _val2);
+    function clg2bytes32(
+        string memory _val,
+        string memory _lbl
+    ) internal check {
+        emit log_named_bytes(_pre(_lbl), bytes(_val));
     }
 
-    function clg2txt(bytes32 _val, string memory _val2) internal check {
-        emit log_named_string(_pre(_val.txt()), _val2);
+    function clg2str(bytes32 _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg2str(address _val, string memory _val2) internal check {
-        emit log_named_string(_pre(_val.str()), _val2);
+    function clg2txt(bytes32 _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
     }
 
-    function clg2str(bytes memory _val, string memory _val2) internal check {
-        emit log_named_string(_pre(_val.str()), _val2);
+    function clg2str(address _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function clg2str(bytes memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.str());
+    }
+
+    function clg2txt(bytes memory _val, string memory _lbl) internal check {
+        emit log_named_string(_pre(_lbl), _val.txt());
     }
 
     function clg(address[] memory _val, string memory _str) internal check {
