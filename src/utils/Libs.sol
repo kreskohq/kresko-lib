@@ -1198,11 +1198,11 @@ library Log {
         _;
     }
 
-    function clg2str(bytes32 _val, string memory _lbl) internal check {
+    function blg2str(bytes32 _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg2txt(bytes32 _val, string memory _lbl) internal check {
+    function blg2txt(bytes32 _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.txt());
     }
 
@@ -1210,11 +1210,11 @@ library Log {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg2str(bytes memory _val, string memory _lbl) internal check {
+    function blg2str(bytes memory _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.str());
     }
 
-    function clg2txt(bytes memory _val, string memory _lbl) internal check {
+    function blg2txt(bytes memory _val, string memory _lbl) internal check {
         emit log_named_string(_pre(_lbl), _val.txt());
     }
 

@@ -146,7 +146,7 @@ library Stash {
         emit Log.log_named_address("Stash.address", _val2);
     }
 
-    function stash(bytes32 _val) internal {
+    function stashb32(bytes32 _val) internal {
         get().valBytes32 = _val;
         emit Log.log_named_bytes32("Stash.bytes32", _val);
     }
@@ -178,7 +178,7 @@ library Stash {
         emit Log.log_named_string("Stash.string", _val);
     }
 
-    function stash(bytes memory _val) internal {
+    function stashb(bytes memory _val) internal {
         get().valBytes = _val;
         emit Log.log_named_bytes("Stash.bytes", _val);
     }
@@ -195,7 +195,7 @@ library Stash {
         return get().addresses;
     }
 
-    function stash(bytes[] memory _vals) internal returns (bytes[] memory) {
+    function stashb(bytes[] memory _vals) internal returns (bytes[] memory) {
         for (uint256 i; i < _vals.length; i++) {
             get().bytesArr.push(_vals[i]);
         }
@@ -203,7 +203,7 @@ library Stash {
         return get().bytesArr;
     }
 
-    function appendStash(bytes memory _val) internal returns (bytes[] memory) {
+    function appendStashb(bytes memory _val) internal returns (bytes[] memory) {
         get().bytesArr.push(_val);
         emit Log.log_named_bytes("Stash.appendBytes", _val);
         emit Log.log_named_uint("LibVm.bytes[] len:", get().bytesArr.length);
