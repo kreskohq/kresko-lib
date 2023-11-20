@@ -33,6 +33,8 @@ library Addr {
     address internal constant LINK = 0xf97f4df75117a78c1A5a0DBb814Af92458539FB4;
     address internal constant GMX = 0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a;
     address internal constant GNS = 0x18c11FD286C5EC11c3b683Caa813B77f5163A122;
+    address internal constant STETH2 =
+        0x5979D7b546E38E414F7E9822514be443A4800529;
 
     address internal constant V3_Router =
         0xE592427A0AEce92De3Edee1F18E0157C05861564;
@@ -141,6 +143,14 @@ library Addr {
         0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7;
     address internal constant CL_USDC =
         0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3;
+    address internal constant CL_XAU =
+        0x1F954Dc24a49708C26E0C1777f16750B5C6d5a2c;
+    address internal constant CL_WTI =
+        0x594b919AD828e693B935705c3F816221729E7AE8;
+    address internal constant CL_EURC =
+        0xDdE3523b6654F4fE9Ce890A660b6f9679D5Ee6eA;
+    address internal constant CL_LDO =
+        0xA43A34030088E6510FecCFb77E88ee5e7ed0fE64;
 
     address internal constant API3_EUR =
         0xA37F6f5a04b7D5eB8DF71799e09D683f8CeC22F3;
@@ -177,6 +187,7 @@ library Addr {
 }
 
 library Tokens {
+    IWETH9 internal constant WETH = IWETH9(Addr.WETH);
     IERC20 internal constant gDAI = IERC20(Addr.gDAI);
     IERC20 internal constant ARB = IERC20(Addr.ARB);
     IERC20 internal constant FRAX = IERC20(Addr.FRAX);
@@ -185,7 +196,7 @@ library Tokens {
     IERC20 internal constant USDCe = IERC20(Addr.USDCe);
     IERC20 internal constant LINK = IERC20(Addr.LINK);
     IERC20 internal constant WBTC = IERC20(Addr.WBTC);
-    IWETH9 internal constant WETH = IWETH9(Addr.WETH);
+    IERC20 internal constant STETH2 = IWETH9(Addr.STETH2);
     IERC20 internal constant USDT = IERC20(Addr.USDT);
     IERC20 internal constant GMX = IERC20(Addr.GMX);
     IERC20 internal constant GNS = IERC20(Addr.GNS);
@@ -313,6 +324,8 @@ library ChainLink {
     IAggregatorV3 internal constant MSFT = IAggregatorV3(Addr.CL_MSFT);
     IAggregatorV3 internal constant SPY = IAggregatorV3(Addr.CL_SPY);
     IAggregatorV3 internal constant GOOGL = IAggregatorV3(Addr.CL_GOOGL);
+    IAggregatorV3 internal constant XAU = IAggregatorV3(Addr.CL_XAU);
+    IAggregatorV3 internal constant WTI = IAggregatorV3(Addr.CL_WTI);
     IAggregatorV3 internal constant CBETH_USD =
         IAggregatorV3(Addr.CL_CBETH_USD);
 }
