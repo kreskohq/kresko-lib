@@ -145,6 +145,8 @@ library Addr {
         0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3;
     address internal constant CL_XAU =
         0x1F954Dc24a49708C26E0C1777f16750B5C6d5a2c;
+    address internal constant CL_XAG =
+        0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3;
     address internal constant CL_WTI =
         0x594b919AD828e693B935705c3F816221729E7AE8;
     address internal constant CL_EURC =
