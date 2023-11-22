@@ -147,6 +147,26 @@ abstract contract RedstoneScript is RedstonePayload {
     function call(
         bytes4 selector,
         address param1,
+        uint256 param2,
+        address param3,
+        string memory prices
+    ) public {
+        bytes memory redstonePayload = getRedstonePayload(prices);
+        bytes memory encodedFunction = abi.encodeWithSelector(
+            selector,
+            param1,
+            param2,
+            param3
+        );
+        (bool success, bytes memory data) = address(__current_kresko).call(
+            abi.encodePacked(encodedFunction, redstonePayload)
+        );
+        if (!success) _revert(data);
+    }
+
+    function call(
+        bytes4 selector,
+        address param1,
         address param2,
         uint256 param3,
         string memory prices
@@ -208,6 +228,31 @@ abstract contract RedstoneScript is RedstonePayload {
         address param3,
         uint256 param4,
         uint256 param5,
+        string memory prices
+    ) public {
+        bytes memory redstonePayload = getRedstonePayload(prices);
+
+        bytes memory encodedFunction = abi.encodeWithSelector(
+            selector,
+            param1,
+            param2,
+            param3,
+            param4,
+            param5
+        );
+        (bool success, bytes memory data) = address(__current_kresko).call(
+            abi.encodePacked(encodedFunction, redstonePayload)
+        );
+        if (!success) _revert(data);
+    }
+
+    function call(
+        bytes4 selector,
+        address param1,
+        address param2,
+        uint256 param3,
+        uint256 param4,
+        address param5,
         string memory prices
     ) public {
         bytes memory redstonePayload = getRedstonePayload(prices);
