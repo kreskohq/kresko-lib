@@ -10,6 +10,10 @@ library ArbSepolia {
         0x4b54D82B1BEda5fFe478b11fC1aB122438598022;
     address internal constant DAI = 0x2880900E93eA590d2fD43914ADC9370299e45d36;
     address internal constant WBTC = 0xf4FF66F2128695f71C26CD6d427f16140Ec3D26B;
+    address internal constant OFFICIALLY_KRESKIAN =
+        0x74e573b3Dd705406Fd4048a20Ab5ac9EE76D0B9E;
+    address internal constant QUEST_FOR_KRESK =
+        0x200945e331Af88e1D854Cb9D3503F257B33Fe19F;
 
     address internal constant V3_Router02 =
         0x021dAc9a7652A2C010AD4B4f412E2DEbBE76481a;
