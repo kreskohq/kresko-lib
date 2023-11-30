@@ -5,9 +5,14 @@ pragma solidity ^0.8.0;
 library Sepolia {
     address internal constant ZERO = address(0);
     address internal constant WETH = 0xA1A245cc76414DC143687D9c3DE1152396f352D6;
-    address internal constant USDC = 0xEbCC972B6B3eB15C0592BE1871838963d0B94278;
-    address internal constant DAI = 0xe5118E47e061ab15Ca972D045b35193F673bcc36;
+    address internal constant USDC = 0x7166779208977096D0F3C66C4FdD97aA8555297D;
+    address internal constant USDCe =
+        0x44A222F943682F816B2D4603904c71D98fBDa01F;
+    address internal constant DAI = 0x6a35d47B9139C6390bE8487836E54AB56eB4135B;
+    address internal constant WBTC = 0xa734BFcb0791407cfFC455Ce921B598cc1740517;
     address internal constant LINK = 0xe97aacf2F1248484003d3208CF4060ec262c6b03;
+    // address internal constant USDC = 0xEbCC972B6B3eB15C0592BE1871838963d0B94278;
+    // address internal constant DAI = 0xe5118E47e061ab15Ca972D045b35193F673bcc36;
 
     address internal constant V3_Router02 =
         0xc7B3dA534D0114DeF17400279A35137E5A649F9e;
