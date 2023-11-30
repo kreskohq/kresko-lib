@@ -5,9 +5,11 @@ pragma solidity ^0.8.0;
 library ArbSepolia {
     address internal constant ZERO = address(0);
     address internal constant WETH = 0x0091f4e75a03C11cB9be8E3717219005eb780D89;
-    address internal constant USDC = 0x7F5c764cBc14f9669B88837ca1490cCa17c31607;
-    address internal constant USDT = 0x94b008aA00579c1307B0EF2c499aD98a8ce58e58;
-    address internal constant DAI = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
+    address internal constant USDC = 0xa6b98b891b9F780b52d21fE6d51055CD553C28c2;
+    address internal constant USDCe =
+        0x4b54D82B1BEda5fFe478b11fC1aB122438598022;
+    address internal constant DAI = 0x2880900E93eA590d2fD43914ADC9370299e45d36;
+    address internal constant WBTC = 0xf4FF66F2128695f71C26CD6d427f16140Ec3D26B;
 
     address internal constant V3_Router02 =
         0x021dAc9a7652A2C010AD4B4f412E2DEbBE76481a;
