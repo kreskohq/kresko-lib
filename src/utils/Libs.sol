@@ -146,12 +146,12 @@ library Help {
     }
 
     function find(
-        address[] storage _elements,
-        address _elementToFind
+        address[] storage _els,
+        address _search
     ) internal pure returns (FindResult memory result) {
-        address[] memory elements = _elements;
+        address[] memory elements = _els;
         for (uint256 i; i < elements.length; ) {
-            if (elements[i] == _elementToFind) {
+            if (elements[i] == _search) {
                 return FindResult(i, true);
             }
             unchecked {
@@ -161,12 +161,12 @@ library Help {
     }
 
     function find(
-        bytes32[] storage _elements,
-        bytes32 _elementToFind
+        bytes32[] storage _els,
+        bytes32 _search
     ) internal pure returns (FindResult memory result) {
-        bytes32[] memory elements = _elements;
+        bytes32[] memory elements = _els;
         for (uint256 i; i < elements.length; ) {
-            if (elements[i] == _elementToFind) {
+            if (elements[i] == _search) {
                 return FindResult(i, true);
             }
             unchecked {
@@ -176,12 +176,12 @@ library Help {
     }
 
     function find(
-        string[] storage _elements,
-        string memory _elementToFind
+        string[] storage _els,
+        string memory _search
     ) internal pure returns (FindResult memory result) {
-        string[] memory elements = _elements;
+        string[] memory elements = _els;
         for (uint256 i; i < elements.length; ) {
-            if (elements[i].equals(_elementToFind)) {
+            if (elements[i].equals(_search)) {
                 return FindResult(i, true);
             }
             unchecked {
@@ -190,76 +190,49 @@ library Help {
         }
     }
 
-    function pushUnique(
-        address[] storage _elements,
-        address _elementToAdd
-    ) internal {
-        if (!_elements.find(_elementToAdd).exists) {
-            _elements.push(_elementToAdd);
+    function pushUnique(address[] storage _els, address _toAdd) internal {
+        if (!_els.find(_toAdd).exists) {
+            _els.push(_toAdd);
         }
     }
 
-    function pushUnique(
-        bytes32[] storage _elements,
-        bytes32 _elementToAdd
-    ) internal {
-        if (!_elements.find(_elementToAdd).exists) {
-            _elements.push(_elementToAdd);
+    function pushUnique(bytes32[] storage _els, bytes32 _toAdd) internal {
+        if (!_els.find(_toAdd).exists) {
+            _els.push(_toAdd);
         }
     }
 
-    function pushUnique(
-        string[] storage _elements,
-        string memory _elementToAdd
-    ) internal {
-        if (!_elements.find(_elementToAdd).exists) {
-            _elements.push(_elementToAdd);
+    function pushUnique(string[] storage _els, string memory _toAdd) internal {
+        if (!_els.find(_toAdd).exists) {
+            _els.push(_toAdd);
         }
     }
 
-    function removeExisting(
-        address[] storage _addresses,
-        address _elementToRemove
-    ) internal {
-        FindResult memory result = _addresses.find(_elementToRemove);
+    function removeExisting(address[] storage _arr, address _toR) internal {
+        FindResult memory result = _arr.find(_toR);
         if (result.exists) {
-            _addresses.removeAddress(_elementToRemove, result.index);
+            _arr.removeAddress(_toR, result.index);
         }
     }
 
-    /**
-     * @dev Removes an element by copying the last element to the element to remove's place and removing
-     * the last element.
-     * @param _addresses The address array containing the item to be removed.
-     * @param _elementToRemove The element to be removed.
-     * @param _elementIndex The index of the element to be removed.
-     */
     function removeAddress(
-        address[] storage _addresses,
-        address _elementToRemove,
-        uint256 _elementIndex
+        address[] storage _arr,
+        address _toR,
+        uint256 _idx
     ) internal {
-        if (_addresses[_elementIndex] != _elementToRemove)
-            revert ELEMENT_DOES_NOT_MATCH_PROVIDED_INDEX(
-                id(_elementToRemove),
-                _elementIndex,
-                _addresses
-            );
+        if (_arr[_idx] != _toR)
+            revert ELEMENT_DOES_NOT_MATCH_PROVIDED_INDEX(id(_toR), _idx, _arr);
 
-        uint256 lastIndex = _addresses.length - 1;
-        // If the index to remove is not the last one, overwrite the element at the index
-        // with the last element.
-        if (_elementIndex != lastIndex) {
-            _addresses[_elementIndex] = _addresses[lastIndex];
+        uint256 lastIndex = _arr.length - 1;
+        if (_idx != lastIndex) {
+            _arr[_idx] = _arr[lastIndex];
         }
-        // Remove the last element.
-        _addresses.pop();
+
+        _arr.pop();
     }
 
-    function isEmpty(
-        address[2] memory _addresses
-    ) internal pure returns (bool) {
-        return _addresses[0] == address(0) && _addresses[1] == address(0);
+    function isEmpty(address[2] memory _arr) internal pure returns (bool) {
+        return _arr[0] == address(0) && _arr[1] == address(0);
     }
 
     function isEmpty(string memory _val) internal pure returns (bool) {
@@ -321,466 +294,444 @@ library Help {
         return string.concat(a, b);
     }
 
-    function arr(
-        address _value1
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](1);
-        dynamic_[0] = _value1;
+    function arr(address _v1) internal pure returns (address[] memory d_) {
+        d_ = new address[](1);
+        d_[0] = _v1;
     }
 
     function arr(
-        address _value1,
-        address _value2
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
+        address _v1,
+        address _v2
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
     function arr(
-        address _value1,
-        address _value2,
-        address _value3
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](3);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
+        address _v1,
+        address _v2,
+        address _v3
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](3);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
     }
 
     function arr(
-        address _value1,
-        address _value2,
-        address _value3,
-        address _value4
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](4);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
-        dynamic_[3] = _value4;
+        address _v1,
+        address _v2,
+        address _v3,
+        address _v4
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](4);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
+        d_[3] = _v4;
+    }
+
+    function arr(uint16 _value) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](1);
+        d_[0] = _value;
     }
 
     function arr(
-        uint16 _value
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](1);
-        dynamic_[0] = _value;
+        uint16 _v1,
+        uint16 _v2
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
     function arr(
-        uint16 _value1,
-        uint16 _value2
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
+        uint16 _v1,
+        uint16 _v2,
+        uint16 _v3
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](3);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
+    }
+
+    function arr(uint32 _value) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](1);
+        d_[0] = _value;
     }
 
     function arr(
-        uint16 _value1,
-        uint16 _value2,
-        uint16 _value3
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](3);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
+        uint32 _v1,
+        uint32 _v2
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
     function arr(
-        uint32 _value
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](1);
-        dynamic_[0] = _value;
+        uint32 _v1,
+        uint32 _v2,
+        uint32 _v3
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](3);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
+    }
+
+    function arr(uint256 _value) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](1);
+        d_[0] = _value;
     }
 
     function arr(
-        uint32 _value1,
-        uint32 _value2
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
+        uint256 _v1,
+        uint256 _v2
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
     function arr(
-        uint32 _value1,
-        uint32 _value2,
-        uint32 _value3
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](3);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
+        uint256 _v1,
+        uint256 _v2,
+        uint256 _v3
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](3);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
     }
 
     function arr(
-        uint256 _value
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](1);
-        dynamic_[0] = _value;
+        uint256 _v1,
+        uint256 _v2,
+        uint256 _v3,
+        uint256 _v4
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](4);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
+        d_[3] = _v4;
     }
 
     function arr(
-        uint256 _value1,
-        uint256 _value2
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-    }
-
-    function arr(
-        uint256 _value1,
-        uint256 _value2,
-        uint256 _value3
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](3);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
-    }
-
-    function arr(
-        uint256 _value1,
-        uint256 _value2,
-        uint256 _value3,
-        uint256 _value4
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](4);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
-        dynamic_[3] = _value4;
-    }
-
-    function arr(
-        uint256 _value1,
-        uint256 _value2,
-        uint256 _value3,
-        uint256 _value4,
-        uint256 _value5
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](5);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
-        dynamic_[2] = _value3;
-        dynamic_[3] = _value4;
-        dynamic_[4] = _value5;
+        uint256 _v1,
+        uint256 _v2,
+        uint256 _v3,
+        uint256 _v4,
+        uint256 _v5
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](5);
+        d_[0] = _v1;
+        d_[1] = _v2;
+        d_[2] = _v3;
+        d_[3] = _v4;
+        d_[4] = _v5;
     }
 
     function dyn(
-        address[1] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](1);
-        dynamic_[0] = _fixed[0];
-        return dynamic_;
+        address[1] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](1);
+        d_[0] = _f[0];
+        return d_;
     }
 
     function dyn(
-        address[2] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+        address[2] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function dyn(
-        address[3] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](3);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        return dynamic_;
+        address[3] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](3);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        return d_;
     }
 
     function dyn(
-        address[4] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](4);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        return dynamic_;
+        address[4] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](4);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        return d_;
     }
 
     function dyn(
-        address[5] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](5);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        return dynamic_;
+        address[5] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](5);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        return d_;
     }
 
     function dyn(
-        address[6] memory _fixed
-    ) internal pure returns (address[] memory dynamic_) {
-        dynamic_ = new address[](6);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        return dynamic_;
+        address[6] memory _f
+    ) internal pure returns (address[] memory d_) {
+        d_ = new address[](6);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        d_[5] = _f[5];
+        return d_;
     }
 
-    function dyn(
-        uint8[1] memory _fixed
-    ) internal pure returns (uint8[] memory dynamic_) {
-        dynamic_ = new uint8[](1);
-        dynamic_[0] = _fixed[0];
-        return dynamic_;
+    function dyn(uint8[1] memory _f) internal pure returns (uint8[] memory d_) {
+        d_ = new uint8[](1);
+        d_[0] = _f[0];
+        return d_;
     }
 
-    function dyn(
-        uint8[2] memory _fixed
-    ) internal pure returns (uint8[] memory dynamic_) {
-        dynamic_ = new uint8[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+    function dyn(uint8[2] memory _f) internal pure returns (uint8[] memory d_) {
+        d_ = new uint8[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function dyn256(
-        uint8[2] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+        uint8[2] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function arr(
-        uint8 _value1,
-        uint8 _value2
-    ) internal pure returns (uint8[] memory dynamic_) {
-        dynamic_ = new uint8[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
+        uint8 _v1,
+        uint8 _v2
+    ) internal pure returns (uint8[] memory d_) {
+        d_ = new uint8[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
     function arr256(
-        uint8 _value1,
-        uint8 _value2
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](2);
-        dynamic_[0] = _value1;
-        dynamic_[1] = _value2;
+        uint8 _v1,
+        uint8 _v2
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](2);
+        d_[0] = _v1;
+        d_[1] = _v2;
     }
 
-    function fix(
-        uint8[] memory _fixed
-    ) internal pure returns (uint8[2] memory) {
-        require(_fixed.length >= 2, "LibHelp: invalid length");
-        return [_fixed[0], _fixed[1]];
+    function fix(uint8[] memory _f) internal pure returns (uint8[2] memory) {
+        require(_f.length >= 2, "Invalid length");
+        return [_f[0], _f[1]];
     }
 
-    function flip(
-        uint8[2] memory _fixed
-    ) internal pure returns (uint8[2] memory) {
-        return [_fixed[1], _fixed[0]];
+    function flip(uint8[2] memory _f) internal pure returns (uint8[2] memory) {
+        return [_f[1], _f[0]];
     }
 
     function dyn(
-        uint16[1] memory _fixed
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](1);
-        dynamic_[0] = _fixed[0];
-        return dynamic_;
+        uint16[1] memory _f
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](1);
+        d_[0] = _f[0];
+        return d_;
     }
 
     function dyn(
-        uint16[2] memory _fixed
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+        uint16[2] memory _f
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function dyn(
-        uint16[3] memory _fixed
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](3);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        return dynamic_;
+        uint16[3] memory _f
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](3);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        return d_;
     }
 
     function dyn(
-        uint16[4] memory _fixed
-    ) internal pure returns (uint16[] memory dynamic_) {
-        dynamic_ = new uint16[](4);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        return dynamic_;
+        uint16[4] memory _f
+    ) internal pure returns (uint16[] memory d_) {
+        d_ = new uint16[](4);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        return d_;
     }
 
     function dyn(
-        uint32[1] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](1);
-        dynamic_[0] = _fixed[0];
-        return dynamic_;
+        uint32[1] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](1);
+        d_[0] = _f[0];
+        return d_;
     }
 
     function dyn(
-        uint32[2] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+        uint32[2] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function dyn(
-        uint32[3] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](3);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        return dynamic_;
+        uint32[3] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](3);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        return d_;
     }
 
     function dyn(
-        uint32[4] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](4);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        return dynamic_;
+        uint32[4] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](4);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        return d_;
     }
 
     function dyn(
-        uint32[5] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](5);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        return dynamic_;
+        uint32[5] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](5);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        return d_;
     }
 
     function dyn(
-        uint256[1] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](1);
-        dynamic_[0] = _fixed[0];
-        return dynamic_;
+        uint32[6] memory _f
+    ) internal pure returns (uint32[] memory d_) {
+        d_ = new uint32[](6);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        d_[5] = _f[5];
+        return d_;
     }
 
     function dyn(
-        uint256[2] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](2);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        return dynamic_;
+        uint256[1] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](1);
+        d_[0] = _f[0];
+        return d_;
     }
 
     function dyn(
-        uint256[3] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](3);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        return dynamic_;
+        uint256[2] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](2);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        return d_;
     }
 
     function dyn(
-        uint256[4] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](4);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        return dynamic_;
+        uint256[3] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](3);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        return d_;
     }
 
     function dyn(
-        uint256[5] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](5);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        return dynamic_;
+        uint256[4] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](4);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        return d_;
     }
 
     function dyn(
-        uint256[6] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](6);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        return dynamic_;
+        uint256[5] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](5);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        return d_;
     }
 
     function dyn(
-        uint256[7] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](7);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        dynamic_[6] = _fixed[6];
-        return dynamic_;
+        uint256[6] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](6);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        d_[5] = _f[5];
+        return d_;
     }
 
     function dyn(
-        uint256[8] memory _fixed
-    ) internal pure returns (uint256[] memory dynamic_) {
-        dynamic_ = new uint256[](8);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        dynamic_[6] = _fixed[6];
-        dynamic_[7] = _fixed[7];
-        return dynamic_;
+        uint256[7] memory _f
+    ) internal pure returns (uint256[] memory d_) {
+        d_ = new uint256[](7);
+        d_[0] = _f[0];
+        d_[1] = _f[1];
+        d_[2] = _f[2];
+        d_[3] = _f[3];
+        d_[4] = _f[4];
+        d_[5] = _f[5];
+        d_[6] = _f[6];
+        return d_;
     }
 
-    // Maximum percentage factor (100.00%)
     uint256 internal constant PERCENTAGE_FACTOR = 1e4;
-
-    // Half percentage factor (50.00%)
     uint256 internal constant HALF_PERCENTAGE_FACTOR = 0.5e4;
 
     function pctMul(
         uint256 value,
         uint256 percentage
     ) internal pure returns (uint256 result) {
-        // to avoid overflow, value <= (type(uint256).max - HALF_PERCENTAGE_FACTOR) / percentage
         assembly {
             if iszero(
                 or(
@@ -807,7 +758,6 @@ library Help {
         uint256 value,
         uint256 percentage
     ) internal pure returns (uint256 result) {
-        // to avoid overflow, value <= (type(uint256).max - halfPercentage) / PERCENTAGE_FACTOR
         assembly {
             if or(
                 iszero(percentage),
@@ -843,13 +793,6 @@ library Help {
 
     uint256 internal constant WAD_RAY_RATIO = 1e9;
 
-    /**
-     * @dev Multiplies two wad, rounding half up to the nearest wad
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Wad
-     * @param b Wad
-     * @return c = a*b, in wad
-     **/
     function mulWad(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - HALF_WAD) / b
         assembly {
@@ -863,13 +806,6 @@ library Help {
         }
     }
 
-    /**
-     * @dev Divides two wad, rounding half up to the nearest wad
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Wad
-     * @param b Wad
-     * @return c = a/b, in wad
-     **/
     function divWad(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - halfB) / WAD
         assembly {
@@ -884,13 +820,6 @@ library Help {
         }
     }
 
-    /**
-     * @notice Multiplies two ray, rounding half up to the nearest ray
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Ray
-     * @param b Ray
-     * @return c = a raymul b
-     **/
     function mulRay(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - HALF_RAY) / b
         assembly {
@@ -904,13 +833,6 @@ library Help {
         }
     }
 
-    /**
-     * @notice Divides two ray, rounding half up to the nearest ray
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Ray
-     * @param b Ray
-     * @return c = a raydiv b
-     **/
     function divRay(uint256 a, uint256 b) internal pure returns (uint256 c) {
         // to avoid overflow, a <= (type(uint256).max - halfB) / RAY
         assembly {
@@ -925,12 +847,6 @@ library Help {
         }
     }
 
-    /**
-     * @dev Casts ray down to wad
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Ray
-     * @return b = a converted to wad, rounded half up to the nearest wad
-     **/
     function fromRayToWad(uint256 a) internal pure returns (uint256 b) {
         assembly {
             b := div(a, WAD_RAY_RATIO)
@@ -941,12 +857,6 @@ library Help {
         }
     }
 
-    /**
-     * @dev Converts wad up to ray
-     * @dev assembly optimized for improved gas savings: https://twitter.com/transmissions11/status/1451131036377571328
-     * @param a Wad
-     * @return b = a converted in ray
-     **/
     function fromWadToRay(uint256 a) internal pure returns (uint256 b) {
         // to avoid overflow, b/WAD_RAY_RATIO == a
         assembly {

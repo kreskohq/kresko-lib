@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {console2, Script} from "forge-std/Script.sol";
-import {VmSafe} from "forge-std/Vm.sol";
+import {Script} from "forge-std/Script.sol";
 
 /// @notice Broadcast + prank utils wont revert like forge. If unsure - just use regular vm.
 contract Wallet is Script {

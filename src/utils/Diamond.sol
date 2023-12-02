@@ -1,8 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
-
-import {Vm} from "forge-std/Vm.sol";
+import {vm} from "./Minimals.sol";
 
 interface ILoupe {
     function facetFunctionSelectors(
@@ -51,9 +50,7 @@ abstract contract FacetScript {
         cmd[0] = _selectorGetterScript;
         cmd[1] = _facetName;
 
-        bytes memory res = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D).ffi(
-            cmd
-        );
+        bytes memory res = vm.ffi(cmd);
 
         selectors = abi.decode(res, (bytes4[]));
 

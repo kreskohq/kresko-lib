@@ -1,9 +1,9 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import {Script} from "forge-std/Script.sol";
+import {vm} from "./Minimals.sol";
 
-abstract contract RedstonePayload is Script {
+abstract contract RedstonePayload {
     string internal _payloadGetterScript;
 
     constructor(string memory scriptLocation) {
@@ -37,11 +37,11 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes4 selector,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(selector);
         (bool success, bytes memory data) = address(target).staticcall(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(selector),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
@@ -51,11 +51,13 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes4 selector,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(selector);
         (bool success, bytes memory data) = address(__current_kresko)
-            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
+            .staticcall(
+                abi.encodePacked(
+                    abi.encodeWithSelector(selector),
+                    getRedstonePayload(prices)
+                )
+            );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
     }
@@ -66,15 +68,13 @@ abstract contract RedstoneScript is RedstonePayload {
         address param2,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2
-        );
         (bool success, bytes memory data) = address(__current_kresko)
-            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
+            .staticcall(
+                abi.encodePacked(
+                    abi.encodeWithSelector(selector, param1, param2),
+                    getRedstonePayload(prices)
+                )
+            );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
     }
@@ -84,11 +84,13 @@ abstract contract RedstoneScript is RedstonePayload {
         bool param1,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(selector, param1);
         (bool success, bytes memory data) = address(__current_kresko)
-            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
+            .staticcall(
+                abi.encodePacked(
+                    abi.encodeWithSelector(selector, param1),
+                    getRedstonePayload(prices)
+                )
+            );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
     }
@@ -99,15 +101,13 @@ abstract contract RedstoneScript is RedstonePayload {
         bool param2,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2
-        );
         (bool success, bytes memory data) = address(__current_kresko)
-            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
+            .staticcall(
+                abi.encodePacked(
+                    abi.encodeWithSelector(selector, param1, param2),
+                    getRedstonePayload(prices)
+                )
+            );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
     }
@@ -117,11 +117,13 @@ abstract contract RedstoneScript is RedstonePayload {
         address param1,
         string memory prices
     ) public returns (uint256) {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(selector, param1);
         (bool success, bytes memory data) = address(__current_kresko)
-            .staticcall(abi.encodePacked(encodedFunction, redstonePayload));
+            .staticcall(
+                abi.encodePacked(
+                    abi.encodeWithSelector(selector, param1),
+                    getRedstonePayload(prices)
+                )
+            );
         if (!success) _revert(data);
         return abi.decode(data, (uint256));
     }
@@ -132,14 +134,11 @@ abstract contract RedstoneScript is RedstonePayload {
         uint256 param2,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(selector, param1, param2),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -151,15 +150,11 @@ abstract contract RedstoneScript is RedstonePayload {
         address param3,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(selector, param1, param2, param3),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -171,16 +166,11 @@ abstract contract RedstoneScript is RedstonePayload {
         uint256 param3,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(selector, param1, param2, param3),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -193,17 +183,17 @@ abstract contract RedstoneScript is RedstonePayload {
         address param4,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3,
-            param4
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(
+                    selector,
+                    param1,
+                    param2,
+                    param3,
+                    param4
+                ),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -213,10 +203,8 @@ abstract contract RedstoneScript is RedstonePayload {
         bytes memory encodedFunction,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
         (bool success, bytes memory data) = address(target).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(encodedFunction, getRedstonePayload(prices))
         );
         if (!success) _revert(data);
     }
@@ -230,18 +218,18 @@ abstract contract RedstoneScript is RedstonePayload {
         uint256 param5,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3,
-            param4,
-            param5
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(
+                    selector,
+                    param1,
+                    param2,
+                    param3,
+                    param4,
+                    param5
+                ),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -255,18 +243,18 @@ abstract contract RedstoneScript is RedstonePayload {
         address param5,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3,
-            param4,
-            param5
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(
+                    selector,
+                    param1,
+                    param2,
+                    param3,
+                    param4,
+                    param5
+                ),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }
@@ -279,17 +267,17 @@ abstract contract RedstoneScript is RedstonePayload {
         uint256 param4,
         string memory prices
     ) public {
-        bytes memory redstonePayload = getRedstonePayload(prices);
-
-        bytes memory encodedFunction = abi.encodeWithSelector(
-            selector,
-            param1,
-            param2,
-            param3,
-            param4
-        );
         (bool success, bytes memory data) = address(__current_kresko).call(
-            abi.encodePacked(encodedFunction, redstonePayload)
+            abi.encodePacked(
+                abi.encodeWithSelector(
+                    selector,
+                    param1,
+                    param2,
+                    param3,
+                    param4
+                ),
+                getRedstonePayload(prices)
+            )
         );
         if (!success) _revert(data);
     }

@@ -2,11 +2,35 @@
 pragma solidity ^0.8.0;
 
 import {stdMath} from "forge-std/StdMath.sol";
-import {Vm, VmSafe} from "forge-std/Vm.sol";
-import {LibVm, store, Log} from "./Libs.sol";
+import {LibVm, store} from "./Libs.sol";
 
 library ShortAssert {
     bool constant IS_TEST = true;
+    event log(string);
+    event logs(bytes);
+
+    event log_address(address);
+    event log_bytes32(bytes32);
+    event log_int(int256);
+    event log_uint(uint256);
+    event log_bytes(bytes);
+    event log_string(string);
+
+    event log_named_address(string key, address val);
+    event log_named_bytes32(string key, bytes32 val);
+    event log_named_decimal_int(string key, int256 val, uint256 decimals);
+    event log_named_decimal_uint(string key, uint256 val, uint256 decimals);
+    event log_named_int(string key, int256 val);
+    event log_named_uint(string key, uint256 val);
+    event log_named_bytes(string key, bytes val);
+    event log_named_string(string key, string val);
+
+    event log_array(uint256[] val);
+    event log_array(int256[] val);
+    event log_array(address[] val);
+    event log_named_array(string key, uint256[] val);
+    event log_named_array(string key, int256[] val);
+    event log_named_array(string key, address[] val);
 
     function failed() public returns (bool) {
         if (store()._failed) {
@@ -45,8 +69,8 @@ library ShortAssert {
 
     function eqz(uint256 a) internal returns (bool) {
         if (a != 0) {
-            emit Log.log("Error: a == 0 not satisfied [uint]");
-            emit Log.log_named_uint("  Value a", a);
+            emit log("Error: a == 0 not satisfied [uint]");
+            emit log_named_uint("  Value a", a);
             fail();
         }
 
@@ -55,7 +79,7 @@ library ShortAssert {
 
     function eqz(uint256 a, string memory err) internal returns (bool) {
         if (a != 0) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eqz(a);
         }
 
@@ -64,7 +88,7 @@ library ShortAssert {
 
     function gtz(uint256 a) internal returns (bool) {
         if (a <= 0) {
-            emit Log.log("Error: a > 0 not satisfied [uint]");
+            emit log("Error: a > 0 not satisfied [uint]");
             fail();
         }
 
@@ -73,7 +97,7 @@ library ShortAssert {
 
     function gtz(uint256 a, string memory err) internal returns (bool) {
         if (a <= 0) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gtz(a);
         }
 
@@ -82,8 +106,8 @@ library ShortAssert {
 
     function gtz(int256 a) internal returns (bool) {
         if (a <= 0) {
-            emit Log.log("Error: a > 0 not satisfied [int]");
-            emit Log.log_named_int("  Value a", a);
+            emit log("Error: a > 0 not satisfied [int]");
+            emit log_named_int("  Value a", a);
             fail();
         }
 
@@ -92,7 +116,7 @@ library ShortAssert {
 
     function gtz(int256 a, string memory err) internal returns (bool) {
         if (a <= 0) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gtz(a);
         }
 
@@ -101,23 +125,23 @@ library ShortAssert {
 
     function assertTrue(bool condition) internal {
         if (!condition) {
-            emit Log.log("Error: Assertion Failed");
+            emit log("Error: Assertion Failed");
             fail();
         }
     }
 
     function assertTrue(bool condition, string memory err) internal {
         if (!condition) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             assertTrue(condition);
         }
     }
 
     function eq(address a, address b) internal returns (bool) {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [address]");
-            emit Log.log_named_address("      Left", a);
-            emit Log.log_named_address("     Right", b);
+            emit log("Error: a == b not satisfied [address]");
+            emit log_named_address("      Left", a);
+            emit log_named_address("     Right", b);
             fail();
         }
         return !store()._failed;
@@ -129,7 +153,7 @@ library ShortAssert {
         string memory err
     ) internal returns (bool) {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
         return !store()._failed;
@@ -137,25 +161,25 @@ library ShortAssert {
 
     function eq(bytes32 a, bytes32 b) internal {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [bytes32]");
-            emit Log.log_named_bytes32("      Left", a);
-            emit Log.log_named_bytes32("     Right", b);
+            emit log("Error: a == b not satisfied [bytes32]");
+            emit log_named_bytes32("      Left", a);
+            emit log_named_bytes32("     Right", b);
             fail();
         }
     }
 
     function eq(bytes32 a, bytes32 b, string memory err) internal {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
 
     function eq(int a, int b) internal returns (bool) {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [int]");
-            emit Log.log_named_int("      Left", a);
-            emit Log.log_named_int("     Right", b);
+            emit log("Error: a == b not satisfied [int]");
+            emit log_named_int("      Left", a);
+            emit log_named_int("     Right", b);
             fail();
         }
         return !store()._failed;
@@ -163,7 +187,7 @@ library ShortAssert {
 
     function eq(int a, int b, string memory err) internal returns (bool) {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
         return !store()._failed;
@@ -171,9 +195,9 @@ library ShortAssert {
 
     function eq(uint a, uint b) internal returns (bool) {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [uint]");
-            emit Log.log_named_uint("      Left", a);
-            emit Log.log_named_uint("     Right", b);
+            emit log("Error: a == b not satisfied [uint]");
+            emit log_named_uint("      Left", a);
+            emit log_named_uint("     Right", b);
             fail();
         }
         return !store()._failed;
@@ -181,7 +205,7 @@ library ShortAssert {
 
     function eq(uint a, uint b, string memory err) internal returns (bool) {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             return eq(a, b);
         }
 
@@ -190,9 +214,9 @@ library ShortAssert {
 
     function eqDecimal(int a, int b, uint decimals) internal {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("      Left", a, decimals);
-            emit Log.log_named_decimal_int("     Right", b, decimals);
+            emit log("Error: a == b not satisfied [decimal int]");
+            emit log_named_decimal_int("      Left", a, decimals);
+            emit log_named_decimal_int("     Right", b, decimals);
             fail();
         }
     }
@@ -204,16 +228,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eqDecimal(a, b, decimals);
         }
     }
 
     function eqDecimal(uint a, uint b, uint decimals) internal {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("      Left", a, decimals);
-            emit Log.log_named_decimal_uint("     Right", b, decimals);
+            emit log("Error: a == b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("      Left", a, decimals);
+            emit log_named_decimal_uint("     Right", b, decimals);
             fail();
         }
     }
@@ -225,39 +249,39 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eqDecimal(a, b, decimals);
         }
     }
 
     function notEq(address a, address b) internal {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [address]");
-            emit Log.log_named_address("      Left", a);
-            emit Log.log_named_address("     Right", b);
+            emit log("Error: a != b not satisfied [address]");
+            emit log_named_address("      Left", a);
+            emit log_named_address("     Right", b);
             fail();
         }
     }
 
     function notEq(address a, address b, string memory err) internal {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq(a, b);
         }
     }
 
     function notEq(bytes32 a, bytes32 b) internal {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [bytes32]");
-            emit Log.log_named_bytes32("      Left", a);
-            emit Log.log_named_bytes32("     Right", b);
+            emit log("Error: a != b not satisfied [bytes32]");
+            emit log_named_bytes32("      Left", a);
+            emit log_named_bytes32("     Right", b);
             fail();
         }
     }
 
     function notEq(bytes32 a, bytes32 b, string memory err) internal {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq(a, b);
         }
     }
@@ -272,9 +296,9 @@ library ShortAssert {
 
     function notEq(int a, int b) internal returns (bool) {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [int]");
-            emit Log.log_named_int("      Left", a);
-            emit Log.log_named_int("     Right", b);
+            emit log("Error: a != b not satisfied [int]");
+            emit log_named_int("      Left", a);
+            emit log_named_int("     Right", b);
             fail();
         }
 
@@ -283,7 +307,7 @@ library ShortAssert {
 
     function notEq(int a, int b, string memory err) internal returns (bool) {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq(a, b);
         }
 
@@ -292,9 +316,9 @@ library ShortAssert {
 
     function notEq(uint a, uint b) internal returns (bool) {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [uint]");
-            emit Log.log_named_uint("      Left", a);
-            emit Log.log_named_uint("     Right", b);
+            emit log("Error: a != b not satisfied [uint]");
+            emit log_named_uint("      Left", a);
+            emit log_named_uint("     Right", b);
             fail();
         }
 
@@ -303,7 +327,7 @@ library ShortAssert {
 
     function notEq(uint a, uint b, string memory err) internal returns (bool) {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq(a, b);
         }
 
@@ -312,9 +336,9 @@ library ShortAssert {
 
     function notEqDecimal(int a, int b, uint decimals) internal {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("      Left", a, decimals);
-            emit Log.log_named_decimal_int("     Right", b, decimals);
+            emit log("Error: a != b not satisfied [decimal int]");
+            emit log_named_decimal_int("      Left", a, decimals);
+            emit log_named_decimal_int("     Right", b, decimals);
             fail();
         }
     }
@@ -326,16 +350,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEqDecimal(a, b, decimals);
         }
     }
 
     function notEqDecimal(uint a, uint b, uint decimals) internal {
         if (a == b) {
-            emit Log.log("Error: a != b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("      Left", a, decimals);
-            emit Log.log_named_decimal_uint("     Right", b, decimals);
+            emit log("Error: a != b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("      Left", a, decimals);
+            emit log_named_decimal_uint("     Right", b, decimals);
             fail();
         }
     }
@@ -347,16 +371,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a == b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEqDecimal(a, b, decimals);
         }
     }
 
     function gt(uint a, uint b) internal returns (bool) {
         if (a <= b) {
-            emit Log.log("Error: a > b not satisfied [uint]");
-            emit Log.log_named_uint("  Value a", a);
-            emit Log.log_named_uint("  Value b", b);
+            emit log("Error: a > b not satisfied [uint]");
+            emit log_named_uint("  Value a", a);
+            emit log_named_uint("  Value b", b);
             fail();
         }
 
@@ -365,7 +389,7 @@ library ShortAssert {
 
     function gt(uint a, uint b, string memory err) internal returns (bool) {
         if (a <= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gt(a, b);
         }
 
@@ -374,9 +398,9 @@ library ShortAssert {
 
     function gt(int a, int b) internal returns (bool) {
         if (a <= b) {
-            emit Log.log("Error: a > b not satisfied [int]");
-            emit Log.log_named_int("  Value a", a);
-            emit Log.log_named_int("  Value b", b);
+            emit log("Error: a > b not satisfied [int]");
+            emit log_named_int("  Value a", a);
+            emit log_named_int("  Value b", b);
             fail();
         }
 
@@ -385,7 +409,7 @@ library ShortAssert {
 
     function gt(int a, int b, string memory err) internal returns (bool) {
         if (a <= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gt(a, b);
         }
 
@@ -394,9 +418,9 @@ library ShortAssert {
 
     function gtDecimal(int a, int b, uint decimals) internal {
         if (a <= b) {
-            emit Log.log("Error: a > b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("  Value a", a, decimals);
-            emit Log.log_named_decimal_int("  Value b", b, decimals);
+            emit log("Error: a > b not satisfied [decimal int]");
+            emit log_named_decimal_int("  Value a", a, decimals);
+            emit log_named_decimal_int("  Value b", b, decimals);
             fail();
         }
     }
@@ -408,16 +432,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a <= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gtDecimal(a, b, decimals);
         }
     }
 
     function gtDecimal(uint a, uint b, uint decimals) internal {
         if (a <= b) {
-            emit Log.log("Error: a > b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("  Value a", a, decimals);
-            emit Log.log_named_decimal_uint("  Value b", b, decimals);
+            emit log("Error: a > b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("  Value a", a, decimals);
+            emit log_named_decimal_uint("  Value b", b, decimals);
             fail();
         }
     }
@@ -429,16 +453,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a <= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gtDecimal(a, b, decimals);
         }
     }
 
     function gte(uint a, uint b) internal returns (bool) {
         if (a < b) {
-            emit Log.log("Error: a >= b not satisfied [uint]");
-            emit Log.log_named_uint("  Value a", a);
-            emit Log.log_named_uint("  Value b", b);
+            emit log("Error: a >= b not satisfied [uint]");
+            emit log_named_uint("  Value a", a);
+            emit log_named_uint("  Value b", b);
             fail();
         }
 
@@ -447,7 +471,7 @@ library ShortAssert {
 
     function gte(uint a, uint b, string memory err) internal returns (bool) {
         if (a < b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gte(a, b);
         }
 
@@ -456,9 +480,9 @@ library ShortAssert {
 
     function gte(int a, int b) internal returns (bool) {
         if (a < b) {
-            emit Log.log("Error: a >= b not satisfied [int]");
-            emit Log.log_named_int("  Value a", a);
-            emit Log.log_named_int("  Value b", b);
+            emit log("Error: a >= b not satisfied [int]");
+            emit log_named_int("  Value a", a);
+            emit log_named_int("  Value b", b);
             fail();
         }
 
@@ -467,7 +491,7 @@ library ShortAssert {
 
     function gte(int a, int b, string memory err) internal returns (bool) {
         if (a < b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gte(a, b);
         }
 
@@ -476,9 +500,9 @@ library ShortAssert {
 
     function gteDecimal(int a, int b, uint decimals) internal {
         if (a < b) {
-            emit Log.log("Error: a >= b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("  Value a", a, decimals);
-            emit Log.log_named_decimal_int("  Value b", b, decimals);
+            emit log("Error: a >= b not satisfied [decimal int]");
+            emit log_named_decimal_int("  Value a", a, decimals);
+            emit log_named_decimal_int("  Value b", b, decimals);
             fail();
         }
     }
@@ -490,16 +514,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a < b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gteDecimal(a, b, decimals);
         }
     }
 
     function gteDecimal(uint a, uint b, uint decimals) internal {
         if (a < b) {
-            emit Log.log("Error: a >= b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("  Value a", a, decimals);
-            emit Log.log_named_decimal_uint("  Value b", b, decimals);
+            emit log("Error: a >= b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("  Value a", a, decimals);
+            emit log_named_decimal_uint("  Value b", b, decimals);
             fail();
         }
     }
@@ -511,16 +535,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a < b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             gteDecimal(a, b, decimals);
         }
     }
 
     function lt(uint a, uint b) internal returns (bool) {
         if (a >= b) {
-            emit Log.log("Error: a < b not satisfied [uint]");
-            emit Log.log_named_uint("  Value a", a);
-            emit Log.log_named_uint("  Value b", b);
+            emit log("Error: a < b not satisfied [uint]");
+            emit log_named_uint("  Value a", a);
+            emit log_named_uint("  Value b", b);
             fail();
         }
 
@@ -529,7 +553,7 @@ library ShortAssert {
 
     function lt(uint a, uint b, string memory err) internal returns (bool) {
         if (a >= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lt(a, b);
         }
 
@@ -538,9 +562,9 @@ library ShortAssert {
 
     function lt(int a, int b) internal returns (bool) {
         if (a >= b) {
-            emit Log.log("Error: a < b not satisfied [int]");
-            emit Log.log_named_int("  Value a", a);
-            emit Log.log_named_int("  Value b", b);
+            emit log("Error: a < b not satisfied [int]");
+            emit log_named_int("  Value a", a);
+            emit log_named_int("  Value b", b);
             fail();
         }
 
@@ -549,7 +573,7 @@ library ShortAssert {
 
     function lt(int a, int b, string memory err) internal returns (bool) {
         if (a >= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lt(a, b);
         }
 
@@ -558,9 +582,9 @@ library ShortAssert {
 
     function ltDecimal(int a, int b, uint decimals) internal {
         if (a >= b) {
-            emit Log.log("Error: a < b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("  Value a", a, decimals);
-            emit Log.log_named_decimal_int("  Value b", b, decimals);
+            emit log("Error: a < b not satisfied [decimal int]");
+            emit log_named_decimal_int("  Value a", a, decimals);
+            emit log_named_decimal_int("  Value b", b, decimals);
             fail();
         }
     }
@@ -572,16 +596,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a >= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             ltDecimal(a, b, decimals);
         }
     }
 
     function ltDecimal(uint a, uint b, uint decimals) internal {
         if (a >= b) {
-            emit Log.log("Error: a < b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("  Value a", a, decimals);
-            emit Log.log_named_decimal_uint("  Value b", b, decimals);
+            emit log("Error: a < b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("  Value a", a, decimals);
+            emit log_named_decimal_uint("  Value b", b, decimals);
             fail();
         }
     }
@@ -593,16 +617,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a >= b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             ltDecimal(a, b, decimals);
         }
     }
 
     function lte(uint a, uint b) internal returns (bool) {
         if (a > b) {
-            emit Log.log("Error: a <= b not satisfied [uint]");
-            emit Log.log_named_uint("  Value a", a);
-            emit Log.log_named_uint("  Value b", b);
+            emit log("Error: a <= b not satisfied [uint]");
+            emit log_named_uint("  Value a", a);
+            emit log_named_uint("  Value b", b);
             fail();
         }
 
@@ -611,7 +635,7 @@ library ShortAssert {
 
     function lte(uint a, uint b, string memory err) internal returns (bool) {
         if (a > b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lte(a, b);
         }
 
@@ -620,9 +644,9 @@ library ShortAssert {
 
     function lte(int a, int b) internal returns (bool) {
         if (a > b) {
-            emit Log.log("Error: a <= b not satisfied [int]");
-            emit Log.log_named_int("  Value a", a);
-            emit Log.log_named_int("  Value b", b);
+            emit log("Error: a <= b not satisfied [int]");
+            emit log_named_int("  Value a", a);
+            emit log_named_int("  Value b", b);
             fail();
         }
 
@@ -631,7 +655,7 @@ library ShortAssert {
 
     function lte(int a, int b, string memory err) internal returns (bool) {
         if (a > b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lte(a, b);
         }
         return !store()._failed;
@@ -639,9 +663,9 @@ library ShortAssert {
 
     function lteDecimal(int a, int b, uint decimals) internal {
         if (a > b) {
-            emit Log.log("Error: a <= b not satisfied [decimal int]");
-            emit Log.log_named_decimal_int("  Value a", a, decimals);
-            emit Log.log_named_decimal_int("  Value b", b, decimals);
+            emit log("Error: a <= b not satisfied [decimal int]");
+            emit log_named_decimal_int("  Value a", a, decimals);
+            emit log_named_decimal_int("  Value b", b, decimals);
             fail();
         }
     }
@@ -653,16 +677,16 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a > b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lteDecimal(a, b, decimals);
         }
     }
 
     function lteDecimal(uint a, uint b, uint decimals) internal {
         if (a > b) {
-            emit Log.log("Error: a <= b not satisfied [decimal uint]");
-            emit Log.log_named_decimal_uint("  Value a", a, decimals);
-            emit Log.log_named_decimal_uint("  Value b", b, decimals);
+            emit log("Error: a <= b not satisfied [decimal uint]");
+            emit log_named_decimal_uint("  Value a", a, decimals);
+            emit log_named_decimal_uint("  Value b", b, decimals);
             fail();
         }
     }
@@ -674,32 +698,32 @@ library ShortAssert {
         string memory err
     ) internal {
         if (a > b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             lteDecimal(a, b, decimals);
         }
     }
 
     function eq(string memory a, string memory b) internal {
         if (keccak256(abi.encodePacked(a)) != keccak256(abi.encodePacked(b))) {
-            emit Log.log("Error: a == b not satisfied [string]");
-            emit Log.log_named_string("      Left", a);
-            emit Log.log_named_string("     Right", b);
+            emit log("Error: a == b not satisfied [string]");
+            emit log_named_string("      Left", a);
+            emit log_named_string("     Right", b);
             fail();
         }
     }
 
     function eq(string memory a, string memory b, string memory err) internal {
         if (keccak256(abi.encodePacked(a)) != keccak256(abi.encodePacked(b))) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
 
     function notEq(string memory a, string memory b) internal {
         if (keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b))) {
-            emit Log.log("Error: a != b not satisfied [string]");
-            emit Log.log_named_string("      Left", a);
-            emit Log.log_named_string("     Right", b);
+            emit log("Error: a != b not satisfied [string]");
+            emit log_named_string("      Left", a);
+            emit log_named_string("     Right", b);
             fail();
         }
     }
@@ -710,7 +734,7 @@ library ShortAssert {
         string memory err
     ) internal {
         if (keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b))) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq(a, b);
         }
     }
@@ -733,25 +757,25 @@ library ShortAssert {
 
     function eq0(bytes memory a, bytes memory b) internal {
         if (!checkEq0(a, b)) {
-            emit Log.log("Error: a == b not satisfied [bytes]");
-            emit Log.log_named_bytes("      Left", a);
-            emit Log.log_named_bytes("     Right", b);
+            emit log("Error: a == b not satisfied [bytes]");
+            emit log_named_bytes("      Left", a);
+            emit log_named_bytes("     Right", b);
             fail();
         }
     }
 
     function eq0(bytes memory a, bytes memory b, string memory err) internal {
         if (!checkEq0(a, b)) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq0(a, b);
         }
     }
 
     function notEq0(bytes memory a, bytes memory b) internal {
         if (checkEq0(a, b)) {
-            emit Log.log("Error: a != b not satisfied [bytes]");
-            emit Log.log_named_bytes("      Left", a);
-            emit Log.log_named_bytes("     Right", b);
+            emit log("Error: a != b not satisfied [bytes]");
+            emit log_named_bytes("      Left", a);
+            emit log_named_bytes("     Right", b);
             fail();
         }
     }
@@ -762,7 +786,7 @@ library ShortAssert {
         string memory err
     ) internal {
         if (checkEq0(a, b)) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             notEq0(a, b);
         }
     }
@@ -777,16 +801,16 @@ library ShortAssert {
 
     function eq(bool a, bool b) internal {
         if (a != b) {
-            emit Log.log("Error: a == b not satisfied [bool]");
-            emit Log.log_named_string("      Left", a ? "true" : "false");
-            emit Log.log_named_string("     Right", b ? "true" : "false");
+            emit log("Error: a == b not satisfied [bool]");
+            emit log_named_string("      Left", a ? "true" : "false");
+            emit log_named_string("     Right", b ? "true" : "false");
             fail();
         }
     }
 
     function eq(bool a, bool b, string memory err) internal {
         if (a != b) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
@@ -801,27 +825,27 @@ library ShortAssert {
 
     function eq(uint256[] memory a, uint256[] memory b) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log("Error: a == b not satisfied [uint[]]");
-            emit Log.log_named_array("      Left", a);
-            emit Log.log_named_array("     Right", b);
+            emit log("Error: a == b not satisfied [uint[]]");
+            emit log_named_array("      Left", a);
+            emit log_named_array("     Right", b);
             fail();
         }
     }
 
     function eq(int256[] memory a, int256[] memory b) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log("Error: a == b not satisfied [int[]]");
-            emit Log.log_named_array("      Left", a);
-            emit Log.log_named_array("     Right", b);
+            emit log("Error: a == b not satisfied [int[]]");
+            emit log_named_array("      Left", a);
+            emit log_named_array("     Right", b);
             fail();
         }
     }
 
     function eq(address[] memory a, address[] memory b) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log("Error: a == b not satisfied [address[]]");
-            emit Log.log_named_array("      Left", a);
-            emit Log.log_named_array("     Right", b);
+            emit log("Error: a == b not satisfied [address[]]");
+            emit log_named_array("      Left", a);
+            emit log_named_array("     Right", b);
             fail();
         }
     }
@@ -832,7 +856,7 @@ library ShortAssert {
         string memory err
     ) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
@@ -843,7 +867,7 @@ library ShortAssert {
         string memory err
     ) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
@@ -854,7 +878,7 @@ library ShortAssert {
         string memory err
     ) internal {
         if (keccak256(abi.encode(a)) != keccak256(abi.encode(b))) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             eq(a, b);
         }
     }
@@ -872,11 +896,11 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log("Error: a ~= b not satisfied [uint]");
-            emit Log.log_named_uint("      Left", a);
-            emit Log.log_named_uint("     Right", b);
-            emit Log.log_named_uint(" Max Delta", maxDelta);
-            emit Log.log_named_uint("     Delta", delta);
+            emit log("Error: a ~= b not satisfied [uint]");
+            emit log_named_uint("      Left", a);
+            emit log_named_uint("     Right", b);
+            emit log_named_uint(" Max Delta", maxDelta);
+            emit log_named_uint("     Delta", delta);
             fail();
         }
 
@@ -892,7 +916,7 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             closeTo(a, b, maxDelta);
         }
 
@@ -908,11 +932,11 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log("Error: a ~= b not satisfied [uint]");
-            emit Log.log_named_decimal_uint("      Left", a, decimals);
-            emit Log.log_named_decimal_uint("     Right", b, decimals);
-            emit Log.log_named_decimal_uint(" Max Delta", maxDelta, decimals);
-            emit Log.log_named_decimal_uint("     Delta", delta, decimals);
+            emit log("Error: a ~= b not satisfied [uint]");
+            emit log_named_decimal_uint("      Left", a, decimals);
+            emit log_named_decimal_uint("     Right", b, decimals);
+            emit log_named_decimal_uint(" Max Delta", maxDelta, decimals);
+            emit log_named_decimal_uint("     Delta", delta, decimals);
             fail();
         }
 
@@ -929,7 +953,7 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             closeToDecimal(a, b, maxDelta, decimals);
         }
     }
@@ -942,11 +966,11 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log("Error: a ~= b not satisfied [int]");
-            emit Log.log_named_int("       Left", a);
-            emit Log.log_named_int("      Right", b);
-            emit Log.log_named_uint(" Max Delta", maxDelta);
-            emit Log.log_named_uint("     Delta", delta);
+            emit log("Error: a ~= b not satisfied [int]");
+            emit log_named_int("       Left", a);
+            emit log_named_int("      Right", b);
+            emit log_named_uint(" Max Delta", maxDelta);
+            emit log_named_uint("     Delta", delta);
             fail();
         }
 
@@ -962,7 +986,7 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             closeTo(a, b, maxDelta);
         }
 
@@ -978,11 +1002,11 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log("Error: a ~= b not satisfied [int]");
-            emit Log.log_named_decimal_int("      Left", a, decimals);
-            emit Log.log_named_decimal_int("     Right", b, decimals);
-            emit Log.log_named_decimal_uint(" Max Delta", maxDelta, decimals);
-            emit Log.log_named_decimal_uint("     Delta", delta, decimals);
+            emit log("Error: a ~= b not satisfied [int]");
+            emit log_named_decimal_int("      Left", a, decimals);
+            emit log_named_decimal_int("     Right", b, decimals);
+            emit log_named_decimal_uint(" Max Delta", maxDelta, decimals);
+            emit log_named_decimal_uint("     Delta", delta, decimals);
             fail();
         }
 
@@ -999,7 +1023,7 @@ library ShortAssert {
         uint256 delta = stdMath.delta(a, b);
 
         if (delta > maxDelta) {
-            emit Log.log_named_string("Error", err);
+            emit log_named_string("Error", err);
             closeToDecimal(a, b, maxDelta, decimals);
         }
 
@@ -1120,7 +1144,7 @@ library ShortAssert {
         function() external view returns (uint256) next
     ) internal returns (uint256) {
         if (!prev) {
-            emit Log.log("Error: Previous value was false");
+            emit log("Error: Previous value was false");
         }
         return next();
     }
