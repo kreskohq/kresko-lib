@@ -28,13 +28,3 @@ contract Wallet is Script {
         return vm.rememberKey(vm.envUint(_pkEnv));
     }
 }
-
-library Envs {
-    string constant LOCAL_ACCOUNTS = "MNEMONIC_DEVNET";
-    string constant TEST_ACCOUNTS = "MNEMONIC_TESTNET";
-    string constant MAIN_ACCOUNTS = "MNEMONIC";
-
-    string constant MAIN_ACCOUNT = "PRIVATE_KEY";
-    string constant TEST_ACCOUNT = "PRIVATE_KEY_TESTNET";
-    string constant LOCAL_ACCOUNT = "PRIVATE_KEY_DEVNET";
-}

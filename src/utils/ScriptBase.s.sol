@@ -2,31 +2,10 @@
 pragma solidity ^0.8.0;
 
 import {Wallet} from "./Wallet.s.sol";
-import {LibVm, Log} from "./Libs.sol";
+import {LibVm} from "./Libs.sol";
 
 abstract contract ScriptBase is Wallet {
     constructor(string memory _mnemonicId) Wallet(_mnemonicId) {}
-
-    /// @notice "Safe" as in does not clear existing caller modifications.
-    modifier safeBroadcastWithIdx(uint32 _mnemonicIndex) {
-        vm.startBroadcast(getAddr(_mnemonicIndex));
-        _;
-        vm.stopBroadcast();
-    }
-
-    /// @notice "Safe" as in does not clear existing caller modifications.
-    modifier safeBroadcastWithAddr(address _addr) {
-        vm.startBroadcast(_addr);
-        _;
-        vm.stopBroadcast();
-    }
-
-    /// @notice "Safe" as in does not clear existing caller modifications.
-    modifier safeBroadcastWithKey(string memory _pkEnv) {
-        vm.startBroadcast(vm.envUint(_pkEnv));
-        _;
-        vm.stopBroadcast();
-    }
 
     /// @dev Clears existing caller modifications before calling startBroadcast.
     modifier broadcastWithIdx(uint32 _mnemonicIndex) {
@@ -124,16 +103,5 @@ abstract contract ScriptBase is Wallet {
 
     function peekCallers() internal returns (LibVm.Callers memory) {
         return LibVm.callers();
-    }
-
-    function logCallers() internal {
-        Log.clg_callers();
-    }
-
-    modifier logGas() {
-        uint256 startGas = gasleft();
-        _;
-        uint256 endGas = gasleft();
-        emit Log.log_named_uint("gas used", startGas - endGas);
     }
 }

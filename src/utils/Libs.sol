@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {Vm, VmSafe} from "forge-std/Vm.sol";
-import {console2} from "forge-std/Console2.sol";
 import {IERC20} from "../token/IERC20.sol";
-import {Stash} from "./Stash.s.sol";
 
 Vm constant VM = Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
 
@@ -12,7 +10,6 @@ struct Store {
     bool _failed;
     bool logDisabled;
     string logPrefix;
-    Stash.Data stash;
 }
 
 function store() view returns (Store storage ds) {
@@ -317,35 +314,11 @@ library Help {
         return vm.parseBytes(_val);
     }
 
-    function toBool(string memory _val) internal pure returns (bool) {
-        return vm.parseBool(_val);
-    }
-
     function and(
         string memory a,
         string memory b
     ) internal pure returns (string memory) {
         return string.concat(a, b);
-    }
-
-    function write(
-        address[] storage _arr,
-        address[] memory _val
-    ) internal returns (address[] storage) {
-        for (uint256 i; i < _val.length; i++) {
-            _arr.push(_val[i]);
-        }
-        return _arr;
-    }
-
-    function write(
-        uint256[] storage _arr,
-        uint256[] memory _val
-    ) internal returns (uint256[] storage) {
-        for (uint256 i; i < _val.length; i++) {
-            _arr.push(_val[i]);
-        }
-        return _arr;
     }
 
     function arr(
@@ -702,64 +675,6 @@ library Help {
         dynamic_[2] = _fixed[2];
         dynamic_[3] = _fixed[3];
         dynamic_[4] = _fixed[4];
-        return dynamic_;
-    }
-
-    function dyn(
-        uint32[6] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](6);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        return dynamic_;
-    }
-
-    function dyn(
-        uint32[7] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](7);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        dynamic_[6] = _fixed[6];
-        return dynamic_;
-    }
-
-    function dyn(
-        uint32[8] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](8);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        dynamic_[6] = _fixed[6];
-        dynamic_[7] = _fixed[7];
-        return dynamic_;
-    }
-
-    function dyn(
-        uint32[9] memory _fixed
-    ) internal pure returns (uint32[] memory dynamic_) {
-        dynamic_ = new uint32[](9);
-        dynamic_[0] = _fixed[0];
-        dynamic_[1] = _fixed[1];
-        dynamic_[2] = _fixed[2];
-        dynamic_[3] = _fixed[3];
-        dynamic_[4] = _fixed[4];
-        dynamic_[5] = _fixed[5];
-        dynamic_[6] = _fixed[6];
-        dynamic_[7] = _fixed[7];
-        dynamic_[8] = _fixed[8];
         return dynamic_;
     }
 
@@ -1425,7 +1340,7 @@ library Log {
         log_decimal_balance(_account, _token);
     }
 
-    function clg_callers() internal check {
+    function logCallers() internal check {
         LibVm.Callers memory current = LibVm.callers();
         emit log_named_string(
             "isHEVM",
@@ -1448,67 +1363,5 @@ library Log {
     modifier check() {
         if (store().logDisabled) return;
         _;
-    }
-}
-
-library Enums {
-    /**
-     * @dev Minter fees for minting and burning.
-     * Open = 0
-     * Close = 1
-     */
-    enum MinterFee {
-        Open,
-        Close
-    }
-    /**
-     * @notice Swap fee types for shared collateral debt pool swaps.
-     * Open = 0
-     * Close = 1
-     */
-    enum SwapFee {
-        In,
-        Out
-    }
-    /**
-     * @notice Configurable oracle types for assets.
-     * Empty = 0
-     * Redstone = 1,
-     * Chainlink = 2,
-     * API3 = 3,
-     * Vault = 4
-     */
-    enum OracleType {
-        Empty,
-        Redstone,
-        Chainlink,
-        API3,
-        Vault
-    }
-
-    /**
-     * @notice Protocol core actions.
-     * Deposit = 0
-     * Withdraw = 1,
-     * Repay = 2,
-     * Borrow = 3,
-     * Liquidate = 4
-     * SCDPDeposit = 5,
-     * SCDPSwap = 6,
-     * SCDPWithdraw = 7,
-     * SCDPRepay = 8,
-     * SCDPLiquidation = 9
-     */
-    enum Action {
-        Deposit,
-        Withdraw,
-        Repay,
-        Borrow,
-        Liquidation,
-        SCDPDeposit,
-        SCDPSwap,
-        SCDPWithdraw,
-        SCDPRepay,
-        SCDPLiquidation
     }
 }

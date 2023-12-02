@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {ScriptBase} from "./ScriptBase.s.sol";
 import {VmSafe} from "forge-std/Vm.sol";
 import {LibVm} from "./Libs.sol";
