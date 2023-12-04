@@ -44,6 +44,14 @@ interface IMinimalVM {
 
     // Returns the time since unix epoch in milliseconds
     function unixTime() external returns (uint256 milliseconds);
+
+    function startBroadcast(address) external;
+
+    function stopBroadcast() external;
+
+    function startPrank(address) external;
+
+    function stopPrank() external;
 }
 
 IMinimalVM constant vm = IMinimalVM(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
