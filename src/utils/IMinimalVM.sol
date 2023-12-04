@@ -6,7 +6,11 @@ interface IMinimalVM {
 
     function readFile(string memory _path) external returns (string memory);
 
+    function writeFile(string calldata, string calldata) external;
+
     function writeJson(string calldata json, string calldata path) external;
+
+    function exists(string calldata) external returns (bool);
 
     function writeJson(
         string calldata json,
@@ -27,6 +31,12 @@ interface IMinimalVM {
         string calldata json,
         string calldata key
     ) external view returns (bool);
+
+    function isFile(string calldata) external view returns (bool);
+
+    function snapshot() external returns (uint256);
+
+    function revertTo(uint256) external returns (bool);
 }
 
 IMinimalVM constant vm = IMinimalVM(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
