@@ -37,6 +37,13 @@ interface IMinimalVM {
     function snapshot() external returns (uint256);
 
     function revertTo(uint256) external returns (bool);
+
+    function warp(uint256 newTimestamp) external;
+
+    function projectRoot() external view returns (string memory path);
+
+    // Returns the time since unix epoch in milliseconds
+    function unixTime() external returns (uint256 milliseconds);
 }
 
 IMinimalVM constant vm = IMinimalVM(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
