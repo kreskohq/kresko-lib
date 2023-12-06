@@ -7,6 +7,20 @@ import {Scripted, LibVm, VmSafe} from "./Scripted.s.sol";
 
 abstract contract Tested is Scripted, Test {
     using LibVm for VmSafe.CallerMode;
+    address tuser0;
+    address tuser1;
+    address tuser2;
+
+    modifier testUsers(
+        address _u0,
+        address _u1,
+        address _u2
+    ) {
+        tuser0 = _u0;
+        tuser1 = _u1;
+        tuser2 = _u2;
+        _;
+    }
 
     modifier prankedById(uint32 _mIdx) {
         address who = getAddr(_mIdx);
