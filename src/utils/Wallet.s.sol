@@ -9,6 +9,11 @@ string constant testMnemonic = "error burger code";
 contract Wallet {
     string private __mEnv = "MNEMONIC_DEVNET";
 
+    modifier mnemonic(string memory _mEnv) {
+        __mEnv = _mEnv;
+        _;
+    }
+
     /// @param _mEnv name of the env variable, default is MNEMONIC_DEVNET
     function useMnemonic(string memory _mEnv) internal {
         __mEnv = _mEnv;
