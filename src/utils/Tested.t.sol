@@ -7,18 +7,18 @@ import {Scripted, LibVm, VmSafe} from "./Scripted.s.sol";
 
 abstract contract Tested is Scripted, Test {
     using LibVm for VmSafe.CallerMode;
-    address tuser0;
-    address tuser1;
-    address tuser2;
+    address user0;
+    address user1;
+    address user2;
 
-    modifier testUsers(
+    modifier users(
         address _u0,
         address _u1,
         address _u2
     ) {
-        tuser0 = _u0;
-        tuser1 = _u1;
-        tuser2 = _u2;
+        user0 = _u0;
+        user1 = _u1;
+        user2 = _u2;
         _;
     }
 
