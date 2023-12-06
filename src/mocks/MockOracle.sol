@@ -7,24 +7,20 @@ contract MockOracle is IAggregatorV3 {
     uint8 public decimals = 8;
     string public override description;
     uint256 public override version = 1;
-    int256 public initialAnswer;
+    int256 public answer;
 
-    constructor(
-        string memory _description,
-        uint256 _initialAnswer,
-        uint8 _decimals
-    ) {
-        description = _description;
-        initialAnswer = int256(_initialAnswer);
-        decimals = _decimals;
+    constructor(string memory _desc, uint256 _answr, uint8 _dec) {
+        description = _desc;
+        answer = int256(_answr);
+        decimals = _dec;
     }
 
-    function setPrice(uint256 _answer) external {
-        initialAnswer = int256(_answer);
+    function setPrice(uint256 _answr) external {
+        answer = int256(_answr);
     }
 
     function price() external view returns (uint256) {
-        return uint256(initialAnswer);
+        return uint256(answer);
     }
 
     function getRoundData(
@@ -35,13 +31,13 @@ contract MockOracle is IAggregatorV3 {
         override
         returns (
             uint80 roundId,
-            int256 answer,
+            int256,
             uint256 startedAt,
             uint256 updatedAt,
-            uint80 answeredInRound
+            uint80
         )
     {
-        return (1, initialAnswer, block.timestamp, block.timestamp, roundId);
+        return (1, answer, block.timestamp, block.timestamp, roundId);
     }
 
     function latestRoundData()
@@ -50,12 +46,12 @@ contract MockOracle is IAggregatorV3 {
         override
         returns (
             uint80 roundId,
-            int256 answer,
+            int256,
             uint256 startedAt,
             uint256 updatedAt,
-            uint80 answeredInRound
+            uint80
         )
     {
-        return (1, initialAnswer, block.timestamp, block.timestamp, roundId);
+        return (1, answer, block.timestamp, block.timestamp, roundId);
     }
 }

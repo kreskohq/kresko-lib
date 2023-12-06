@@ -2,28 +2,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Script} from "forge-std/Script.sol";
+import {mAddr, mPk, mvm} from "./MinVm.s.sol";
 
-/// @notice Broadcast + prank utils wont revert like forge. If unsure - just use regular vm.
-contract Wallet is Script {
-    string private __mnemonicId;
+string constant testMnemonic = "error burger code";
 
-    constructor(string memory _mnemonicId) {
-        __mnemonicId = _mnemonicId;
+contract Wallet {
+    string private __mEnv = "MNEMONIC_DEVNET";
+
+    /// @param _mEnv name of the env variable, default is MNEMONIC_DEVNET
+    function useMnemonic(string memory _mEnv) internal {
+        __mEnv = _mEnv;
     }
 
-    function getPk(uint32 _mnemonicIndex) internal view returns (uint256) {
-        return vm.deriveKey(vm.envString(__mnemonicId), _mnemonicIndex);
+    /// @param _mIdx mnemonic index
+    function getPk(uint32 _mIdx) internal returns (uint256) {
+        return mPk(__mEnv, _mIdx);
     }
 
-    function getAddr(uint32 _mnemonicIndex) internal returns (address account) {
-        (account, ) = deriveRememberKey(
-            vm.envString(__mnemonicId),
-            _mnemonicIndex
-        );
+    /// @param _mIdx mnemonic index
+    function getAddr(uint32 _mIdx) internal returns (address) {
+        return mAddr(__mEnv, _mIdx);
     }
 
+    /// @param _pkEnv name of the env variable
     function getAddr(string memory _pkEnv) internal returns (address) {
-        return vm.rememberKey(vm.envUint(_pkEnv));
+        return mvm.rememberKey(mvm.envOr(_pkEnv, 0));
     }
 }

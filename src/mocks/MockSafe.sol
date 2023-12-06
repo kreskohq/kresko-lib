@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable
+
 pragma solidity ^0.8.0;
 
 contract GnosisSafeL2Mock {
@@ -22,6 +24,11 @@ contract GnosisSafeL2Mock {
         return who == owner;
     }
 
+    function setOwner(address who) external {
+        require(msg.sender == owner, "mso");
+        owner = who;
+    }
+
     function getOwners() external view returns (address[] memory) {
         address[] memory owners = new address[](6);
         owners[0] = address(owner);
@@ -43,29 +50,4 @@ library LibSafe {
     function createSafe(address admin) internal returns (GnosisSafeL2Mock) {
         return new GnosisSafeL2Mock(admin);
     }
-    //     GnosisSafeL2 masterCopy = new GnosisSafeL2();
-    //     GnosisSafeProxyFactory proxyFactory = new GnosisSafeProxy();
-    //     address[] memory councilUsers = new address[](5);
-    //     councilUsers[0] = (admin);
-    //     councilUsers[1] = (USER1);
-    //     councilUsers[2] = (USER2);
-    //     councilUsers[3] = (USER3);
-    //     councilUsers[4] = (USER4);
-
-    //     return
-    //         proxyFactory.createProxy(
-    //             address(masterCopy),
-    //             abi.encodeWithSelector(
-    //                 masterCopy.setup.selector,
-    //                 councilUsers,
-    //                 3,
-    //                 address(0),
-    //                 "0x",
-    //                 address(0),
-    //                 address(0),
-    //                 0,
-    //                 admin
-    //             )
-    //         );
-    // }
 }
