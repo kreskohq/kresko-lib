@@ -101,6 +101,25 @@ abstract contract RedstoneScript is RsPayload {
             );
     }
 
+    function rsStatic(
+        bytes4 _s,
+        address p1,
+        address p2,
+        uint256 p3,
+        uint256 p4,
+        string memory _mstr
+    ) public returns (uint256) {
+        return
+            abi.decode(
+                rsStatic(
+                    _rsKresko,
+                    abi.encodeWithSelector(_s, p1, p2, p3, p4),
+                    _mstr
+                ),
+                (uint256)
+            );
+    }
+
     function rsCall(
         bytes4 _s,
         address p1,
