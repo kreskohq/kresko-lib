@@ -37,6 +37,7 @@ function hasVM() view returns (bool) {
 }
 
 function getPayloadRs(string memory _mstr) returns (bytes memory) {
+    if (bytes(_mstr).length == 0) revert("RsScript: no mock");
     return getPayloadRs(rs_script_def, _mstr);
 }
 
