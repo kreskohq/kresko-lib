@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {FFIVm, hasVM, vmAddr} from "./Base.sol";
+import {FFIVm, hasVM, vmAddr} from "./Base.s.sol";
 
 interface IMinVM is FFIVm {
     function readFile(string memory) external returns (string memory);

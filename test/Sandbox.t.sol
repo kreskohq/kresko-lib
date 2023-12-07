@@ -6,8 +6,7 @@ import {Tested} from "../src/utils/Tested.t.sol";
 import {Help, Log} from "../src/utils/Libs.s.sol";
 import {LibVm} from "../src/utils/LibVm.s.sol";
 import {ShortAssert} from "../src/utils/ShortAssert.t.sol";
-import {MinLog} from "../src/utils/MinLog.s.sol";
-import {logp} from "../src/utils/Base.sol";
+import {PLog, logp} from "../src/utils/PLog.s.sol";
 
 contract Sandbox is Tested {
     TestContract internal thing;

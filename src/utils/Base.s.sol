@@ -52,7 +52,7 @@ function getPayloadRs(
     return vmFFI.ffi(args);
 }
 
-function _revert(bytes memory _d) pure {
+function __revert(bytes memory _d) pure {
     assembly {
         revert(add(32, _d), mload(_d))
     }

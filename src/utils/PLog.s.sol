@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {logp} from "./Base.sol";
+import {logp} from "./Base.s.sol";
 
-library MinLog {
+library PLog {
     function clg(string memory p0) internal pure {
         logp(abi.encodeWithSignature("log(string)", p0));
     }

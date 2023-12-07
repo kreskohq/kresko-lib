@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
-import {vmFFI} from "../Base.sol";
+import {vmFFI} from "../Base.s.sol";
 
 interface ILoupe {
     function facetFunctionSelectors(

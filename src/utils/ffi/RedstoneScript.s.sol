@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import {_revert, getPayloadRs} from "../Base.sol";
+import {__revert, getPayloadRs} from "../Base.s.sol";
 
 abstract contract RsPayload {
     string private _rsScript;
@@ -192,7 +192,7 @@ abstract contract RedstoneScript is RsPayload {
         (bool success, bytes memory data) = address(_to).call(
             abi.encodePacked(_f, getRsPayload(_mstr))
         );
-        if (!success) _revert(data);
+        if (!success) __revert(data);
 
         return data;
     }
@@ -205,7 +205,7 @@ abstract contract RedstoneScript is RsPayload {
         (bool success, bytes memory data) = address(_to).staticcall(
             abi.encodePacked(_f, getRsPayload(_mstr))
         );
-        if (!success) _revert(data);
+        if (!success) __revert(data);
 
         return data;
     }

@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import {Wallet} from "./Wallet.s.sol";
 import {LibVm, VmSafe} from "./LibVm.s.sol";
 import {Script} from "forge-std/Script.sol";
+import {__revert} from "./Base.s.sol";
 
 abstract contract Scripted is Script, Wallet {
     using LibVm for VmSafe.CallerMode;
@@ -139,5 +140,9 @@ abstract contract Scripted is Script, Wallet {
 
     function peekCallers() internal returns (LibVm.Callers memory) {
         return LibVm.callers();
+    }
+
+    function _revert(bytes memory _d) internal pure {
+        __revert(_d);
     }
 }
