@@ -26,21 +26,21 @@ abstract contract Tested is Scripted, Test {
         address who = getAddr(_mIdx);
         vm.startPrank(who, who);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
     }
 
     modifier prankedByKey(string memory _pkEnv) {
         address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
     }
 
     modifier prankedByNew(string memory _label) {
         address who = prankNew(_label).addr;
         vm.startPrank(who, who);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
     }
 
     modifier reprankedById(uint32 _mIdx) {
@@ -49,7 +49,7 @@ abstract contract Tested is Scripted, Test {
         address who = getAddr(_mIdx);
         vm.startPrank(who, who);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 
@@ -59,7 +59,7 @@ abstract contract Tested is Scripted, Test {
         address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 
@@ -68,7 +68,7 @@ abstract contract Tested is Scripted, Test {
 
         prankNew(_label);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 

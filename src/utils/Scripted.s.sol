@@ -28,25 +28,25 @@ abstract contract Scripted is Script, Wallet {
     modifier broadcastedById(uint32 _mIdx) {
         broadcastWith(_mIdx);
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
     }
 
     modifier broadcasted(address _addr) {
         broadcastWith(_addr);
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
     }
 
     modifier broadcastedByPk(string memory _pkEnv) {
         broadcastWith(_pkEnv);
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
     }
 
     modifier pranked(address _sno) {
         prank(_sno);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
     }
 
     /// @dev clear call modes, broadcast function body and restore callers after
@@ -55,7 +55,7 @@ abstract contract Scripted is Script, Wallet {
 
         vm.startBroadcast(_addr);
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 
@@ -64,7 +64,7 @@ abstract contract Scripted is Script, Wallet {
 
         vm.startBroadcast(getAddr(_mIdx));
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 
@@ -73,7 +73,7 @@ abstract contract Scripted is Script, Wallet {
 
         vm.startBroadcast(getAddr(_pkEnv));
         _;
-        vm.stopBroadcast();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 
@@ -89,7 +89,7 @@ abstract contract Scripted is Script, Wallet {
         (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
         vm.startPrank(_addr, _addr);
         _;
-        vm.stopPrank();
+        LibVm.clearCallers();
         _m.restore(_s, _o);
     }
 

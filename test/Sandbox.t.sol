@@ -65,6 +65,9 @@ contract Sandbox is Tested {
         broadcastWith(third);
         _unbroadcastedRestored().eq(msg.sender);
         peekSender().eq(third);
+        vm.stopBroadcast();
+
+        _unbroadcastedRestored();
     }
 
     function _broadcastRestored()
