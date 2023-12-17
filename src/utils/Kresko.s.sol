@@ -293,7 +293,7 @@ library LibKresko {
     function getDebtSCDP(
         Kresko _kresko,
         address _krAsset
-    ) external view returns (uint256) {
+    ) internal view returns (uint256) {
         return
             abi.decode(
                 _kresko.staticcall(
