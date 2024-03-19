@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {VM, LibVm} from "./LibVm.s.sol";
+import {mvm, LibVm} from "./LibVm.s.sol";
 import {IERC20} from "../token/IERC20.sol";
 import {hasVM, mAddr, store} from "./MinVm.s.sol";
 import {PLog} from "./PLog.s.sol";
@@ -133,15 +133,15 @@ library Help {
     }
 
     function str(address _val) internal pure returns (string memory) {
-        return VM.toString(_val);
+        return mvm.toString(_val);
     }
 
     function str(uint256 _val) internal pure returns (string memory) {
-        return VM.toString(_val);
+        return mvm.toString(_val);
     }
 
     function str(bytes32 _val) internal pure returns (string memory) {
-        return VM.toString(_val);
+        return mvm.toString(_val);
     }
 
     function txt(bytes32 _val) internal pure returns (string memory) {
@@ -153,23 +153,23 @@ library Help {
     }
 
     function str(bytes memory _val) internal pure returns (string memory) {
-        return VM.toString(_val);
+        return mvm.toString(_val);
     }
 
     function toAddr(string memory _val) internal pure returns (address) {
-        return VM.parseAddress(_val);
+        return mvm.parseAddress(_val);
     }
 
     function toUint(string memory _val) internal pure returns (uint256) {
-        return VM.parseUint(_val);
+        return mvm.parseUint(_val);
     }
 
     function toB32(string memory _val) internal pure returns (bytes32) {
-        return VM.parseBytes32(_val);
+        return mvm.parseBytes32(_val);
     }
 
     function toBytes(string memory _val) internal pure returns (bytes memory) {
-        return VM.parseBytes(_val);
+        return mvm.parseBytes(_val);
     }
 
     function and(
@@ -395,7 +395,7 @@ library Log {
 
     function log_decimal_balance(address _account, address _token) internal {
         emit log_named_decimal_uint(
-            _pre(VM.toString(_account).and(IERC20(_token).symbol())),
+            _pre(mvm.toString(_account).and(IERC20(_token).symbol())),
             IERC20(_token).balanceOf(_account),
             IERC20(_token).decimals()
         );
@@ -407,7 +407,7 @@ library Log {
     ) internal {
         for (uint256 i; i < _tokens.length; i++) {
             emit log_named_decimal_uint(
-                _pre(VM.toString(_account).and(IERC20(_tokens[i]).symbol())),
+                _pre(mvm.toString(_account).and(IERC20(_tokens[i]).symbol())),
                 IERC20(_tokens[i]).balanceOf(_account),
                 IERC20(_tokens[i]).decimals()
             );

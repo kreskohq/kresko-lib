@@ -13,6 +13,8 @@ import {IWETH9} from "../token/IWETH9.sol";
 
 library Arb {
     address constant ZERO = address(0);
+    address constant KRESKO_NFT_SAFE =
+        0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
     address constant KRESKO_SAFE = 0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
     address constant OFFICIALLY_KRESKIAN =
         0xAbDb949a18d27367118573A217E5353EDe5A0f1E;

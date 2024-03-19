@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+// solhint-disable
 pragma solidity ^0.8.0;
 
 import {ERC20} from "../token/ERC20.sol";
@@ -62,5 +63,57 @@ contract MockERC20 is ERC20 {
 
     function burn(address from, uint256 amount) external {
         _burn(from, amount);
+    }
+}
+
+contract WETH is MockERC20 {
+    constructor() MockERC20("WETH", "WETH", 18, 0) {}
+
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external {
+        _burn(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+contract USDC is MockERC20 {
+    constructor() MockERC20("USDC", "USDC", 18, 0) {}
+
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external {
+        _burn(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+contract DAI is MockERC20 {
+    constructor() MockERC20("DAI", "DAI", 18, 0) {}
+
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external {
+        _burn(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+contract USDT is MockERC20 {
+    constructor() MockERC20("USDT", "USDT", 6, 0) {}
+
+    function deposit() external payable {
+        _mint(msg.sender, msg.value);
+    }
+
+    function withdraw(uint256 amount) external {
+        _burn(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
     }
 }

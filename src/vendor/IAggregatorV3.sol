@@ -8,6 +8,8 @@ interface IAggregatorV3 {
 
     function version() external view returns (uint256);
 
+    function latestAnswer() external view returns (int256);
+
     function getRoundData(
         uint80 _roundId
     )

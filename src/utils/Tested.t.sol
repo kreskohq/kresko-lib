@@ -3,10 +3,11 @@
 pragma solidity ^0.8.0;
 
 import {Test} from "forge-std/Test.sol";
-import {Scripted, LibVm, VmSafe} from "./Scripted.s.sol";
+import {IMinVM} from "./MinVm.s.sol";
+import {Scripted, LibVm} from "./Scripted.s.sol";
 
 abstract contract Tested is Scripted, Test {
-    using LibVm for VmSafe.CallerMode;
+    using LibVm for IMinVM.CallerMode;
     address user0;
     address user1;
     address user2;
@@ -44,7 +45,7 @@ abstract contract Tested is Scripted, Test {
     }
 
     modifier reprankedById(uint32 _mIdx) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         address who = getAddr(_mIdx);
         vm.startPrank(who, who);
@@ -54,7 +55,7 @@ abstract contract Tested is Scripted, Test {
     }
 
     modifier reprankedByKey(string memory _pkEnv) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
@@ -64,7 +65,7 @@ abstract contract Tested is Scripted, Test {
     }
 
     modifier reprankedByNew(string memory _label) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         prankNew(_label);
         _;

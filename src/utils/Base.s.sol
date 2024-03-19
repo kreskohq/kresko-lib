@@ -24,6 +24,12 @@ function logv(bytes memory _b) view {
 
 interface FFIVm {
     function ffi(string[] memory) external returns (bytes memory);
+
+    function toString(bytes32) external view returns (string memory);
+
+    function toString(address) external view returns (string memory);
+
+    function toString(uint256) external view returns (string memory);
 }
 
 FFIVm constant vmFFI = FFIVm(vmAddr);
@@ -34,23 +40,6 @@ function hasVM() view returns (bool) {
         len := extcodesize(vmAddr)
     }
     return len > 0;
-}
-
-function getPayloadRs(string memory _mstr) returns (bytes memory) {
-    if (bytes(_mstr).length == 0) revert("RsScript: no mock");
-    return getPayloadRs(rs_script_def, _mstr);
-}
-
-function getPayloadRs(
-    string memory _loc,
-    string memory _mstr
-) returns (bytes memory) {
-    string[] memory args = new string[](3);
-    args[0] = "node";
-    args[1] = _loc;
-    args[2] = _mstr;
-
-    return vmFFI.ffi(args);
 }
 
 function __revert(bytes memory _d) pure {

@@ -3,12 +3,12 @@
 pragma solidity ^0.8.0;
 
 import {Wallet} from "./Wallet.s.sol";
-import {LibVm, VmSafe} from "./LibVm.s.sol";
+import {LibVm, IMinVM, mvm} from "./LibVm.s.sol";
 import {Script} from "forge-std/Script.sol";
 import {__revert} from "./Base.s.sol";
 
 abstract contract Scripted is Script, Wallet {
-    using LibVm for VmSafe.CallerMode;
+    using LibVm for IMinVM.CallerMode;
 
     modifier fork(string memory _uoa) {
         vm.createSelectFork(_uoa);
@@ -51,7 +51,7 @@ abstract contract Scripted is Script, Wallet {
 
     /// @dev clear call modes, broadcast function body and restore callers after
     modifier rebroadcasted(address _addr) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         vm.startBroadcast(_addr);
         _;
@@ -60,7 +60,7 @@ abstract contract Scripted is Script, Wallet {
     }
 
     modifier rebroadcastById(uint32 _mIdx) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         vm.startBroadcast(getAddr(_mIdx));
         _;
@@ -69,7 +69,7 @@ abstract contract Scripted is Script, Wallet {
     }
 
     modifier rebroadcastedByKey(string memory _pkEnv) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         vm.startBroadcast(getAddr(_pkEnv));
         _;
@@ -79,14 +79,14 @@ abstract contract Scripted is Script, Wallet {
 
     /// @dev func body with no call modes and restore callers after
     modifier reclearCallers() {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
         _;
         _m.restore(_s, _o);
     }
 
     /// @dev clear call modes, prank function body and restore callers after
     modifier repranked(address _addr) {
-        (VmSafe.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
         vm.startPrank(_addr, _addr);
         _;
         LibVm.clearCallers();
@@ -144,5 +144,28 @@ abstract contract Scripted is Script, Wallet {
 
     function _revert(bytes memory _d) internal pure {
         __revert(_d);
+    }
+
+    string __jsonk;
+
+    /// @notice serialize things, set key as "end" to write to file to './temp/'
+    function toJSON(string memory key, string memory val) internal {
+        if (
+            keccak256(abi.encodePacked(key)) !=
+            keccak256(abi.encodePacked("end"))
+        ) {
+            __jsonk = mvm.serializeString("out", key, val);
+            return;
+        }
+        string memory outputDir = string.concat("./temp/");
+        if (!mvm.exists(outputDir)) mvm.createDir(outputDir, true);
+        string memory file = string.concat(
+            outputDir,
+            mvm.toString(block.chainid),
+            "-task-run-",
+            string.concat(mvm.toString(mvm.unixTime()), ".json")
+        );
+
+        mvm.writeJson(val, file);
     }
 }
