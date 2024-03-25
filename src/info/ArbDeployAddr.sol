@@ -18,7 +18,9 @@ abstract contract ArbDeployAddr {
     address constant WBTCAddr = 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f;
     address constant wethAddr = 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1;
     address constant krETHAddr = 0x24dDC92AA342e92f26b4A676568D04d2E3Ea0abc;
+    address constant krBTCAddr = 0x11EF4EcF3ff1c8dB291bc3259f3A4aAC6e4d2325;
     address constant akrETHAddr = 0x3103570A28ca026e818c79608F1FF804F4Bde284;
+    address constant akrBTCAddr = 0xc67a33599f73928D24D32fC0015e187157233410;
     address constant DAIAddr = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
 
     address constant stash = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
