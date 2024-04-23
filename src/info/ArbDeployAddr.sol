@@ -28,7 +28,7 @@ abstract contract ArbDeployAddr {
     address constant stash = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
     address constant safe = 0x266489Bde85ff0dfe1ebF9f0a7e6Fed3a973cEc3;
     address constant nftMultisig = 0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
-    address constant deployer = 0x5a6B3E907b83DE2AbD9010509429683CF5ad5984;
+    address constant og_deployer = 0x5a6B3E907b83DE2AbD9010509429683CF5ad5984;
     address constant kreskianAddr = 0xAbDb949a18d27367118573A217E5353EDe5A0f1E;
     address constant questAddr = 0x1C04925779805f2dF7BbD0433ABE92Ea74829bF6;
 
