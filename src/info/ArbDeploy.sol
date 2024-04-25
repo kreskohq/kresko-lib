@@ -11,19 +11,19 @@ import {IVault} from "../core/IVault.sol";
 import {IPyth} from "../vendor/IPyth.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {
-    IKresko1155 kreskian = IKresko1155(kreskianAddr);
-    IKresko1155 qfk = IKresko1155(questAddr);
+    IKresko1155 constant kreskian = IKresko1155(kreskianAddr);
+    IKresko1155 constant qfk = IKresko1155(questAddr);
 
-    IKresko kresko = IKresko(kreskoAddr);
-    IVault vault = IVault(vaultAddr);
-    IKISS kiss = IKISS(kissAddr);
+    IKresko constant kresko = IKresko(kreskoAddr);
+    IVault constant vault = IVault(vaultAddr);
+    IKISS constant kiss = IKISS(kissAddr);
 
-    IKreskoAsset krETH = IKreskoAsset(krETHAddr);
-    IKreskoAsset krBTC = IKreskoAsset(krBTCAddr);
-    IKreskoAsset krSOL = IKreskoAsset(krSOLAddr);
+    IKreskoAsset constant krETH = IKreskoAsset(krETHAddr);
+    IKreskoAsset constant krBTC = IKreskoAsset(krBTCAddr);
+    IKreskoAsset constant krSOL = IKreskoAsset(krSOLAddr);
 
-    IKreskoAssetAnchor akrETH = IKreskoAssetAnchor(akrETHAddr);
-    IKreskoAssetAnchor akrBTC = IKreskoAssetAnchor(akrBTCAddr);
-    IKreskoAssetAnchor akrSOL = IKreskoAssetAnchor(akrSOLAddr);
-    IPyth pythEP = IPyth(pythAddr);
+    IKreskoAssetAnchor constant akrETH = IKreskoAssetAnchor(akrETHAddr);
+    IKreskoAssetAnchor constant akrBTC = IKreskoAssetAnchor(akrBTCAddr);
+    IKreskoAssetAnchor constant akrSOL = IKreskoAssetAnchor(akrSOLAddr);
+    IPyth constant pythEP = IPyth(pythAddr);
 }
