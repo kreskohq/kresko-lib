@@ -11,7 +11,7 @@ import {IVault} from "../core/IVault.sol";
 import {IPyth} from "../vendor/IPyth.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {
-    IKresko1155 kreskian = IKresko1155(kreskoAddr);
+    IKresko1155 kreskian = IKresko1155(kreskianAddr);
     IKresko1155 qfk = IKresko1155(questAddr);
 
     IKresko kresko = IKresko(kreskoAddr);
