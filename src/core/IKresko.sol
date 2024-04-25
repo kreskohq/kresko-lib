@@ -8,6 +8,7 @@ import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./
 import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
 import {View} from "./IData.sol";
 import {PythView} from "../vendor/IPyth.sol";
+import {IExtendedDiamondCutFacet} from "./IDiamondCut.sol";
 
 interface ISCDPConfigFacet {
     /**
@@ -1395,6 +1396,7 @@ interface IBatchFacet {
 interface IKresko is
     IErrorsEvents,
     IDiamondStateFacet,
+    IExtendedDiamondCutFacet,
     IAuthorizationFacet,
     ICommonConfigFacet,
     ICommonStateFacet,
