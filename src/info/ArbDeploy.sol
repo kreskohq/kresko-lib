@@ -9,6 +9,7 @@ import {IKreskoAsset, IKreskoAssetAnchor} from "../core/IKreskoAsset.sol";
 import {IKresko} from "../core/IKresko.sol";
 import {IVault} from "../core/IVault.sol";
 import {IPyth} from "../vendor/IPyth.sol";
+import {IMarketStatus} from "../core/IMarketStatus.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {
     IKresko1155 constant kreskian = IKresko1155(kreskianAddr);
@@ -21,9 +22,13 @@ abstract contract ArbDeploy is ArbDeployAddr {
     IKreskoAsset constant krETH = IKreskoAsset(krETHAddr);
     IKreskoAsset constant krBTC = IKreskoAsset(krBTCAddr);
     IKreskoAsset constant krSOL = IKreskoAsset(krSOLAddr);
+    IKreskoAsset constant krEUR = IKreskoAsset(krEURAddr);
 
     IKreskoAssetAnchor constant akrETH = IKreskoAssetAnchor(akrETHAddr);
     IKreskoAssetAnchor constant akrBTC = IKreskoAssetAnchor(akrBTCAddr);
     IKreskoAssetAnchor constant akrSOL = IKreskoAssetAnchor(akrSOLAddr);
+    IKreskoAssetAnchor constant akrEUR = IKreskoAssetAnchor(akrEURAddr);
+
     IPyth constant pythEP = IPyth(pythAddr);
+    IMarketStatus constant marketStatus = IMarketStatus(marketStatusAddr);
 }
