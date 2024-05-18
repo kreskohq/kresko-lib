@@ -26,6 +26,7 @@ struct Oracle {
     bytes32 pythId;
     uint256 staleTime;
     bool invertPyth;
+    bool isClosing;
 }
 
 /**
