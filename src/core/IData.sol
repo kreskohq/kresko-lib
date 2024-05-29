@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import {IKreskoAsset} from "./IKreskoAsset.sol";
-import {PythView} from "../vendor/IPyth.sol";
+import {PythView} from "../vendor/Pyth.sol";
 import {Asset, RawPrice, VaultAsset} from "./types/Data.sol";
 
 // solhint-disable state-visibility, max-states-count, var-name-mixedcase, no-global-import, const-name-snakecase, no-empty-blocks, no-console, code-complexity

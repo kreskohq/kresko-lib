@@ -10,7 +10,7 @@ import {IDataV1} from "../core/IData.sol";
 import {Log, Help} from "./Libs.s.sol";
 import {IKresko} from "../core/IKresko.sol";
 import {IERC20} from "../token/IERC20.sol";
-import {IPyth, PythView} from "../vendor/IPyth.sol";
+import {IPyth, PythView} from "../vendor/Pyth.sol";
 import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 import {ISwapRouter} from "../vendor/ISwapRouter.sol";
 import {IQuoterV2} from "../vendor/IQuoterV2.sol";

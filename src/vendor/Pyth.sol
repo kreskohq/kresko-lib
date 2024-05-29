@@ -6,6 +6,23 @@ struct PythView {
     IPyth.Price[] prices;
 }
 
+struct PriceFeed {
+    bytes32 id;
+    IPyth.Price price;
+    IPyth.Price emaPrice;
+}
+
+function getPythPriceView(
+    PriceFeed[] memory feeds
+) pure returns (PythView memory view_) {
+    view_.ids = new bytes32[](feeds.length);
+    view_.prices = new IPyth.Price[](feeds.length);
+    for (uint256 i; i < feeds.length; i++) {
+        view_.ids[i] = feeds[i].id;
+        view_.prices[i] = feeds[i].price;
+    }
+}
+
 interface IPyth {
     struct Price {
         int64 price;

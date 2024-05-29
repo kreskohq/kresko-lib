@@ -8,7 +8,7 @@ import {IKISS} from "../core/IKISS.sol";
 import {IKreskoAsset, IKreskoAssetAnchor} from "../core/IKreskoAsset.sol";
 import {IKresko} from "../core/IKresko.sol";
 import {IVault} from "../core/IVault.sol";
-import {IPyth} from "../vendor/IPyth.sol";
+import {IPyth} from "../vendor/Pyth.sol";
 import {IMarketStatus} from "../core/IMarketStatus.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {

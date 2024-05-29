@@ -7,7 +7,7 @@ import {SwapArgs, BurnArgs, UncheckedWithdrawArgs, LiquidationArgs, SCDPLiquidat
 import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./types/Setup.sol";
 import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
 import {View} from "./IData.sol";
-import {PythView} from "../vendor/IPyth.sol";
+import {PythView} from "../vendor/Pyth.sol";
 import {IExtendedDiamondCutFacet} from "./IDiamondCut.sol";
 
 interface ISCDPConfigFacet {

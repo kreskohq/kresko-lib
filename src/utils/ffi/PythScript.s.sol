@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {vmFFI} from "../Base.s.sol";
-import {PythView, IPyth} from "../../vendor/IPyth.sol";
+import {PythView, IPyth} from "../../vendor/Pyth.sol";
 
 function getPythData(
     bytes32[] memory _ids,

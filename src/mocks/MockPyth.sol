@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {IPyth} from "../vendor/IPyth.sol";
+import {IPyth} from "../vendor/Pyth.sol";
 
 contract MockPyth is IPyth {
     mapping(bytes32 => Price) internal prices;
