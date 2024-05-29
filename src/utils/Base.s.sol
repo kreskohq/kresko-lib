@@ -22,8 +22,16 @@ function logv(bytes memory _b) view {
     }
 }
 
+struct FFIResult {
+    int32 exitCode;
+    bytes stdout;
+    bytes stderr;
+}
+
 interface FFIVm {
     function ffi(string[] memory) external returns (bytes memory);
+
+    function tryFfi(string[] memory) external returns (FFIResult memory);
 
     function toString(bytes32) external view returns (string memory);
 
