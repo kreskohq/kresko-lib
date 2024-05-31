@@ -1010,6 +1010,7 @@ interface ICommonConfigFacet {
         bytes32[] pythIds;
         uint256[] staleTimes;
         bool[] invertPyth;
+        bool[] isClosables;
     }
 
     /**
@@ -1063,7 +1064,8 @@ interface ICommonConfigFacet {
     function setChainlinkFeeds(
         bytes32[] calldata _tickers,
         address[] calldata _feeds,
-        uint256[] memory _staleTimes
+        uint256[] memory _staleTimes,
+        bool[] calldata _isClosables
     ) external;
 
     /**
@@ -1075,7 +1077,8 @@ interface ICommonConfigFacet {
     function setAPI3Feeds(
         bytes32[] calldata _tickers,
         address[] calldata _feeds,
-        uint256[] memory _staleTimes
+        uint256[] memory _staleTimes,
+        bool[] calldata _isClosables
     ) external;
 
     /**
@@ -1103,7 +1106,8 @@ interface ICommonConfigFacet {
         bytes32 _ticker,
         bytes32 _pythId,
         bool _invert,
-        uint256 _staleTime
+        uint256 _staleTime,
+        bool _isClosable
     ) external;
 
     /**
@@ -1116,7 +1120,8 @@ interface ICommonConfigFacet {
     function setChainLinkFeed(
         bytes32 _ticker,
         address _feedAddr,
-        uint256 _staleTime
+        uint256 _staleTime,
+        bool _isClosable
     ) external;
 
     /**
@@ -1129,7 +1134,8 @@ interface ICommonConfigFacet {
     function setAPI3Feed(
         bytes32 _ticker,
         address _feedAddr,
-        uint256 _staleTime
+        uint256 _staleTime,
+        bool _isClosable
     ) external;
 
     /**
@@ -1137,6 +1143,12 @@ interface ICommonConfigFacet {
      * @param _newManager _newManager address
      */
     function setGatingManager(address _newManager) external;
+
+    /**
+     * @notice Sets market status provider
+     * @param _provider market status provider address
+     */
+    function setMarketStatusProvider(address _provider) external;
 }
 
 interface ICommonStateFacet {
