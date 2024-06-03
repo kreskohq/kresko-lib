@@ -385,35 +385,6 @@ library Log {
         PLog.clg(_pre(_str), _val ? "true" : "false");
     }
 
-    function log_pct(uint256 _val) internal {
-        emit log_named_decimal_uint(_pre(""), _val, 2);
-    }
-
-    function log_pct(uint256 _val, string memory _str) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
-    }
-
-    function log_decimal_balance(address _account, address _token) internal {
-        emit log_named_decimal_uint(
-            _pre(mvm.toString(_account).and(IERC20(_token).symbol())),
-            IERC20(_token).balanceOf(_account),
-            IERC20(_token).decimals()
-        );
-    }
-
-    function log_decimal_balances(
-        address _account,
-        address[] memory _tokens
-    ) internal {
-        for (uint256 i; i < _tokens.length; i++) {
-            emit log_named_decimal_uint(
-                _pre(mvm.toString(_account).and(IERC20(_tokens[i]).symbol())),
-                IERC20(_tokens[i]).balanceOf(_account),
-                IERC20(_tokens[i]).decimals()
-            );
-        }
-    }
-
     function clg(address _val) internal pure {
         if (check()) return;
         if (!_hasPrefix()) {
@@ -673,14 +644,6 @@ library Log {
     function blg(bytes memory _val, string memory _str) internal pure {
         if (check()) return;
         PLog.blg(_val, _pre(_str));
-    }
-
-    function clgBal(address _account, address[] memory _tokens) internal {
-        log_decimal_balances(_account, _tokens);
-    }
-
-    function clgBal(address _account, address _token) internal {
-        log_decimal_balance(_account, _token);
     }
 
     function logCallers() internal {
