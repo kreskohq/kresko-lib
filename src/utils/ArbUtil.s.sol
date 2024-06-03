@@ -9,7 +9,6 @@ import {Log, Help} from "./Libs.s.sol";
 import {PythView} from "../vendor/Pyth.sol";
 import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 import {ISwapRouter} from "../vendor/ISwapRouter.sol";
-import {IQuoterV2} from "../vendor/IQuoterV2.sol";
 
 // solhint-disable avoid-low-level-calls, state-visibility, const-name-snakecase
 
@@ -23,13 +22,12 @@ abstract contract ArbBase is ArbDeploy {
     string pythScript;
     address[] clAssets;
     string pythAssets;
+
     IAggregatorV3 constant CL_ETH =
         IAggregatorV3(0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612);
 
     ISwapRouter constant routerV3 =
         ISwapRouter(0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45);
-    IQuoterV2 constant quoterV2 =
-        IQuoterV2(0x61fFE014bA17989E743c5F6cB21bF9697530B21e);
 
     IDataV1 constant dataV1 = IDataV1(dataV1Addr);
 
@@ -55,21 +53,6 @@ abstract contract ArbBase is ArbDeploy {
         pythEP.updatePriceFeeds{value: pythEP.getUpdateFee(pythUpdate)}(
             pythUpdate
         );
-    }
-
-    function getValue(
-        address asset,
-        uint256 amount
-    ) internal returns (uint256) {
-        ValQuery[] memory queries = new ValQuery[](1);
-        queries[0] = ValQuery(asset, amount);
-        return getValues(queries)[0].value;
-    }
-
-    function getPrice(address asset) internal returns (uint256) {
-        ValQuery[] memory queries = new ValQuery[](1);
-        queries[0] = ValQuery(asset, 1e18);
-        return getValues(queries)[0].price;
     }
 
     function getValuePrice(
