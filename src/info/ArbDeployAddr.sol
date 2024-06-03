@@ -34,7 +34,6 @@ abstract contract ArbDeployAddr {
     address constant akrEURAddr = 0xBb6053898C5f6e536405fA324839141aA102b6D9;
     address constant akrJPYAddr = 0x3438Eb57e5b0f1CbEca257Aea9644B26b1B61EaC;
 
-    address constant stash = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
     address constant safe = 0x266489Bde85ff0dfe1ebF9f0a7e6Fed3a973cEc3;
     address constant nftMultisig = 0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
     address constant og_deployer = 0x5a6B3E907b83DE2AbD9010509429683CF5ad5984;
@@ -47,5 +46,8 @@ abstract contract ArbDeployAddr {
     IERC20 constant WBTC = IERC20(WBTCAddr);
     IERC20 constant ARB = IERC20(ARBAddr);
 
+    address constant binanceAddr = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
     address constant pythAddr = 0xff1a0f4744e8582DF1aE09D5611b887B6a12925C;
+    address constant routerv3Addr = 0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45;
+    address constant quoterV2Addr = 0x61fFE014bA17989E743c5F6cB21bF9697530B21e;
 }
