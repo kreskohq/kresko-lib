@@ -6,6 +6,7 @@ import {Asset, Oracle, RawPrice} from "../core/types/Data.sol";
 import {IERC20} from "../token/IERC20.sol";
 import {PythView} from "../vendor/Pyth.sol";
 import {ArbDeploy} from "../info/ArbDeploy.sol";
+import {IKresko} from "../core/IKresko.sol";
 
 // solhint-disable
 
@@ -14,6 +15,7 @@ abstract contract Inspector is ArbDeploy {
     using Help for *;
 
     IDataV1 internal constant dataV1 = IDataV1(dataV1Addr);
+    IKresko internal constant kresko = IKresko(kreskoAddr);
 
     function peekAccount(address account, PythView memory pythView) public {
         IDataV1.DAccount memory acc = dataV1.getAccount(pythView, account);

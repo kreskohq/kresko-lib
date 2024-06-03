@@ -10,13 +10,18 @@ import {IKresko} from "../core/IKresko.sol";
 import {IVault} from "../core/IVault.sol";
 import {IPyth} from "../vendor/Pyth.sol";
 import {IMarketStatus} from "../core/IMarketStatus.sol";
+import {IDeploymentFactory} from "../core/IDeploymentFactory.sol";
+import {IExtendedDiamondCutFacet} from "../core/IDiamondCut.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {
     IKresko1155 constant kreskian = IKresko1155(kreskianAddr);
     IKresko1155 constant qfk = IKresko1155(questAddr);
+    IExtendedDiamondCutFacet constant kreskoDiamond =
+        IExtendedDiamondCutFacet(kreskoAddr);
 
     IVault constant vault = IVault(vaultAddr);
     IKISS constant kiss = IKISS(kissAddr);
+    IDeploymentFactory factory = IDeploymentFactory(factoryAddr);
 
     IKreskoAsset constant krETH = IKreskoAsset(krETHAddr);
     IKreskoAsset constant krBTC = IKreskoAsset(krBTCAddr);
