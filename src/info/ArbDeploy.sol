@@ -15,7 +15,6 @@ abstract contract ArbDeploy is ArbDeployAddr {
     IKresko1155 constant kreskian = IKresko1155(kreskianAddr);
     IKresko1155 constant qfk = IKresko1155(questAddr);
 
-    IKresko constant kresko = IKresko(kreskoAddr);
     IVault constant vault = IVault(vaultAddr);
     IKISS constant kiss = IKISS(kissAddr);
 
