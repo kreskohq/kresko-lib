@@ -1,13 +1,81 @@
 // SPDX-License-Identifier: MIT
 // solhint-disable
+
 pragma solidity ^0.8.0;
 
+// lib/openzeppelin/contracts/utils/introspection/IERC165.sol
+
+// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)
+
+/**
+ * @dev Interface of the ERC165 standard, as defined in the
+ * https://eips.ethereum.org/EIPS/eip-165[EIP].
+ *
+ * Implementers can declare support of contract interfaces, which can then be
+ * queried by others ({ERC165Checker}).
+ *
+ * For an implementation, see {ERC165}.
+ */
 interface IERC165_0 {
+    /**
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`. See the corresponding
+     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
+     * to learn more about how these ids are created.
+     *
+     * This function call must use less than 30 000 gas.
+     */
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-interface IERC165Internal {}
+// lib/solidstate/contracts/access/access_control/IAccessControlInternal.sol
 
+/**
+ * @title Partial AccessControl interface needed by internal functions
+ */
+interface IAccessControlInternal {
+    event RoleAdminChanged(
+        bytes32 indexed role,
+        bytes32 indexed previousAdminRole,
+        bytes32 indexed newAdminRole
+    );
+
+    event RoleGranted(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
+
+    event RoleRevoked(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
+}
+
+// lib/solidstate/contracts/interfaces/IERC165Internal.sol
+
+/**
+ * @title ERC165 interface registration interface
+ */
+interface IERC165Internal {
+
+}
+
+// lib/solidstate/contracts/interfaces/IERC2981Internal.sol
+
+/**
+ * @title ERC2981 interface
+ */
+interface IERC2981Internal {
+
+}
+
+// lib/solidstate/contracts/interfaces/IERC721Internal.sol
+
+/**
+ * @title Partial ERC721 interface needed by internal functions
+ */
 interface IERC721Internal {
     event Transfer(
         address indexed from,
@@ -28,7 +96,13 @@ interface IERC721Internal {
     );
 }
 
+// lib/solidstate/contracts/token/ERC721/enumerable/IERC721Enumerable.sol
+
 interface IERC721Enumerable {
+    /**
+     * @notice get total token supply
+     * @return total supply
+     */
     function totalSupply() external view returns (uint256);
 
     /**
@@ -114,6 +188,13 @@ interface Errors {
     error NotBurningClaim(uint256 id);
 }
 
+// src/diamond/interfaces/IDiamondCutFacet.sol
+
+/******************************************************************************\
+* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
+* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
+/******************************************************************************/
+
 interface IDiamondCutFacet {
     struct Initializer {
         address initializer;
@@ -133,6 +214,12 @@ interface IDiamondCutFacet {
         bytes4[] functionSelectors;
     }
 
+    /// @notice Add/replace/remove any number of functions and optionally execute
+    ///         a function with delegatecall
+    /// @param _diamondCut Contains the facet addresses and function selectors
+    /// @param _init The address of the contract or facet to execute _calldata
+    /// @param _calldata A function call, including function selector and arguments
+    ///                  _calldata is executed with delegatecall on _init
     function diamondCut(
         FacetCut[] calldata _diamondCut,
         address _init,
@@ -146,7 +233,19 @@ interface IExtendedDiamondCutFacet is IDiamondCutFacet {
     function executeInitializer(Initializer calldata _init) external;
 }
 
+// src/diamond/interfaces/IDiamondLoupeFacet.sol
+
+/******************************************************************************\
+* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
+* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
+/******************************************************************************/
+
+// A loupe is a small magnifying glass used to look at diamonds.
+// These functions look at diamonds
 interface IDiamondLoupeFacet {
+    /// These functions are expected to be called frequently
+    /// by tools.
+
     struct Facet {
         address facetAddress;
         bytes4[] functionSelectors;
@@ -179,6 +278,11 @@ interface IDiamondLoupeFacet {
     ) external view returns (address facetAddress_);
 }
 
+// src/diamond/interfaces/IERC173.sol
+
+/// @title ERC-173 Contract Ownership Standard
+///  Note: the ERC-165 identifier for this interface is 0x7f5828d0
+/* is ERC165 */
 interface IERC173 {
     /// @dev This emits when ownership of a contract changes.
     event OwnershipTransferred(
@@ -195,6 +299,10 @@ interface IERC173 {
     /// @param _newOwner The address of the new owner of the contract
     function transferOwnership(address _newOwner) external;
 }
+
+// lib/openzeppelin/contracts/token/ERC1155/IERC1155.sol
+
+// OpenZeppelin Contracts (last updated v5.0.1) (token/ERC1155/IERC1155.sol)
 
 /**
  * @dev Required interface of an ERC1155 compliant contract, as defined in the
@@ -314,6 +422,22 @@ interface IERC1155 is IERC165_0 {
         bytes calldata data
     ) external;
 
+    /**
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.
+     *
+     * WARNING: This function can potentially allow a reentrancy attack when transferring tokens
+     * to an untrusted contract, when invoking {onERC1155BatchReceived} on the receiver.
+     * Ensure to follow the checks-effects-interactions pattern and consider employing
+     * reentrancy guards when interacting with untrusted contracts.
+     *
+     * Emits either a {TransferSingle} or a {TransferBatch} event, depending on the length of the array arguments.
+     *
+     * Requirements:
+     *
+     * - `ids` and `values` must have the same length.
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
+     * acceptance magic value.
+     */
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -323,9 +447,90 @@ interface IERC1155 is IERC165_0 {
     ) external;
 }
 
+// lib/solidstate/contracts/access/access_control/IAccessControl.sol
+
+/**
+ * @title AccessControl interface
+ */
+interface IAccessControl is IAccessControlInternal {
+    /*
+     * @notice query whether role is assigned to account
+     * @param role role to query
+     * @param account account to query
+     * @return whether role is assigned to account
+     */
+    function hasRole(
+        bytes32 role,
+        address account
+    ) external view returns (bool);
+
+    /*
+     * @notice query admin role for given role
+     * @param role role to query
+     * @return admin role
+     */
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+
+    /*
+     * @notice assign role to given account
+     * @param role role to assign
+     * @param account recipient of role assignment
+     */
+    function grantRole(bytes32 role, address account) external;
+
+    /*
+     * @notice unassign role from given account
+     * @param role role to unassign
+     * @parm account
+     */
+    function revokeRole(bytes32 role, address account) external;
+
+    /**
+     * @notice relinquish role
+     * @param role role to relinquish
+     */
+    function renounceRole(bytes32 role) external;
+
+    /**
+     * @notice Returns one of the accounts that have `role`. `index` must be a
+     * value between 0 and {getRoleMemberCount}, non-inclusive.
+     *
+     * Role bearers are not sorted in any particular way, and their ordering may
+     * change at any point.
+     *
+     * WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure
+     * you perform all queries on the same block. See the following
+     * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
+     * for more information.
+     */
+    function getRoleMember(
+        bytes32 role,
+        uint256 index
+    ) external view returns (address);
+
+    /**
+     * @notice Returns the number of accounts that have `role`. Can be used
+     * together with {getRoleMember} to enumerate all bearers of a role.
+     */
+    function getRoleMemberCount(bytes32 role) external view returns (uint256);
+}
+
+// lib/solidstate/contracts/interfaces/IERC165.sol
+
+/**
+ * @title ERC165 interface registration interface
+ * @dev see https://eips.ethereum.org/EIPS/eip-165
+ */
 interface IERC165_1 is IERC165Internal {
+    /**
+     * @notice query whether contract has registered support for given interface
+     * @param interfaceId interface id
+     * @return bool whether interface is supported
+     */
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
+
+// lib/solidstate/contracts/token/ERC721/base/IERC721BaseInternal.sol
 
 /**
  * @title ERC721 base interface
@@ -343,11 +548,24 @@ interface IERC721BaseInternal is IERC721Internal {
     error ERC721Base__TransferToZeroAddress();
 }
 
-interface IOwnershipFacet is IERC173 {}
+// src/diamond/interfaces/IOwnershipFacet.sol
 
+// solhint-disable no-empty-blocks
+
+interface IOwnershipFacet is IERC173 {
+
+}
+
+// lib/solidstate/contracts/token/ERC721/metadata/IERC721MetadataInternal.sol
+
+/**
+ * @title ERC721Metadata internal interface
+ */
 interface IERC721MetadataInternal is IERC721BaseInternal {
     error ERC721Metadata__NonExistentToken();
 }
+
+// src/core/RegistryState.sol
 
 /**
  * @title Claim Event
@@ -374,7 +592,7 @@ struct RegistryState {
     // Airdrops
     uint256 airdropsIds;
     // Kredits to be burnt for Minting 721
-    uint256 kreditsForMint;
+    uint256 maxKreditsForMint;
     // Mapping kredits airdrop to merkle roots
     mapping(uint256 => ClaimEvent) claimEvents;
     // Claimed airdrops
@@ -405,6 +623,26 @@ function rs() pure returns (RegistryState storage state) {
     assembly {
         state.slot := position
     }
+}
+
+// lib/solidstate/contracts/interfaces/IERC2981.sol
+
+/**
+ * @title ERC2981 interface
+ * @dev see https://eips.ethereum.org/EIPS/eip-2981
+ */
+interface IERC2981 is IERC2981Internal, IERC165_1 {
+    /**
+     * @notice called with the sale price to determine how much royalty is owed and to whom
+     * @param tokenId the ERC721 or ERC1155 token id to query for royalty information
+     * @param salePrice the sale price of the given asset
+     * @return receiever rightful recipient of royalty
+     * @return royaltyAmount amount of royalty owed
+     */
+    function royaltyInfo(
+        uint256 tokenId,
+        uint256 salePrice
+    ) external view returns (address receiever, uint256 royaltyAmount);
 }
 
 // lib/solidstate/contracts/interfaces/IERC721.sol
@@ -535,6 +773,11 @@ interface IClaimerConfigFacet {
     function setKreditsForMint(uint256 amount) external;
 
     function mintProfile(address to, bool link) external returns (uint256);
+
+    function batchMintProfile(
+        address[] calldata to,
+        bool[] calldata link
+    ) external;
 }
 
 // src/core/interfaces/IViewFacet.sol
@@ -583,6 +826,10 @@ interface IViewFacet {
     ) external view returns (ClaimEvent memory);
 
     function getKreditsForMint() external view returns (uint256);
+
+    function getProfileKreditsCost(
+        uint256 kredits
+    ) external view returns (uint256);
 }
 
 // src/core/libs/Events.sol
@@ -617,7 +864,28 @@ interface Events {
     event KreditsForMintSet(uint256 amount);
 }
 
-interface IERC721Base is IERC721BaseInternal, IERC721 {}
+// src/core/interfaces/IRoyaltyFacet.sol
+
+interface IRoyaltyFacet is IERC2981 {
+    function setRoyalties(
+        uint16 defaultRoyaltyBPS,
+        uint16[] memory royaltiesBPS,
+        address defaultRoyaltyReceiver
+    ) external;
+
+    function setRoyalty(uint16 defaultRoyaltyBPS) external;
+}
+
+// lib/solidstate/contracts/token/ERC721/base/IERC721Base.sol
+
+/**
+ * @title ERC721 base interface
+ */
+interface IERC721Base is IERC721BaseInternal, IERC721 {
+
+}
+
+// src/core/interfaces/IERC721Facet.sol
 
 interface IERC721Facet is IERC721Base, IERC721Enumerable, IERC721Metadata {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
@@ -644,7 +912,11 @@ interface IERC721Facet is IERC721Base, IERC721Enumerable, IERC721Metadata {
         uint256 value,
         bytes calldata data
     ) external returns (bytes4);
+
+    function updateTokenURI(string memory newURI) external;
 }
+
+// src/core/interfaces/IKreditsDiamond.sol
 
 interface IKreditsDiamond is
     IDiamondCutFacet,
@@ -652,9 +924,13 @@ interface IKreditsDiamond is
     IOwnershipFacet,
     IClaimerFacet,
     IClaimerConfigFacet,
+    IRoyaltyFacet,
+    IAccessControl,
     IActionFacet,
     IViewFacet,
     IERC721Facet,
     Errors,
     Events
-{}
+{
+
+}
