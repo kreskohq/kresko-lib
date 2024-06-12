@@ -12,7 +12,7 @@ function getPythData(
     args[0] = "bun";
     args[1] = "--no-warnings";
     args[2] = _jsPath;
-    for (uint256 i = 0; i < _ids.length; i++) {
+    for (uint256 i; i < _ids.length; i++) {
         args[i + 3] = vmFFI.toString(_ids[i]);
     }
 

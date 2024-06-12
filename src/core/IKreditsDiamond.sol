@@ -805,8 +805,6 @@ interface IViewFacet {
         uint256 airdropId
     ) external view returns (bool);
 
-    function getIsValid(address nft) external view returns (bool);
-
     function getKredits(uint256 tokenId) external view returns (uint256);
 
     function getLinkedId(address user) external view returns (uint256);

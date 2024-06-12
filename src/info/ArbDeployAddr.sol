@@ -27,12 +27,14 @@ abstract contract ArbDeployAddr {
     address constant krSOLAddr = 0x96084d2E3389B85f2Dc89E321Aaa3692Aed05eD2;
     address constant krEURAddr = 0x83BB68a7437b02ebBe1ab2A0E8B464CC5510Aafe;
     address constant krJPYAddr = 0xc4fEE1b0483eF73352447b1357adD351Bfddae77;
+    address constant krGBPAddr = 0xdb274afDfA7f395ef73ab98C18cDf3D9C03b538C;
 
     address constant akrETHAddr = 0x3103570A28ca026e818c79608F1FF804F4Bde284;
     address constant akrBTCAddr = 0xc67a33599f73928D24D32fC0015e187157233410;
     address constant akrSOLAddr = 0x362cB60d235Cf8258042DAfB2a3Cdb14302D9D0f;
     address constant akrEURAddr = 0xBb6053898C5f6e536405fA324839141aA102b6D9;
     address constant akrJPYAddr = 0x3438Eb57e5b0f1CbEca257Aea9644B26b1B61EaC;
+    address constant akrGBPAddr = 0x37BddA32281c15716D35f901b8141f7F382220C1;
 
     address constant safe = 0x266489Bde85ff0dfe1ebF9f0a7e6Fed3a973cEc3;
     address constant nftMultisig = 0x389297F0d8C489954D65e04ff0690FC54E57Dad6;

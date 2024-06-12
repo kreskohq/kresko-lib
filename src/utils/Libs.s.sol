@@ -386,7 +386,6 @@ library Log {
     }
 
     function clg(address _val) internal pure {
-        if (check()) return;
         if (!_hasPrefix()) {
             PLog.clg(_val);
         } else {
@@ -395,7 +394,6 @@ library Log {
     }
 
     function blg(bytes32 _val) internal pure {
-        if (check()) return;
         if (!_hasPrefix()) {
             PLog.blg(_val);
         } else {
@@ -404,7 +402,6 @@ library Log {
     }
 
     function clg(int256 _val) internal pure {
-        if (check()) return;
         if (!_hasPrefix()) {
             PLog.clg(_val);
         } else {
@@ -413,7 +410,6 @@ library Log {
     }
 
     function clg(uint256 _val) internal pure {
-        if (check()) return;
         if (!_hasPrefix()) {
             PLog.clg(_val);
         } else {
@@ -422,7 +418,6 @@ library Log {
     }
 
     function blg(bytes memory _val) internal pure {
-        if (check()) return;
         if (!_hasPrefix()) {
             PLog.blg(_val);
         } else {
@@ -431,167 +426,134 @@ library Log {
     }
 
     function pct(uint256 _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, 2);
     }
 
     function pct(string memory _str, uint256 _val) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, 2);
     }
 
     function dlg(int256 _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_decimal_int(_pre(_str), _val, 18);
     }
 
     function dlg(int256 _val, string memory _str, uint256 dec) internal {
-        if (check()) return;
         emit log_named_decimal_int(_pre(_str), _val, dec);
     }
 
     function dlg(string memory _str, int256 _val) internal {
-        if (check()) return;
         emit log_named_decimal_int(_pre(_str), _val, 18);
     }
 
     function dlg(string memory _str, uint256 _val) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, 18);
     }
 
     function dlg(string memory _str, int256 _val, uint256 dec) internal {
-        if (check()) return;
         emit log_named_decimal_int(_pre(_str), _val, dec);
     }
 
     function dlg(string memory _str, uint256 _val, uint256 dec) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
     function dlg(uint256 _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, 18);
     }
 
     function dlg(uint256 _val, string memory _str, uint256 dec) internal {
-        if (check()) return;
         emit log_named_decimal_uint(_pre(_str), _val, dec);
     }
 
     function clg(string memory _str, uint256 _val) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_str));
     }
 
     function clg(uint256 _val, string memory _str) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_str));
     }
 
     function clg(string memory _str, int256 _val) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_str));
     }
 
     function clg(int256 _val, string memory _str) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_str));
     }
 
     function clg(string memory _val) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_val));
     }
 
     function clg(string memory _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val);
     }
 
     function clg(string memory _lbl, address _val) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_lbl));
     }
 
     function clg(string memory _lbl, uint256[] memory _val) internal {
-        if (check()) return;
         emit log_named_array(_pre(_lbl), _val);
     }
 
     function clg(string memory _lbl, int256[] memory _val) internal {
-        if (check()) return;
         emit log_named_array(_pre(_lbl), _val);
     }
 
     function blg(string memory _lbl, bytes memory _val) internal pure {
-        if (check()) return;
         PLog.blg(_val, _pre(_lbl));
     }
 
     function blg(string memory _lbl, bytes32 _val) internal pure {
-        if (check()) return;
         PLog.blg(_val, _pre(_lbl));
     }
 
     function blg2txt(string memory _lbl, bytes32 _val) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.txt());
     }
 
     function blg2str(string memory _lbl, bytes memory _val) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.str());
     }
 
     function blg2txt(string memory _lbl, bytes memory _val) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.txt());
     }
 
     function blg2str(bytes32 _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.str());
     }
 
     function blg2txt(bytes32 _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.txt());
     }
 
     function blg2str(bytes memory _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.str());
     }
 
     function blg2txt(bytes memory _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.txt());
     }
 
     function clg2bytes(string memory _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.blg(bytes(_val), _pre(_lbl));
     }
 
     function clg2str(address _val, string memory _lbl) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl), _val.str());
     }
 
     function clg2str(string memory _lbl, address _val) internal pure {
-        if (check()) return;
         PLog.clg(_pre(_lbl).and(_val.str()));
     }
 
     function clg(address[] memory _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_array(_pre(_str), _val);
     }
 
     function clg(address _val, string memory _str) internal pure {
-        if (check()) return;
         PLog.clg(_val, _pre(_str));
     }
 
@@ -604,12 +566,10 @@ library Log {
     }
 
     function clg(address[] memory _val) internal {
-        if (check()) return;
         emit log_array(_val);
     }
 
     function clg(uint256[] memory _val) internal {
-        if (check()) return;
         if (!_hasPrefix()) {
             emit log_array(_val);
         } else {
@@ -618,7 +578,6 @@ library Log {
     }
 
     function clg(int256[] memory _val) internal {
-        if (check()) return;
         if (!_hasPrefix()) {
             emit log_array(_val);
         } else {
@@ -627,48 +586,27 @@ library Log {
     }
 
     function clg(uint256[] memory _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_array(_pre(_str), _val);
     }
 
     function clg(int256[] memory _val, string memory _str) internal {
-        if (check()) return;
         emit log_named_array(_pre(_str), _val);
     }
 
     function blg(bytes32 _val, string memory _str) internal pure {
-        if (check()) return;
         PLog.blg(_val, _pre(_str));
     }
 
     function blg(bytes memory _val, string memory _str) internal pure {
-        if (check()) return;
         PLog.blg(_val, _pre(_str));
     }
 
     function logCallers() internal {
-        if (check()) return;
         LibVm.Callers memory current = LibVm.callers();
 
         emit log_named_string("isHEVM", hasVM() ? "true" : "false");
         emit log_named_address("msg.sender", current.msgSender);
         emit log_named_address("tx.origin", current.txOrigin);
         emit log_named_string("mode", current.mode);
-    }
-
-    function disable() internal {
-        store().logDisabled = true;
-    }
-
-    function enable() internal {
-        store().logDisabled = false;
-    }
-
-    function _check() internal view returns (bool) {
-        return store().logDisabled;
-    }
-
-    function check() internal pure returns (bool) {
-        return Purify.BoolOut(_check)();
     }
 }
