@@ -6,6 +6,7 @@ import {IERC20} from "../token/IERC20.sol";
 
 abstract contract ArbDeployAddr {
     address constant kreskoAddr = 0x0000000000177abD99485DCaea3eFaa91db3fe72;
+    address constant kreditsAddr = 0x8E84a3B8e0b074c149b8277c753Dc6396bB95F48;
     address constant multicallAddr = 0xC35A7648B434f0A161c12BD144866bdf93c4a4FC;
     address constant factoryAddr = 0x000000000070AB95211e32fdA3B706589D3482D5;
     address constant vaultAddr = 0x2dF01c1e472eaF880e3520C456b9078A5658b04c;
