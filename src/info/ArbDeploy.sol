@@ -28,6 +28,7 @@ abstract contract ArbDeploy is ArbDeployAddr {
     IKreskoAsset constant krEUR = IKreskoAsset(krEURAddr);
     IKreskoAsset constant krJPY = IKreskoAsset(krJPYAddr);
     IKreskoAsset constant krGBP = IKreskoAsset(krGBPAddr);
+    IKreskoAsset constant krXAU = IKreskoAsset(krXAUAddr);
 
     IKreskoAssetAnchor constant akrETH = IKreskoAssetAnchor(akrETHAddr);
     IKreskoAssetAnchor constant akrBTC = IKreskoAssetAnchor(akrBTCAddr);
@@ -35,6 +36,7 @@ abstract contract ArbDeploy is ArbDeployAddr {
     IKreskoAssetAnchor constant akrEUR = IKreskoAssetAnchor(akrEURAddr);
     IKreskoAssetAnchor constant akrJPY = IKreskoAssetAnchor(akrJPYAddr);
     IKreskoAssetAnchor constant akrGBP = IKreskoAssetAnchor(akrGBPAddr);
+    IKreskoAssetAnchor constant akrXAU = IKreskoAssetAnchor(akrXAUAddr);
 
     IPyth constant pythEP = IPyth(pythAddr);
     IMarketStatus constant marketStatus = IMarketStatus(marketStatusAddr);
