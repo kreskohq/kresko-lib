@@ -10,7 +10,7 @@ struct DiamondCtor {
     FacetCut[] cuts;
     Initializer init;
 }
-string constant facetScriptLoc = "./lib/kresko-lib/utils/diamond/getFunctionSelectors.sh";
+string constant facetScriptLoc = "./lib/kresko-lib/utils/diamond/get-facet-data.sh";
 string constant defaultFacetLoc = "./**/facets/*Facet.sol";
 
 struct FacetData {
