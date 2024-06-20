@@ -4,19 +4,17 @@ pragma solidity ^0.8.0;
 import {getPythData} from "./ffi/PythScript.s.sol";
 import {ArbDeploy} from "../info/ArbDeploy.sol";
 import {__revert} from "./Base.s.sol";
-import {IDataV1} from "../core/IData.sol";
+import {IDataV1} from "../core/types/Views.sol";
 import {Log, Help} from "./Libs.s.sol";
 import {PythView} from "../vendor/Pyth.sol";
 import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
-import {ISwapRouter} from "../vendor/ISwapRouter.sol";
-import {IQuoterV2} from "../vendor/IQuoterV2.sol";
 
 // solhint-disable avoid-low-level-calls, state-visibility, const-name-snakecase
 
 abstract contract ArbBase is ArbDeploy {
     using Log for *;
     using Help for *;
-
+    IDataV1 constant dataV1 = IDataV1(dataV1Addr);
     bytes[] pythUpdate;
     PythView pythView;
 
@@ -25,10 +23,6 @@ abstract contract ArbBase is ArbDeploy {
     string pythAssets;
     IAggregatorV3 constant CL_ETH =
         IAggregatorV3(0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612);
-
-    ISwapRouter constant routerV3 = ISwapRouter(routerv3Addr);
-    IQuoterV2 constant quoterV2 = IQuoterV2(quoterV2Addr);
-    IDataV1 constant dataV1 = IDataV1(dataV1Addr);
 
     function fetchPyth(string memory assets) internal {
         (bytes[] memory update, PythView memory values) = getPythData(

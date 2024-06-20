@@ -1,64 +1,29 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable
 pragma solidity ^0.8.0;
 import {IERC20Permit} from "../token/IERC20Permit.sol";
-
-/// @title KreskoAsset issuer interface
-/// @author Kresko
-/// @notice Contract that allows minting and burning through Kresko.
-/// @dev All mintable assets in Kresko must implement this. (enforced through introspection)
-interface IKreskoAssetIssuer {
-    /**
-     * @notice Mints @param _assets of krAssets for @param _to,
-     * @notice Mints relative @return _shares of anchor tokens.
-     */
-    function issue(
-        uint256 _assets,
-        address _to
-    ) external returns (uint256 shares);
-
-    /**
-     * @notice Burns @param _assets of krAssets from @param _from,
-     * @notice Burns relative @return _shares of anchor tokens.
-     */
-    function destroy(
-        uint256 _assets,
-        address _from
-    ) external returns (uint256 shares);
-
-    /**
-     * @notice Preview conversion from KrAsset amount: @param assets to matching amount of Anchor tokens: @return shares
-     */
-    function convertToShares(
-        uint256 assets
-    ) external view returns (uint256 shares);
-
-    /**
-     * @notice Preview conversion from Anchor token amount: @param shares to matching KrAsset amount: @return assets
-     */
-    function convertToAssets(
-        uint256 shares
-    ) external view returns (uint256 assets);
-
-    /**
-     * @notice Preview conversion from Anchor token amounts: @param shares to matching amounts of KrAssets: @return assets
-     */
-    function convertManyToAssets(
-        uint256[] calldata shares
-    ) external view returns (uint256[] memory assets);
-
-    /**
-     * @notice Preview conversion from KrAsset amounts: @param assets to matching amounts of Anchor tokens: @return shares
-     */
-    function convertManyToShares(
-        uint256[] calldata assets
-    ) external view returns (uint256[] memory shares);
-}
+import {IKreskoAssetIssuer} from "./individual/IKreskoAssetIssuer.sol";
+import {IERC4626Upgradeable} from "./individual/IERC4626Upgradeable.sol";
 
 interface ISyncable {
     function sync() external;
 }
 
-interface IKreskoAsset is IERC20Permit {
+interface IReinitializable {
+    /**
+     * @notice Updates ERC20 metadata for the token in case eg. a ticker change
+     * @param _name new name for the asset
+     * @param _symbol new symbol for the asset
+     * @param _version number that must be greater than latest emitted `Initialized` version
+     */
+    function reinitializeERC20(
+        string memory _name,
+        string memory _symbol,
+        uint8 _version
+    ) external;
+}
+
+interface IKreskoAsset is IReinitializable, IERC20Permit {
     event Wrap(
         address indexed asset,
         address underlying,
@@ -119,18 +84,6 @@ interface IKreskoAsset is IERC20Permit {
         uint248 _denominator,
         bool _positive,
         address[] calldata _pools
-    ) external;
-
-    /**
-     * @notice Updates ERC20 metadata for the token in case eg. a ticker change
-     * @param _name new name for the asset
-     * @param _symbol new symbol for the asset
-     * @param _version number that must be greater than latest emitted `Initialized` version
-     */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
     ) external;
 
     /**
@@ -198,12 +151,7 @@ interface IKreskoAsset is IERC20Permit {
      */
     function enableNativeUnderlying(bool _enabled) external;
 
-    /**
-     * @notice Sets fee recipient address
-     * @dev Has modifiers: onlyRole.
-     * @param _feeRecipient The fee recipient address.
-     */
-    function setFeeRecipient(address _feeRecipient) external;
+    function setFeeRecipient(address) external;
 
     /**
      * @notice Sets deposit fee
@@ -228,112 +176,22 @@ interface IKreskoAsset is IERC20Permit {
     function setUnderlying(address _underlyingAddr) external;
 }
 
-interface IERC4626Upgradeable {
+interface IKreskoAssetAnchor is
+    IKreskoAssetIssuer,
+    IERC4626Upgradeable,
+    IReinitializable,
+    IERC20Permit
+{
     /**
      * @notice The underlying Kresko Asset
      */
     function asset() external view returns (IKreskoAsset);
 
-    /**
-     * @notice Deposit KreskoAssets for equivalent amount of anchor tokens
-     * @param assets Amount of KreskoAssets to deposit
-     * @param receiver Address to send shares to
-     * @return shares Amount of shares minted
-     */
-    function deposit(
-        uint256 assets,
-        address receiver
-    ) external returns (uint256 shares);
-
-    /**
-     * @notice Withdraw KreskoAssets for equivalent amount of anchor tokens
-     * @param assets Amount of KreskoAssets to withdraw
-     * @param receiver Address to send KreskoAssets to
-     * @param owner Address to burn shares from
-     * @return shares Amount of shares burned
-     * @dev shares are burned from owner, not msg.sender
-     */
-    function withdraw(
-        uint256 assets,
-        address receiver,
-        address owner
-    ) external returns (uint256 shares);
-
-    function maxDeposit(address) external view returns (uint256);
-
-    function maxMint(address) external view returns (uint256 assets);
-
-    function maxRedeem(address owner) external view returns (uint256 assets);
-
-    function maxWithdraw(address owner) external view returns (uint256 assets);
-
-    /**
-     * @notice Mint shares of anchor tokens for equivalent amount of KreskoAssets
-     * @param shares Amount of shares to mint
-     * @param receiver Address to send shares to
-     * @return assets Amount of KreskoAssets redeemed
-     */
-    function mint(
-        uint256 shares,
-        address receiver
-    ) external returns (uint256 assets);
-
-    function previewDeposit(
-        uint256 assets
-    ) external view returns (uint256 shares);
-
-    function previewMint(uint256 shares) external view returns (uint256 assets);
-
-    function previewRedeem(
-        uint256 shares
-    ) external view returns (uint256 assets);
-
-    function previewWithdraw(
-        uint256 assets
-    ) external view returns (uint256 shares);
-
-    /**
-     * @notice Track the underlying amount
-     * @return Total supply for the underlying
-     */
-    function totalAssets() external view returns (uint256);
-
-    /**
-     * @notice Redeem shares of anchor for KreskoAssets
-     * @param shares Amount of shares to redeem
-     * @param receiver Address to send KreskoAssets to
-     * @param owner Address to burn shares from
-     * @return assets Amount of KreskoAssets redeemed
-     */
-    function redeem(
-        uint256 shares,
-        address receiver,
-        address owner
-    ) external returns (uint256 assets);
-}
-
-interface IKreskoAssetAnchor is
-    IKreskoAssetIssuer,
-    IERC4626Upgradeable,
-    IERC20Permit
-{
     function totalAssets()
         external
         view
         override(IERC4626Upgradeable)
         returns (uint256);
-
-    /**
-     * @notice Updates ERC20 metadata for the token in case eg. a ticker change
-     * @param _name new name for the asset
-     * @param _symbol new symbol for the asset
-     * @param _version number that must be greater than latest emitted `Initialized` version
-     */
-    function reinitializeERC20(
-        string memory _name,
-        string memory _symbol,
-        uint8 _version
-    ) external;
 
     /**
      * @notice Mint Kresko Anchor Asset to Kresko Asset (Only KreskoAsset can call)

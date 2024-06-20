@@ -285,21 +285,6 @@ library FixedPointMath {
                 z := shl(8, z)
             }
 
-            // Goal was to get z*z*y within a small factor of x. More iterations could
-            // get y in a tighter range. Currently, we will have y in [256, 256*2^16).
-            // We ensured y >= 256 so that the relative difference between y and y+1 is small.
-            // That's not possible if x < 256 but we can just verify those cases exhaustively.
-
-            // Now, z*z*y <= x < z*z*(y+1), and y <= 2^(16+8), and either y >= 256, or x < 256.
-            // Correctness can be checked exhaustively for x < 256, so we assume y >= 256.
-            // Then z*sqrt(y) is within sqrt(257)/sqrt(256) of sqrt(x), or about 20bps.
-
-            // For s in the range [1/256, 256], the estimate f(s) = (181/1024) * (s+1) is in the range
-            // (1/2.84 * sqrt(s), 2.84 * sqrt(s)), with largest error when s = 1 and when s = 256 or 1/256.
-
-            // Since y is in [256, 256*2^16), let a = y/65536, so that a is in [1/256, 256). Then we can estimate
-            // sqrt(y) using sqrt(65536) * 181/1024 * (a + 1) = 181/4 * (y + 65536)/65536 = 181 * (y + 65536)/2^18.
-
             // There is no overflow risk here since y < 2^136 after the first branch above.
             z := shr(18, mul(z, add(y, 65536))) // A mul() is saved from starting z at 181.
 

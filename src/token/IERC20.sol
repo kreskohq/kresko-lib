@@ -2,10 +2,6 @@
 pragma solidity ^0.8.0;
 
 interface IERC20 {
-    /* -------------------------------------------------------------------------- */
-    /*                                   Events                                   */
-    /* -------------------------------------------------------------------------- */
-
     event Transfer(address indexed from, address indexed to, uint256 amount);
 
     event Approval(
@@ -13,10 +9,6 @@ interface IERC20 {
         address indexed spender,
         uint256 amount
     );
-
-    /* -------------------------------------------------------------------------- */
-    /*                                    ERC20                                   */
-    /* -------------------------------------------------------------------------- */
 
     function allowance(address, address) external view returns (uint256);
 

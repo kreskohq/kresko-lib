@@ -6,19 +6,19 @@ import {IErrorsEvents} from "./IErrorsEvents.sol";
 import {SwapArgs, BurnArgs, UncheckedWithdrawArgs, LiquidationArgs, SCDPLiquidationArgs, MintArgs, SCDPWithdrawArgs, SCDPRepayArgs, WithdrawArgs} from "./types/Args.sol";
 import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./types/Setup.sol";
 import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
-import {View} from "./IData.sol";
-import {PythView} from "../vendor/Pyth.sol";
-import {IExtendedDiamondCutFacet} from "./IDiamondCut.sol";
+import {IDiamond} from "./IDiamond.sol";
+import {IDiamondStateFacet} from "./individual/IDiamondStateFacet.sol";
+import {IAuthorizationFacet} from "./individual/IAuthorizationFacet.sol";
+import {IViewDataFacet} from "./individual/IViewDataFacet.sol";
+import {IBatchFacet} from "./individual/IBatchFacet.sol";
 
 interface ISCDPConfigFacet {
     /**
      * @notice Initialize SCDP.
      * Callable by diamond owner only.
-     * @param _init The initial configuration.
      */
-    function initializeSCDP(SCDPInitArgs memory _init) external;
+    function initializeSCDP(SCDPInitArgs memory) external;
 
-    /// @notice Get the pool configuration.
     function getParametersSCDP() external view returns (SCDPParameters memory);
 
     /**
@@ -29,14 +29,14 @@ interface ISCDPConfigFacet {
     function setFeeAssetSCDP(address _assetAddr) external;
 
     /// @notice Set the minimum collateralization ratio for SCDP.
-    function setMinCollateralRatioSCDP(uint32 _newMCR) external;
+    function setMinCollateralRatioSCDP(uint32) external;
 
     /// @notice Set the liquidation threshold for SCDP while updating MLR to one percent above it.
-    function setLiquidationThresholdSCDP(uint32 _newLT) external;
+    function setLiquidationThresholdSCDP(uint32) external;
 
     /// @notice Set the max liquidation ratio for SCDP.
     /// @notice MLR is also updated automatically when setLiquidationThresholdSCDP is used.
-    function setMaxLiquidationRatioSCDP(uint32 _newMLR) external;
+    function setMaxLiquidationRatioSCDP(uint32) external;
 
     /// @notice Set the new liquidation incentive for a swappable asset.
     /// @param _assetAddr Asset address
@@ -111,16 +111,14 @@ interface ISCDPConfigFacet {
     /**
      * @notice Set whether swap routes for pairs are enabled or not. Both ways.
      * Only callable by admin.
-     * @param _setters The configurations to set.
      */
-    function setSwapRoutesSCDP(SwapRouteSetter[] calldata _setters) external;
+    function setSwapRoutesSCDP(SwapRouteSetter[] calldata) external;
 
     /**
      * @notice Set whether a swap route for a pair is enabled or not.
      * Only callable by admin.
-     * @param _setter The configuration to set
      */
-    function setSingleSwapRouteSCDP(SwapRouteSetter calldata _setter) external;
+    function setSingleSwapRouteSCDP(SwapRouteSetter calldata) external;
 }
 
 interface ISCDPStateFacet {
@@ -240,9 +238,7 @@ interface ISCDPStateFacet {
     /**
      * @notice Get enabled state of asset
      */
-    function getAssetEnabledSCDP(
-        address _assetAddr
-    ) external view returns (bool);
+    function getAssetEnabledSCDP(address) external view returns (bool);
 
     /**
      * @notice Get whether swap is enabled from `_assetIn` to `_assetOut`
@@ -261,50 +257,6 @@ interface ISCDPStateFacet {
 /*                               Access Control                                    */
 /* -------------------------------------------------------------------------- */
 
-interface IViewDataFacet {
-    function viewProtocolData(
-        PythView calldata prices
-    ) external view returns (View.Protocol memory);
-
-    function viewAccountData(
-        PythView calldata prices,
-        address account
-    ) external view returns (View.Account memory);
-
-    function viewMinterAccounts(
-        PythView calldata prices,
-        address[] memory accounts
-    ) external view returns (View.MAccount[] memory);
-
-    function viewSCDPAccount(
-        PythView calldata prices,
-        address account
-    ) external view returns (View.SAccount memory);
-
-    function viewSCDPDepositAssets() external view returns (address[] memory);
-
-    function viewTokenBalances(
-        PythView calldata prices,
-        address account,
-        address[] memory tokens
-    ) external view returns (View.Balance[] memory result);
-
-    function viewAccountGatingPhase(
-        address account
-    ) external view returns (uint8 phase, bool eligibleForCurrentPhase);
-
-    function viewSCDPAccounts(
-        PythView calldata prices,
-        address[] memory accounts,
-        address[] memory assets
-    ) external view returns (View.SAccount[] memory);
-
-    function viewSCDPAssets(
-        PythView calldata prices,
-        address[] memory assets
-    ) external view returns (View.AssetData[] memory);
-}
-
 interface IMinterDepositWithdrawFacet {
     /**
      * @notice Deposits collateral into the protocol.
@@ -321,26 +273,22 @@ interface IMinterDepositWithdrawFacet {
     /**
      * @notice Withdraws sender's collateral from the protocol.
      * @dev Requires that the post-withdrawal collateral value does not violate minimum collateral requirement.
-     * @param _args WithdrawArgs
-     * @param _updateData Price update data
      * assets array. Only needed if withdrawing the entire deposit of a particular collateral asset.
      */
     function withdrawCollateral(
-        WithdrawArgs memory _args,
-        bytes[] calldata _updateData
+        WithdrawArgs memory,
+        bytes[] calldata
     ) external payable;
 
     /**
      * @notice Withdraws sender's collateral from the protocol before checking minimum collateral ratio.
      * @dev Executes post-withdraw-callback triggering onUncheckedCollateralWithdraw on the caller
      * @dev Requires that the post-withdraw-callback collateral value does not violate minimum collateral requirement.
-     * @param _args UncheckedWithdrawArgs
-     * @param _updateData Price update data
      * assets array. Only needed if withdrawing the entire deposit of a particular collateral asset.
      */
     function withdrawCollateralUnchecked(
-        UncheckedWithdrawArgs memory _args,
-        bytes[] calldata _updateData
+        UncheckedWithdrawArgs memory,
+        bytes[] calldata
     ) external payable;
 }
 
@@ -348,23 +296,20 @@ interface IMinterBurnFacet {
     /**
      * @notice Burns existing Kresko assets.
      * @notice Manager role is required if the caller is not the account being repaid to or the account repaying.
-     * @param args Burn arguments
-     * @param _updateData Price update data
      */
     function burnKreskoAsset(
         BurnArgs memory args,
-        bytes[] calldata _updateData
+        bytes[] calldata
     ) external payable;
 }
 
 interface IMinterMintFacet {
     /**
      * @notice Mints new Kresko assets.
-     * @param _args MintArgs struct containing the arguments necessary to perform a mint.
      */
     function mintKreskoAsset(
-        MintArgs memory _args,
-        bytes[] calldata _updateData
+        MintArgs memory,
+        bytes[] calldata
     ) external payable;
 }
 
@@ -388,9 +333,8 @@ interface ISCDPSwapFacet {
     /**
      * @notice Swap kresko assets with KISS using the shared collateral pool.
      * Uses oracle pricing of _amountIn to determine how much _assetOut to send.
-     * @param _args SwapArgs struct containing swap data.
      */
-    function swapSCDP(SwapArgs calldata _args) external payable;
+    function swapSCDP(SwapArgs calldata) external payable;
 
     /**
      * @notice Accumulates fees to deposits as a fixed, instantaneous income.
@@ -419,20 +363,18 @@ interface ISCDPFacet {
 
     /**
      * @notice Withdraw collateral for account from the collateral pool.
-     * @param _args WithdrawArgs struct containing withdraw data.
      */
     function withdrawSCDP(
-        SCDPWithdrawArgs memory _args,
-        bytes[] calldata _updateData
+        SCDPWithdrawArgs memory,
+        bytes[] calldata
     ) external payable;
 
     /**
      * @notice Withdraw collateral without caring about fees.
-     * @param _args WithdrawArgs struct containing withdraw data.
      */
     function emergencyWithdrawSCDP(
-        SCDPWithdrawArgs memory _args,
-        bytes[] calldata _updateData
+        SCDPWithdrawArgs memory,
+        bytes[] calldata
     ) external payable;
 
     /**
@@ -451,29 +393,27 @@ interface ISCDPFacet {
     /**
      * @notice Repay debt for no fees or slippage.
      * @notice Only uses swap deposits, if none available, reverts.
-     * @param _args RepayArgs struct containing repay data.
      */
-    function repaySCDP(SCDPRepayArgs calldata _args) external payable;
+    function repaySCDP(SCDPRepayArgs calldata) external payable;
 
     /**
      * @notice Liquidate the collateral pool.
      * @notice Adjusts everyones deposits if swap deposits do not cover the seized amount.
-     * @param _args LiquidationArgs struct containing liquidation data.
      */
     function liquidateSCDP(
-        SCDPLiquidationArgs memory _args,
-        bytes[] calldata _updateData
+        SCDPLiquidationArgs memory,
+        bytes[] calldata
     ) external payable;
 
     /**
      * @dev Calculates the total value that is allowed to be liquidated from SCDP (if it is liquidatable)
-     * @param _repayAssetAddr Address of Kresko Asset to repay
-     * @param _seizeAssetAddr Address of Collateral to seize
+     * @param _repayAsset Address of Kresko Asset to repay
+     * @param _seizeAsset Address of Collateral to seize
      * @return MaxLiqInfo Calculated information about the maximum liquidation.
      */
     function getMaxLiqValueSCDP(
-        address _repayAssetAddr,
-        address _seizeAssetAddr
+        address _repayAsset,
+        address _seizeAsset
     ) external view returns (MaxLiqInfo memory);
 
     function getLiquidatableSCDP() external view returns (bool);
@@ -514,7 +454,7 @@ interface ISDIFacet {
     function coverSCDP(
         address _assetAddr,
         uint256 _coverAmount,
-        bytes[] calldata _updateData
+        bytes[] calldata
     ) external payable returns (uint256 value);
 
     /// @notice Cover debt by providing collateral, receiving small incentive in return.
@@ -522,7 +462,7 @@ interface ISDIFacet {
         address _assetAddr,
         uint256 _coverAmount,
         address _seizeAssetAddr,
-        bytes[] calldata _updateData
+        bytes[] calldata
     ) external payable returns (uint256 value, uint256 seizedAmount);
 
     /// @notice Enable a cover asset to be used.
@@ -532,7 +472,7 @@ interface ISDIFacet {
     function disableCoverAssetSDI(address _assetAddr) external;
 
     /// @notice Set the contract holding cover assets.
-    function setCoverRecipientSDI(address _coverRecipient) external;
+    function setCoverRecipientSDI(address) external;
 
     /// @notice Get all accepted cover assets.
     function getCoverAssetsSDI() external view returns (address[] memory);
@@ -541,42 +481,29 @@ interface ISDIFacet {
 interface IMinterConfigFacet {
     /**
      * @dev Updates the contract's minimum debt value.
-     * @param _newMinDebtValue The new minimum debt value as a wad.
      */
-    function setMinDebtValueMinter(uint256 _newMinDebtValue) external;
+    function setMinDebtValueMinter(uint256) external;
 
     /**
      * @notice Updates the liquidation incentive multiplier.
-     * @param _collateralAsset The collateral asset to update.
-     * @param _newLiquidationIncentive The new liquidation incentive multiplier for the asset.
      */
-    function setCollateralLiquidationIncentiveMinter(
-        address _collateralAsset,
-        uint16 _newLiquidationIncentive
-    ) external;
+    function setCollateralLiquidationIncentiveMinter(address, uint16) external;
 
     /**
      * @dev Updates the contract's collateralization ratio.
-     * @param _newMinCollateralRatio The new minimum collateralization ratio as wad.
      */
-    function setMinCollateralRatioMinter(
-        uint32 _newMinCollateralRatio
-    ) external;
+    function setMinCollateralRatioMinter(uint32) external;
 
     /**
      * @dev Updates the contract's liquidation threshold value
-     * @param _newThreshold The new liquidation threshold value
      */
-    function setLiquidationThresholdMinter(uint32 _newThreshold) external;
+    function setLiquidationThresholdMinter(uint32) external;
 
     /**
      * @notice Updates the max liquidation ratior value.
      * @notice This is the maximum collateral ratio that liquidations can liquidate to.
-     * @param _newMaxLiquidationRatio Percent value in wad precision.
      */
-    function setMaxLiquidationRatioMinter(
-        uint32 _newMaxLiquidationRatio
-    ) external;
+    function setMaxLiquidationRatioMinter(uint32) external;
 }
 
 interface IMinterStateFacet {
@@ -593,26 +520,24 @@ interface IMinterStateFacet {
     function getMinCollateralRatioMinter() external view returns (uint32);
 
     /// @notice simple check if kresko asset exists
-    function getKrAssetExists(address _krAsset) external view returns (bool);
+    function getKrAssetExists(address) external view returns (bool);
 
     /// @notice simple check if collateral asset exists
-    function getCollateralExists(
-        address _collateralAsset
-    ) external view returns (bool);
+    function getCollateralExists(address) external view returns (bool);
 
     /// @notice get all meaningful protocol parameters
     function getParametersMinter() external view returns (MinterParams memory);
 
     /**
      * @notice Gets the USD value for a single collateral asset and amount.
-     * @param _collateralAsset The address of the collateral asset.
+     * @param _collateral The address of the collateral asset.
      * @param _amount The amount of the collateral asset to calculate the value for.
      * @return value The unadjusted value for the provided amount of the collateral asset.
      * @return adjustedValue The (cFactor) adjusted value for the provided amount of the collateral asset.
      * @return price The price of the collateral asset.
      */
     function getCollateralValueWithPrice(
-        address _collateralAsset,
+        address _collateral,
         uint256 _amount
     )
         external
@@ -647,14 +572,14 @@ interface IMinterLiquidationFacet {
     /**
      * @dev Calculates the total value that is allowed to be liquidated from an account (if it is liquidatable)
      * @param _account Address of the account to liquidate
-     * @param _repayAssetAddr Address of Kresko Asset to repay
-     * @param _seizeAssetAddr Address of Collateral to seize
+     * @param _repayAsset Address of Kresko Asset to repay
+     * @param _seizeAsset Address of Collateral to seize
      * @return MaxLiqInfo Calculated information about the maximum liquidation.
      */
     function getMaxLiqValue(
         address _account,
-        address _repayAssetAddr,
-        address _seizeAssetAddr
+        address _repayAsset,
+        address _seizeAsset
     ) external view returns (MaxLiqInfo memory);
 }
 
@@ -851,96 +776,6 @@ interface IMinterAccountStateFacet {
     ) external view returns (address[] memory assets, uint256[] memory amounts);
 }
 
-interface IAuthorizationFacet {
-    /**
-     * @dev OpenZeppelin
-     * Returns one of the accounts that have `role`. `index` must be a
-     * value between 0 and {getRoleMemberCount}, non-inclusive.
-     *
-     * Role bearers are not sorted in any particular way, and their ordering may
-     * change at any point.
-     *
-     * @notice WARNING:
-     * When using {getRoleMember} and {getRoleMemberCount}, make sure
-     * you perform all queries on the same block.
-     *
-     * See the following forum post for more information:
-     * - https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296
-     *
-     * @dev Kresko
-     *
-     * TL;DR above:
-     *
-     * - If you iterate the EnumSet outside a single block scope you might get different results.
-     * - Since when EnumSet member is deleted it is replaced with the highest index.
-     * @return address with the `role`
-     */
-    function getRoleMember(
-        bytes32 role,
-        uint256 index
-    ) external view returns (address);
-
-    /**
-     * @dev Returns the number of accounts that have `role`. Can be used
-     * together with {getRoleMember} to enumerate all bearers of a role.
-     * @notice See warning in {getRoleMember} if combining these two
-     */
-    function getRoleMemberCount(bytes32 role) external view returns (uint256);
-
-    /**
-     * @dev Grants `role` to `account`.
-     *
-     * If `account` had not been already granted `role`, emits a {RoleGranted}
-     * event.
-     *
-     * Requirements:
-     *
-     * - the caller must have ``role``'s admin role.
-     */
-    function grantRole(bytes32 role, address account) external;
-
-    /**
-     * @dev Returns the admin role that controls `role`. See {grantRole} and
-     * {revokeRole}.
-     *
-     * @notice To change a role's admin, use {_setRoleAdmin}.
-     */
-    function getRoleAdmin(bytes32 role) external view returns (bytes32);
-
-    /**
-     * @dev Returns true if `account` has been granted `role`.
-     */
-    function hasRole(
-        bytes32 role,
-        address account
-    ) external view returns (bool);
-
-    /**
-     * @dev Revokes `role` from the calling account.
-     *
-     * Roles are often managed via {grantRole} and {revokeRole}: this function's
-     * purpose is to provide a mechanism for accounts to lose their privileges
-     * if they are compromised (such as when a trusted device is misplaced).
-     *
-     * If the calling account had been revoked `role`, emits a {RoleRevoked}
-     * event.
-     *
-     * @notice Requirements
-     *
-     * - the caller must be `account`.
-     */
-    function renounceRole(bytes32 role, address account) external;
-
-    /**
-     * @dev Revokes `role` from `account`.
-     *
-     * @notice Requirements
-     *
-     * - the caller must have ``role``'s admin role.
-     */
-    function revokeRole(bytes32 role, address account) external;
-}
-
 interface ISafetyCouncilFacet {
     /**
      * @dev Toggle paused-state of assets in a per-action basis
@@ -975,7 +810,6 @@ interface ISafetyCouncilFacet {
 
     /**
      * @notice View the state of safety measures for an asset on a per-action basis
-     * @param _assetAddr krAsset / collateral asset
      * @param _action One of possible user actions:
      *
      *  Deposit = 0
@@ -985,7 +819,7 @@ interface ISafetyCouncilFacet {
      *  Liquidate = 4
      */
     function safetyStateFor(
-        address _assetAddr,
+        address,
         Enums.Action _action
     ) external view returns (SafetyState memory);
 
@@ -1001,7 +835,7 @@ interface ISafetyCouncilFacet {
      */
     function assetActionPaused(
         Enums.Action _action,
-        address _assetAddr
+        address
     ) external view returns (bool);
 }
 
@@ -1184,71 +1018,59 @@ interface ICommonStateFacet {
         Enums.OracleType _oracleType
     ) external view returns (Oracle memory);
 
-    function getChainlinkPrice(bytes32 _ticker) external view returns (uint256);
+    function getChainlinkPrice(bytes32) external view returns (uint256);
 
-    function getVaultPrice(bytes32 _ticker) external view returns (uint256);
+    function getVaultPrice(bytes32) external view returns (uint256);
 
-    function getRedstonePrice(bytes32 _ticker) external view returns (uint256);
+    function getRedstonePrice(bytes32) external view returns (uint256);
 
-    function getAPI3Price(bytes32 _ticker) external view returns (uint256);
+    function getAPI3Price(bytes32) external view returns (uint256);
 
-    function getPythPrice(bytes32 _ticker) external view returns (uint256);
+    function getPythPrice(bytes32) external view returns (uint256);
 }
 
 interface IAssetStateFacet {
     /**
      * @notice Get the state of a specific asset
-     * @param _assetAddr Address of the asset.
      * @return Asset State of asset
      * @custom:signature getAsset(address)
      * @custom:selector 0x30b8b2c6
      */
 
-    function getAsset(address _assetAddr) external view returns (Asset memory);
+    function getAsset(address) external view returns (Asset memory);
 
     /**
      * @notice Get price for an asset from address.
-     * @param _assetAddr Asset address.
      * @return uint256 Current price for the asset.
      * @custom:signature getPrice(address)
      * @custom:selector 0x41976e09
      */
-    function getPrice(address _assetAddr) external view returns (uint256);
+    function getPrice(address) external view returns (uint256);
 
     /**
      * @notice Get push price for an asset from address.
-     * @param _assetAddr Asset address.
      * @return RawPrice Current raw price for the asset.
      * @custom:signature getPushPrice(address)
      * @custom:selector 0xc72f3dd7
      */
-    function getPushPrice(
-        address _assetAddr
-    ) external view returns (RawPrice memory);
+    function getPushPrice(address) external view returns (RawPrice memory);
 
     /**
      * @notice Get value for an asset amount using the current price.
-     * @param _assetAddr Asset address.
-     * @param _amount The amount (uint256).
      * @return uint256 Current value for `_amount` of `_assetAddr`.
      * @custom:signature getValue(address,uint256)
      * @custom:selector 0xc7bf8cf5
      */
-    function getValue(
-        address _assetAddr,
-        uint256 _amount
-    ) external view returns (uint256);
+    function getValue(address, uint256) external view returns (uint256);
 
     /**
      * @notice Gets corresponding feed address for the oracle type and asset address.
-     * @param _assetAddr The asset address.
-     * @param _oracleType The oracle type.
-     * @return feedAddr Feed address that the asset uses with the oracle type.
+     * @return feed Feed address that the asset uses with the oracle type.
      */
     function getFeedForAddress(
-        address _assetAddr,
-        Enums.OracleType _oracleType
-    ) external view returns (address feedAddr);
+        address,
+        Enums.OracleType
+    ) external view returns (address feed);
 }
 
 interface IAssetConfigFacet {
@@ -1280,28 +1102,22 @@ interface IAssetConfigFacet {
     ) external returns (Asset memory);
 
     /**
-     * @notice  Updates the cFactor of a KreskoAsset. Convenience.
-     * @param _assetAddr The collateral asset.
-     * @param _newFactor The new collateral factor.
+     * @notice Updates the cFactor of a KreskoAsset. Convenience.
      */
-    function setAssetCFactor(address _assetAddr, uint16 _newFactor) external;
+    function setAssetCFactor(address, uint16) external;
 
     /**
      * @notice Updates the kFactor of a KreskoAsset.
-     * @param _assetAddr The KreskoAsset.
-     * @param _newKFactor The new kFactor.
      */
-    function setAssetKFactor(address _assetAddr, uint16 _newKFactor) external;
+    function setAssetKFactor(address, uint16) external;
 
     /**
      * @notice Validate supplied asset config. Reverts with information if invalid.
-     * @param _assetAddr The asset address.
-     * @param _config Configuration for the asset.
      * @return bool True for convenience.
      */
     function validateAssetConfig(
-        address _assetAddr,
-        Asset memory _config
+        address,
+        Asset memory
     ) external view returns (bool);
 
     /**
@@ -1315,100 +1131,11 @@ interface IAssetConfigFacet {
     ) external;
 }
 
-/// @title IDiamondStateFacet
-/// @notice Functions for the diamond state itself.
-interface IDiamondStateFacet {
-    /// @notice Whether the diamond is initialized.
-    function initialized() external view returns (bool);
-
-    /// @notice The EIP-712 typehash for the contract's domain.
-    function domainSeparator() external view returns (bytes32);
-
-    /// @notice Get the storage version (amount of times the storage has been upgraded)
-    /// @return uint256 The storage version.
-    function getStorageVersion() external view returns (uint256);
-
-    /**
-     * @notice Get the address of the owner
-     * @return owner_ The address of the owner.
-     */
-    function owner() external view returns (address owner_);
-
-    /**
-     * @notice Get the address of pending owner
-     * @return pendingOwner_ The address of the pending owner.
-     **/
-    function pendingOwner() external view returns (address pendingOwner_);
-
-    /**
-     * @notice Initiate ownership transfer to a new address
-     * @notice caller must be the current contract owner
-     * @notice the new owner cannot be address(0)
-     * @notice emits a {PendingOwnershipTransfer} event
-     * @param _newOwner address that is set as the pending new owner
-     */
-    function transferOwnership(address _newOwner) external;
-
-    /**
-     * @notice Transfer the ownership to the new pending owner
-     * @notice caller must be the pending owner
-     * @notice emits a {OwnershipTransferred} event
-     */
-    function acceptOwnership() external;
-}
-
-interface IBatchFacet {
-    /**
-     * @notice Performs batched calls to the protocol with a single price update.
-     * @param _calls Calls to perform.
-     * @param _updateData Pyth price data to use for the calls.
-     */
-    function batchCall(
-        bytes[] calldata _calls,
-        bytes[] calldata _updateData
-    ) external payable;
-
-    /**
-     * @notice Performs "static calls" with the update prices through `batchCallToError`, using a try-catch.
-     * Refunds the msg.value sent for price update fee.
-     * @param _staticCalls Calls to perform.
-     * @param _updateData Pyth price update preview with the static calls.
-     * @return timestamp Timestamp of the data.
-     * @return results Static call results as bytes[]
-     */
-    function batchStaticCall(
-        bytes[] calldata _staticCalls,
-        bytes[] calldata _updateData
-    ) external payable returns (uint256 timestamp, bytes[] memory results);
-
-    /**
-     * @notice Performs supplied calls and reverts a `Errors.BatchResult` containing returned results as bytes[].
-     * @param _calls Calls to perform.
-     * @param _updateData Pyth price update data to use for the static calls.
-     * @return `Errors.BatchResult` which needs to be caught and decoded on-chain (according to the result signature).
-     * Use `batchStaticCall` for a direct return.
-     */
-    function batchCallToError(
-        bytes[] calldata _calls,
-        bytes[] calldata _updateData
-    ) external payable returns (uint256, bytes[] memory);
-
-    /**
-     * @notice Used to transform bytes memory -> calldata by external call, then calldata slices the error selector away.
-     * @param _errorData Error data to decode.
-     * @return timestamp Timestamp of the data.
-     * @return results Static call results as bytes[]
-     */
-    function decodeErrorData(
-        bytes calldata _errorData
-    ) external pure returns (uint256 timestamp, bytes[] memory results);
-}
-
 // solhint-disable-next-line no-empty-blocks
 interface IKresko is
     IErrorsEvents,
     IDiamondStateFacet,
-    IExtendedDiamondCutFacet,
+    IDiamond,
     IAuthorizationFacet,
     ICommonConfigFacet,
     ICommonStateFacet,

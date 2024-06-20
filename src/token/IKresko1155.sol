@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 ^0.8.0;
+// solhint-disable
+
+pragma solidity ^0.8.0;
+import {IERC165} from "../core/individual/IERC165.sol";
 
 // node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol
 
@@ -104,37 +107,10 @@ interface IAccessControlUpgradeable {
     function renounceRole(bytes32 role, address account) external;
 }
 
-// node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol
-
-// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)
-
-/**
- * @dev Interface of the ERC165 standard, as defined in the
- * https://eips.ethereum.org/EIPS/eip-165[EIP].
- *
- * Implementers can declare support of contract interfaces, which can then be
- * queried by others ({ERC165Checker}).
- *
- * For an implementation, see {ERC165}.
- */
-interface IERC165Upgradeable {
-    /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`. See the corresponding
-     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
-     * to learn more about how these ids are created.
-     *
-     * This function call must use less than 30 000 gas.
-     */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-}
-
-// contracts/lz-contracts-upgradeable/token/onft/ERC1155/IONFT1155CoreUpgradeable.sol
-
 /**
  * @dev Interface of the ONFT Core standard
  */
-interface IONFT1155CoreUpgradeable is IERC165Upgradeable {
+interface IONFT1155CoreUpgradeable is IERC165 {
     event SendToChain(
         uint16 indexed _dstChainId,
         address indexed _from,
@@ -243,7 +219,7 @@ interface IONFT1155CoreUpgradeable is IERC165Upgradeable {
  *
  * _Available since v3.1._
  */
-interface IERC1155Upgradeable is IERC165Upgradeable {
+interface IERC1155Upgradeable is IERC165 {
     /**
      * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.
      */

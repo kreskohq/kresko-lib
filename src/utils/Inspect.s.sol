@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {IDataV1} from "../core/IData.sol";
+import {IDataV1} from "../core/types/Views.sol";
 import {Log, Help} from "./Libs.s.sol";
 import {Asset, Oracle, RawPrice} from "../core/types/Data.sol";
 import {IERC20} from "../token/IERC20.sol";

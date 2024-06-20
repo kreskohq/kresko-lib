@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import {IErrorsEvents} from "./IErrorsEvents.sol";
 
-interface IKrMulticall {
-    function rescue(
-        address _token,
-        uint256 _amount,
-        address _receiver
-    ) external;
+interface IKrMulticall is IErrorsEvents {
+    function rescue(address, uint256, address _to) external;
 
     function execute(
-        Operation[] calldata ops,
-        bytes[] calldata _updateData
+        Operation[] calldata _ops,
+        bytes[] calldata _p
     ) external payable returns (Result[] memory);
 
     /**
@@ -111,33 +108,22 @@ interface IKrMulticall {
         LeaveInContract
     }
 
-    error NO_ALLOWANCE(Action action, address token, string symbol);
-    error ZERO_AMOUNT_IN(Action action, address token, string symbol);
-    error ZERO_NATIVE_IN(Action action);
-    error VALUE_NOT_ZERO(Action action, uint256 value);
-    error INVALID_NATIVE_TOKEN_IN(Action action, address token, string symbol);
+    error ZERO_AMOUNT_IN(Action, address token, string symbol);
+    error ZERO_NATIVE_IN(Action);
+    error VALUE_NOT_ZERO(Action, uint256 value);
+    error INVALID_NATIVE_TOKEN_IN(Action, address token, string symbol);
     error ZERO_OR_INVALID_AMOUNT_IN(
-        Action action,
+        Action,
         address token,
         string symbol,
         uint256 balance,
         uint256 amountOut
     );
-    error INVALID_ACTION(Action action);
-    error NATIVE_SYNTH_WRAP_NOT_ALLOWED(
-        Action action,
-        address token,
-        string symbol
-    );
+    error INVALID_ACTION(Action);
+    error NATIVE_SYNTH_WRAP_NOT_ALLOWED(Action, address token, string symbol);
 
-    error TOKENS_IN_MODE_WAS_NONE_BUT_ADDRESS_NOT_ZERO(
-        Action action,
-        address token
-    );
-    error TOKENS_OUT_MODE_WAS_NONE_BUT_ADDRESS_NOT_ZERO(
-        Action action,
-        address token
-    );
+    error TOKENS_IN_MODE_WAS_NONE_BUT_ADDRESS_NOT_ZERO(Action, address token);
+    error TOKENS_OUT_MODE_WAS_NONE_BUT_ADDRESS_NOT_ZERO(Action, address token);
 
-    error INSUFFICIENT_UPDATE_FEE(uint256 updateFee, uint256 amountIn);
+    error INSUFFICIENT_UPDATE_FEE(uint256 fee, uint256 amountIn);
 }

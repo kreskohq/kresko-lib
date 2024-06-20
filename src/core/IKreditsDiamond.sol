@@ -2,31 +2,9 @@
 // solhint-disable
 
 pragma solidity ^0.8.0;
-
-// lib/openzeppelin/contracts/utils/introspection/IERC165.sol
-
-// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)
-
-/**
- * @dev Interface of the ERC165 standard, as defined in the
- * https://eips.ethereum.org/EIPS/eip-165[EIP].
- *
- * Implementers can declare support of contract interfaces, which can then be
- * queried by others ({ERC165Checker}).
- *
- * For an implementation, see {ERC165}.
- */
-interface IERC165_0 {
-    /**
-     * @dev Returns true if this contract implements the interface defined by
-     * `interfaceId`. See the corresponding
-     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
-     * to learn more about how these ids are created.
-     *
-     * This function call must use less than 30 000 gas.
-     */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-}
+import {IDiamond} from "./IDiamond.sol";
+import {IERC165} from "./individual/IERC165.sol";
+import {IERC173} from "./individual/IERC173.sol";
 
 // lib/solidstate/contracts/access/access_control/IAccessControlInternal.sol
 
@@ -50,49 +28,6 @@ interface IAccessControlInternal {
         bytes32 indexed role,
         address indexed account,
         address indexed sender
-    );
-}
-
-// lib/solidstate/contracts/interfaces/IERC165Internal.sol
-
-/**
- * @title ERC165 interface registration interface
- */
-interface IERC165Internal {
-
-}
-
-// lib/solidstate/contracts/interfaces/IERC2981Internal.sol
-
-/**
- * @title ERC2981 interface
- */
-interface IERC2981Internal {
-
-}
-
-// lib/solidstate/contracts/interfaces/IERC721Internal.sol
-
-/**
- * @title Partial ERC721 interface needed by internal functions
- */
-interface IERC721Internal {
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
-    event Approval(
-        address indexed owner,
-        address indexed operator,
-        uint256 indexed tokenId
-    );
-
-    event ApprovalForAll(
-        address indexed owner,
-        address indexed operator,
-        bool approved
     );
 }
 
@@ -188,127 +123,7 @@ interface Errors {
     error NotBurningClaim(uint256 id);
 }
 
-// src/diamond/interfaces/IDiamondCutFacet.sol
-
-/******************************************************************************\
-* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
-* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
-/******************************************************************************/
-
-interface IDiamondCutFacet {
-    struct Initializer {
-        address initializer;
-        bytes data;
-    }
-
-    enum FacetCutAction {
-        Add,
-        Replace,
-        Remove
-    }
-    // Add=0, Replace=1, Remove=2
-
-    struct FacetCut {
-        address facetAddress;
-        FacetCutAction action;
-        bytes4[] functionSelectors;
-    }
-
-    /// @notice Add/replace/remove any number of functions and optionally execute
-    ///         a function with delegatecall
-    /// @param _diamondCut Contains the facet addresses and function selectors
-    /// @param _init The address of the contract or facet to execute _calldata
-    /// @param _calldata A function call, including function selector and arguments
-    ///                  _calldata is executed with delegatecall on _init
-    function diamondCut(
-        FacetCut[] calldata _diamondCut,
-        address _init,
-        bytes calldata _calldata
-    ) external;
-
-    event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata);
-}
-
-interface IExtendedDiamondCutFacet is IDiamondCutFacet {
-    function executeInitializer(Initializer calldata _init) external;
-}
-
-// src/diamond/interfaces/IDiamondLoupeFacet.sol
-
-/******************************************************************************\
-* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
-* EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
-/******************************************************************************/
-
-// A loupe is a small magnifying glass used to look at diamonds.
-// These functions look at diamonds
-interface IDiamondLoupeFacet {
-    /// These functions are expected to be called frequently
-    /// by tools.
-
-    struct Facet {
-        address facetAddress;
-        bytes4[] functionSelectors;
-    }
-
-    /// @notice Gets all facet addresses and their four byte function selectors.
-    /// @return facets_ Facet
-    function facets() external view returns (Facet[] memory facets_);
-
-    /// @notice Gets all the function selectors supported by a specific facet.
-    /// @param _facet The facet address.
-    /// @return facetFunctionSelectors_
-    function facetFunctionSelectors(
-        address _facet
-    ) external view returns (bytes4[] memory facetFunctionSelectors_);
-
-    /// @notice Get all the facet addresses used by a diamond.
-    /// @return facetAddresses_
-    function facetAddresses()
-        external
-        view
-        returns (address[] memory facetAddresses_);
-
-    /// @notice Gets the facet that supports the given selector.
-    /// @dev If facet is not found return address(0).
-    /// @param _functionSelector The function selector.
-    /// @return facetAddress_ The facet address.
-    function facetAddress(
-        bytes4 _functionSelector
-    ) external view returns (address facetAddress_);
-}
-
-// src/diamond/interfaces/IERC173.sol
-
-/// @title ERC-173 Contract Ownership Standard
-///  Note: the ERC-165 identifier for this interface is 0x7f5828d0
-/* is ERC165 */
-interface IERC173 {
-    /// @dev This emits when ownership of a contract changes.
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
-
-    /// @notice Get the address of the owner
-    /// @return owner_ The address of the owner.
-    function owner() external view returns (address owner_);
-
-    /// @notice Set the address of the new owner of the contract
-    /// @dev Set _newOwner to address(0) to renounce any ownership.
-    /// @param _newOwner The address of the new owner of the contract
-    function transferOwnership(address _newOwner) external;
-}
-
-// lib/openzeppelin/contracts/token/ERC1155/IERC1155.sol
-
-// OpenZeppelin Contracts (last updated v5.0.1) (token/ERC1155/IERC1155.sol)
-
-/**
- * @dev Required interface of an ERC1155 compliant contract, as defined in the
- * https://eips.ethereum.org/EIPS/eip-1155[EIP].
- */
-interface IERC1155 is IERC165_0 {
+interface IERC1155 is IERC165 {
     /**
      * @dev Emitted when `value` amount of tokens of type `id` are transferred from `from` to `to` by `operator`.
      */
@@ -515,54 +330,12 @@ interface IAccessControl is IAccessControlInternal {
     function getRoleMemberCount(bytes32 role) external view returns (uint256);
 }
 
-// lib/solidstate/contracts/interfaces/IERC165.sol
-
-/**
- * @title ERC165 interface registration interface
- * @dev see https://eips.ethereum.org/EIPS/eip-165
- */
-interface IERC165_1 is IERC165Internal {
-    /**
-     * @notice query whether contract has registered support for given interface
-     * @param interfaceId interface id
-     * @return bool whether interface is supported
-     */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-}
-
-// lib/solidstate/contracts/token/ERC721/base/IERC721BaseInternal.sol
-
-/**
- * @title ERC721 base interface
- */
-interface IERC721BaseInternal is IERC721Internal {
-    error ERC721Base__NotOwnerOrApproved();
-    error ERC721Base__SelfApproval();
-    error ERC721Base__BalanceQueryZeroAddress();
-    error ERC721Base__ERC721ReceiverNotImplemented();
-    error ERC721Base__InvalidOwner();
-    error ERC721Base__MintToZeroAddress();
-    error ERC721Base__NonExistentToken();
-    error ERC721Base__NotTokenOwner();
-    error ERC721Base__TokenAlreadyMinted();
-    error ERC721Base__TransferToZeroAddress();
-}
-
 // src/diamond/interfaces/IOwnershipFacet.sol
 
 // solhint-disable no-empty-blocks
 
 interface IOwnershipFacet is IERC173 {
 
-}
-
-// lib/solidstate/contracts/token/ERC721/metadata/IERC721MetadataInternal.sol
-
-/**
- * @title ERC721Metadata internal interface
- */
-interface IERC721MetadataInternal is IERC721BaseInternal {
-    error ERC721Metadata__NonExistentToken();
 }
 
 // src/core/RegistryState.sol
@@ -631,7 +404,7 @@ function rs() pure returns (RegistryState storage state) {
  * @title ERC2981 interface
  * @dev see https://eips.ethereum.org/EIPS/eip-2981
  */
-interface IERC2981 is IERC2981Internal, IERC165_1 {
+interface IERC2981 is IERC165 {
     /**
      * @notice called with the sale price to determine how much royalty is owed and to whom
      * @param tokenId the ERC721 or ERC1155 token id to query for royalty information
@@ -651,7 +424,36 @@ interface IERC2981 is IERC2981Internal, IERC165_1 {
  * @title ERC721 interface
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-interface IERC721 is IERC721Internal, IERC165_1 {
+interface IERC721 is IERC165 {
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 indexed tokenId
+    );
+
+    event Approval(
+        address indexed owner,
+        address indexed operator,
+        uint256 indexed tokenId
+    );
+
+    event ApprovalForAll(
+        address indexed owner,
+        address indexed operator,
+        bool approved
+    );
+
+    error ERC721Base__NotOwnerOrApproved();
+    error ERC721Base__SelfApproval();
+    error ERC721Base__BalanceQueryZeroAddress();
+    error ERC721Base__ERC721ReceiverNotImplemented();
+    error ERC721Base__InvalidOwner();
+    error ERC721Base__MintToZeroAddress();
+    error ERC721Base__NonExistentToken();
+    error ERC721Base__NotTokenOwner();
+    error ERC721Base__TokenAlreadyMinted();
+    error ERC721Base__TransferToZeroAddress();
+
     /**
      * @notice query the balance of given address
      * @return balance quantity of tokens held
@@ -743,7 +545,9 @@ interface IERC721 is IERC721Internal, IERC165_1 {
 /**
  * @title ERC721Metadata interface
  */
-interface IERC721Metadata is IERC721MetadataInternal {
+interface IERC721Metadata {
+    error ERC721Metadata__NonExistentToken();
+
     /**
      * @notice get token name
      * @return token name
@@ -876,18 +680,9 @@ interface IRoyaltyFacet is IERC2981 {
 
 // lib/solidstate/contracts/token/ERC721/base/IERC721Base.sol
 
-/**
- * @title ERC721 base interface
- */
-interface IERC721Base is IERC721BaseInternal, IERC721 {
-
-}
-
 // src/core/interfaces/IERC721Facet.sol
 
-interface IERC721Facet is IERC721Base, IERC721Enumerable, IERC721Metadata {
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
-
+interface IERC721Facet is IERC721, IERC721Enumerable, IERC721Metadata {
     function onERC721Received(
         address operator,
         address from,
@@ -917,8 +712,7 @@ interface IERC721Facet is IERC721Base, IERC721Enumerable, IERC721Metadata {
 // src/core/interfaces/IKreditsDiamond.sol
 
 interface IKreditsDiamond is
-    IDiamondCutFacet,
-    IDiamondLoupeFacet,
+    IDiamond,
     IOwnershipFacet,
     IClaimerFacet,
     IClaimerConfigFacet,

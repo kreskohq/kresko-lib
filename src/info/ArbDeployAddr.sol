@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 import {IWETH9} from "../token/IWETH9.sol";
 import {IERC20} from "../token/IERC20.sol";
+import {Meta} from "./Periphery.sol";
 
 abstract contract ArbDeployAddr {
     address constant kreskoAddr = 0x0000000000177abD99485DCaea3eFaa91db3fe72;
@@ -55,4 +56,10 @@ abstract contract ArbDeployAddr {
     address constant pythAddr = 0xff1a0f4744e8582DF1aE09D5611b887B6a12925C;
     address constant routerv3Addr = 0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45;
     address constant quoterV2Addr = 0x61fFE014bA17989E743c5F6cB21bF9697530B21e;
+
+    function getKrAddr(
+        string memory _symbol
+    ) public view returns (Meta.KrAssetAddr memory) {
+        return Meta.krAssetAddr(factoryAddr, _symbol);
+    }
 }

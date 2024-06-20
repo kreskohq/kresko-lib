@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-// solhint-disable no-inline-assembly, one-contract-per-file
+// solhint-disable
 pragma solidity ^0.8.0;
 
-import {IKreskoAsset} from "./IKreskoAsset.sol";
-import {PythView} from "../vendor/Pyth.sol";
-import {Asset, RawPrice, VaultAsset} from "./types/Data.sol";
-
-// solhint-disable state-visibility, max-states-count, var-name-mixedcase, no-global-import, const-name-snakecase, no-empty-blocks, no-console, code-complexity
+import {IKreskoAsset} from "../IKreskoAsset.sol";
+import {PythView} from "../../vendor/Pyth.sol";
+import {Asset, RawPrice} from "./Data.sol";
+import {VaultAsset} from "../IVault.sol";
 
 library View {
     struct AssetData {

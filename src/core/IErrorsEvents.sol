@@ -180,15 +180,6 @@ interface IErrorsEvents is IErrorFieldProvider {
     /*                                 Collateral                                 */
     /* -------------------------------------------------------------------------- */
 
-    /**
-     * @notice Emitted when a collateral asset is added to the protocol.
-     * @dev Can only be emitted once for a given collateral asset.
-     * @param ticker Underlying asset ticker.
-     * @param symbol Asset symbol
-     * @param collateralAsset The address of the collateral asset.
-     * @param factor The collateral factor.
-     * @param liqIncentive The liquidation incentive
-     */
     event CollateralAssetAdded(
         string indexed ticker,
         string indexed symbol,
@@ -198,14 +189,6 @@ interface IErrorsEvents is IErrorFieldProvider {
         uint256 liqIncentive
     );
 
-    /**
-     * @notice Emitted when a collateral asset is updated.
-     * @param ticker Underlying asset ticker.
-     * @param symbol Asset symbol
-     * @param collateralAsset The address of the collateral asset.
-     * @param factor The collateral factor.
-     * @param liqIncentive The liquidation incentive
-     */
     event CollateralAssetUpdated(
         string indexed ticker,
         string indexed symbol,
@@ -215,36 +198,18 @@ interface IErrorsEvents is IErrorFieldProvider {
         uint256 liqIncentive
     );
 
-    /**
-     * @notice Emitted when an account deposits collateral.
-     * @param account The address of the account depositing collateral.
-     * @param collateralAsset The address of the collateral asset.
-     * @param amount The amount of the collateral asset that was deposited.
-     */
     event CollateralDeposited(
         address indexed account,
         address indexed collateralAsset,
         uint256 amount
     );
 
-    /**
-     * @notice Emitted when an account withdraws collateral.
-     * @param account The address of the account withdrawing collateral.
-     * @param collateralAsset The address of the collateral asset.
-     * @param amount The amount of the collateral asset that was withdrawn.
-     */
     event CollateralWithdrawn(
         address indexed account,
         address indexed collateralAsset,
         uint256 amount
     );
 
-    /**
-     * @notice Emitted when AMM helper withdraws account collateral without MCR checks.
-     * @param account The address of the account withdrawing collateral.
-     * @param collateralAsset The address of the collateral asset.
-     * @param amount The amount of the collateral asset that was withdrawn.
-     */
     event UncheckedCollateralWithdrawn(
         address indexed account,
         address indexed collateralAsset,
@@ -252,21 +217,9 @@ interface IErrorsEvents is IErrorFieldProvider {
     );
 
     /* -------------------------------------------------------------------------- */
-    /*                                Kresko Assets                               */
+    /*                                Kresko Assets                                   */
     /* -------------------------------------------------------------------------- */
 
-    /**
-     * @notice Emitted when a KreskoAsset is added to the protocol.
-     * @dev Can only be emitted once for a given Kresko asset.
-     * @param ticker Underlying asset ticker.
-     * @param symbol Asset symbol
-     * @param kreskoAsset The address of the Kresko asset.
-     * @param anchor anchor token
-     * @param kFactor The k-factor.
-     * @param maxDebtMinter The total supply limit.
-     * @param closeFee The close fee percentage.
-     * @param openFee The open fee percentage.
-     */
     event KreskoAssetAdded(
         string indexed ticker,
         string indexed symbol,
@@ -278,16 +231,6 @@ interface IErrorsEvents is IErrorFieldProvider {
         uint256 openFee
     );
 
-    /**
-     * @notice Emitted when a Kresko asset's oracle is updated.
-     * @param ticker Underlying asset ticker.
-     * @param symbol Asset symbol
-     * @param kreskoAsset The address of the Kresko asset.
-     * @param kFactor The k-factor.
-     * @param maxDebtMinter The total supply limit.
-     * @param closeFee The close fee percentage.
-     * @param openFee The open fee percentage.
-     */
     event KreskoAssetUpdated(
         string indexed ticker,
         string indexed symbol,
@@ -313,38 +256,19 @@ interface IErrorsEvents is IErrorFieldProvider {
         address receiver
     );
 
-    /**
-     * @notice Emitted when an account burns a Kresko asset.
-     * @param account The address of the account burning the Kresko asset.
-     * @param kreskoAsset The address of the Kresko asset.
-     * @param amount The amount of the KreskoAsset that was burned.
-     */
     event KreskoAssetBurned(
         address indexed account,
         address indexed kreskoAsset,
         uint256 amount
     );
 
-    /**
-     * @notice Emitted when cFactor is updated for a collateral asset.
-     * @param symbol Asset symbol
-     * @param collateralAsset The address of the collateral asset.
-     * @param from Previous value.
-     * @param to New value.
-     */
     event CFactorUpdated(
         string indexed symbol,
         address indexed collateralAsset,
         uint256 from,
         uint256 to
     );
-    /**
-     * @notice Emitted when kFactor is updated for a KreskoAsset.
-     * @param symbol Asset symbol
-     * @param kreskoAsset The address of the KreskoAsset.
-     * @param from Previous value.
-     * @param to New value.
-     */
+
     event KFactorUpdated(
         string indexed symbol,
         address indexed kreskoAsset,
@@ -365,17 +289,17 @@ interface IErrorsEvents is IErrorFieldProvider {
     );
 
     /**
-     * @notice Emitted when an account pays an open/close fee with a collateral asset in the Minter.
+     * @notice Emitted when an account pays an open/close fee in the Minter.
      * @dev This can be emitted multiple times for a single asset.
-     * @param account Address of the account paying the fee.
-     * @param paymentCollateralAsset Address of the collateral asset used to pay the fee.
+     * @param account Account paying the fee.
+     * @param feeAsset Asset used to pay the fee.
      * @param feeType Fee type.
-     * @param paymentAmount Amount of ollateral asset that was paid.
-     * @param paymentValue USD value of the payment.
+     * @param paymentAmount Amount paid.
+     * @param paymentValue USD value.
      */
     event FeePaid(
         address indexed account,
-        address indexed paymentCollateralAsset,
+        address indexed feeAsset,
         uint256 indexed feeType,
         uint256 paymentAmount,
         uint256 paymentValue,
@@ -383,13 +307,13 @@ interface IErrorsEvents is IErrorFieldProvider {
     );
 
     /**
-     * @notice Emitted when a liquidation occurs.
-     * @param account The address of the account being liquidated.
+     * @notice Emitted when a liquidation occurs in the Minter.
+     * @param account Cccount being liquidated.
      * @param liquidator The account performing the liquidation.
-     * @param repayKreskoAsset The address of the KreskoAsset being paid back to the protocol by the liquidator.
-     * @param repayAmount The amount of the repay KreskoAsset being paid back to the protocol by the liquidator.
-     * @param seizedCollateralAsset The address of the collateral asset being seized from the account by the liquidator.
-     * @param collateralSent The amount of the seized collateral asset being seized from the account by the liquidator.
+     * @param repayKreskoAsset KreskoAsset paid back to the protocol by the liquidator.
+     * @param repayAmount Amount of KreskoAsset repaid.
+     * @param seizedCollateralAsset Collateral asset seized from the account.
+     * @param collateralSent Amount of collateral seized
      */
     event LiquidationOccurred(
         address indexed account,

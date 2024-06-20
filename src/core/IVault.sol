@@ -1,14 +1,47 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {IERC20} from "../token/IERC20.sol";
-import {VaultAsset} from "./types/Data.sol";
-import {VaultConfiguration} from "./types/Setup.sol";
+import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
+
+/**
+ * @notice Vault configuration struct
+ * @param sequencerUptimeFeed The feed address for the sequencer uptime
+ * @param sequencerGracePeriodTime The grace period time for the sequencer
+ * @param governance The governance address
+ * @param feeRecipient The fee recipient address
+ * @param oracleDecimals The oracle decimals
+ */
+struct VaultConfiguration {
+    address sequencerUptimeFeed;
+    uint96 sequencerGracePeriodTime;
+    address governance;
+    address pendingGovernance;
+    address feeRecipient;
+    uint8 oracleDecimals;
+}
+
+/**
+ * @notice Asset struct for deposit assets in contract
+ * @param token The ERC20 token
+ * @param feed IAggregatorV3 feed for the asset
+ * @param staleTime Time in seconds for the feed to be considered stale
+ * @param maxDeposits Max deposits allowed for the asset
+ * @param depositFee Deposit fee of the asset
+ * @param withdrawFee Withdraw fee of the asset
+ * @param enabled Enabled status of the asset
+ */
+struct VaultAsset {
+    IERC20 token;
+    IAggregatorV3 feed;
+    uint24 staleTime;
+    uint8 decimals;
+    uint32 depositFee;
+    uint32 withdrawFee;
+    uint248 maxDeposits;
+    bool enabled;
+}
 
 interface IVault is IERC20 {
-    /* -------------------------------------------------------------------------- */
-    /*                                Functionality                               */
-    /* -------------------------------------------------------------------------- */
-
     /**
      * @notice This function deposits `assetsIn` of `asset`, regardless of the amount of vault shares minted.
      * @notice If depositFee > 0, `depositFee` of `assetsIn` is sent to the fee recipient.
@@ -288,8 +321,4 @@ interface IVault is IERC20 {
      * @param newWithdrawFee Fee to set
      */
     function setWithdrawFee(address assetAddr, uint16 newWithdrawFee) external;
-
-    /* -------------------------------------------------------------------------- */
-    /*                                   Errors                                   */
-    /* -------------------------------------------------------------------------- */
 }

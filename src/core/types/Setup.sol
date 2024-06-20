@@ -14,6 +14,10 @@ struct MinterParams {
  * @notice Feed configuration.
  * @param oracleIds List of two supported oracle providers.
  * @param feeds List of two feed addresses matching to the providers supplied. Redstone will be address(0).
+ * @param staleTimes List of two stale times for the feeds.
+ * @param pythId Pyth asset ID.
+ * @param invertPyth Invert the Pyth price.
+ * @param isClosable Is the market for the ticker closable.
  */
 struct FeedConfiguration {
     Enums.OracleType[2] oracleIds;
@@ -21,6 +25,7 @@ struct FeedConfiguration {
     uint256[2] staleTimes;
     bytes32 pythId;
     bool invertPyth;
+    bool isClosable;
 }
 
 /**
@@ -36,23 +41,6 @@ struct CommonInitArgs {
     address sequencerUptimeFeed;
     address gatingManager;
     address pythEp;
-}
-
-/**
- * @notice Vault configuration struct
- * @param sequencerUptimeFeed The feed address for the sequencer uptime
- * @param sequencerGracePeriodTime The grace period time for the sequencer
- * @param governance The governance address
- * @param feeRecipient The fee recipient address
- * @param oracleDecimals The oracle decimals
- */
-struct VaultConfiguration {
-    address sequencerUptimeFeed;
-    uint96 sequencerGracePeriodTime;
-    address governance;
-    address pendingGovernance;
-    address feeRecipient;
-    uint8 oracleDecimals;
 }
 
 /**
