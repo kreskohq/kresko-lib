@@ -9,7 +9,6 @@ import {__revert} from "./Base.s.sol";
 
 abstract contract Scripted is Script, Wallet {
     using LibVm for IMinVM.CallerMode;
-
     modifier fork(string memory _uoa) {
         vm.createSelectFork(_uoa);
         _;

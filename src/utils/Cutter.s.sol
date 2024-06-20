@@ -2,21 +2,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Help, Log} from "./Libs.s.sol";
+import {PLog} from "./PLog.s.sol";
 import {__revert} from "./Base.s.sol";
-import {FacetCut, FacetCutAction, IDiamond, IDiamondLoupeFacet, Initializer} from "../core/IDiamond.sol";
+import {FacetCut, FacetCutAction, IDiamond, Initializer} from "../core/IDiamond.sol";
 import {defaultFacetLoc, FacetData, getFacet, getFacets} from "./ffi/ffi-facets.s.sol";
 import {Scripted} from "./Scripted.s.sol";
 import {ArbDeploy} from "../info/ArbDeploy.sol";
 import {Factory, Files} from "./Files.s.sol";
 
 contract Cutter is ArbDeploy, Files, Scripted {
-    using Help for *;
-    using Log for *;
+    using PLog for *;
 
     IDiamond internal _diamond;
     FacetCut[] internal _cuts;
-    string[] _files;
+    string[] internal _fileInfo;
     Initializer internal _initializer;
 
     constructor() {
@@ -93,17 +92,15 @@ contract Cutter is ArbDeploy, Files, Scripted {
     function _handleFacet(
         FacetData memory _facet
     ) private returns (address facetAddr) {
-        address oldFacet = IDiamondLoupeFacet(address(_diamond)).facetAddress(
-            _facet.selectors[0]
-        );
+        address oldFacet = _diamond.facetAddress(_facet.selectors[0]);
         if (oldFacet == address(0)) {
-            oldFacet = IDiamondLoupeFacet(address(_diamond)).facetAddress(
+            oldFacet = _diamond.facetAddress(
                 _facet.selectors[_facet.selectors.length - 1]
             );
         }
 
         bytes4[] memory oldSelectors;
-        if (oldFacet != address(0) && !_facet.file.equals("")) {
+        if (oldFacet != address(0) && !_eq(_facet.file, "")) {
             bytes memory code = vm.getDeployedCode(
                 string.concat(_facet.file, ".sol:", _facet.file)
             );
@@ -119,8 +116,7 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 return oldFacet;
             }
 
-            oldSelectors = IDiamondLoupeFacet(address(_diamond))
-                .facetFunctionSelectors(oldFacet);
+            oldSelectors = _diamond.facetFunctionSelectors(oldFacet);
             _cuts.push(
                 FacetCut({
                     facetAddress: address(0),
@@ -128,12 +124,12 @@ contract Cutter is ArbDeploy, Files, Scripted {
                     functionSelectors: oldSelectors
                 })
             );
-            _files.push(
+            _fileInfo.push(
                 string.concat(
                     "Remove Facet -> ",
                     _facet.file,
                     " (",
-                    oldFacet.str(),
+                    vm.toString(oldFacet),
                     ")"
                 )
             );
@@ -150,7 +146,7 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 functionSelectors: _facet.selectors
             })
         );
-        _files.push(string.concat("New Facet -> ", _facet.file));
+        _fileInfo.push(string.concat("New Facet -> ", _facet.file));
         json(_facet.selectors.length, "newSelectors");
         jsonKey();
     }
@@ -173,9 +169,11 @@ contract Cutter is ArbDeploy, Files, Scripted {
     function logCuts() internal view {
         _cuts.length.clg("FacetCuts:");
         for (uint256 i; i < _cuts.length; i++) {
-            Log.br();
-            Log.hr();
-            _files[i].clg(string.concat("[CUT #", i.str(), "]"));
+            PLog.clg("\n");
+            PLog.clg(
+                "*****************************************************************"
+            );
+            _fileInfo[i].clg(string.concat("[CUT #", vm.toString(i), "]"));
             _cuts[i].facetAddress.clg("Facet Address");
             uint8(_cuts[i].action).clg("Action");
             uint256 selectorLength = _cuts[i].functionSelectors.length;
@@ -185,15 +183,26 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 selectorStr = string.concat(
                     selectorStr,
                     string(
-                        abi.encodePacked(_cuts[i].functionSelectors[sel]).str()
+                        vm.toString(
+                            abi.encodePacked(_cuts[i].functionSelectors[sel])
+                        )
                     ),
                     sel == selectorLength - 1 ? "" : ","
                 );
             }
             string.concat(selectorStr, "]").clg(
-                string.concat("Selectors (", selectorLength.str(), ")")
+                string.concat("Selectors (", vm.toString(selectorLength), ")")
             );
             selectorLength.clg("Selector Count");
         }
+    }
+
+    function _eq(
+        string memory __a,
+        string memory __b
+    ) internal pure returns (bool) {
+        return
+            keccak256(abi.encodePacked(__a)) ==
+            keccak256(abi.encodePacked(__b));
     }
 }
