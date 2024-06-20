@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 import {IErrorsEvents} from "./IErrorsEvents.sol";
+import {IDiamond} from "./IDiamond.sol";
 import {SwapArgs, BurnArgs, UncheckedWithdrawArgs, LiquidationArgs, SCDPLiquidationArgs, MintArgs, SCDPWithdrawArgs, SCDPRepayArgs, WithdrawArgs} from "./types/Args.sol";
 import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./types/Setup.sol";
 import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
-import {IDiamond} from "./IDiamond.sol";
 import {IDiamondStateFacet} from "./individual/IDiamondStateFacet.sol";
 import {IAuthorizationFacet} from "./individual/IAuthorizationFacet.sol";
 import {IViewDataFacet} from "./individual/IViewDataFacet.sol";

@@ -65,7 +65,7 @@ interface IExtendedDiamondCutFacet is IDiamondCutFacet {
     function executeInitializer(Initializer calldata) external;
 }
 
-interface IDiamond is IDiamondCutFacet, IDiamondLoupeFacet, IERC165 {
+interface IDiamond is IExtendedDiamondCutFacet, IDiamondLoupeFacet, IERC165 {
     function setERC165(
         bytes4[] calldata add,
         bytes4[] calldata remove
