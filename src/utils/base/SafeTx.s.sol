@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 import {PLog} from "../PLog.s.sol";
 import {Based} from "./Based.s.sol";
+import {SafeScript} from "../ffi/SafeScript.s.sol";
 
 abstract contract SafeTx is Based {
     address internal SAFE_ADDRESS;
