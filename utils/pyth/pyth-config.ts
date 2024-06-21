@@ -1,5 +1,5 @@
 export const HERMES_URLS = ['https://hermes.pyth.network', process.env.PYTH_HERMES_EP]
-
+export const defaultTickers = ['ETH', 'USDC', 'SOL', 'BTC', 'ARB', 'EUR', 'JPY', 'GBP', 'XAU', 'XAG', 'DOGE'] as const
 export const tickers = {
   '1INCH': '0x63f341689d98a12ef60a5cff1d7f85c70a9e17bf1575f0e7c0b2512d48b1c8b3',
   AAPL: '0x49f6b65cb1de6b10eaf75e7c03ca029c306d0357e91b5311b175084a5ad55688',
