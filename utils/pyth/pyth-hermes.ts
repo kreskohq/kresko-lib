@@ -8,8 +8,11 @@ const hermes = {
   pricesV2: (ids: Pyth.ID[]) =>
     fetchHermes<Pyth.V2Response>(`/v2/updates/price/latest?ids[]=${ids.join('&ids[]=')}&binary=true`),
 }
-
-export async function fetchPythData(items: string[]) {
+export async function fetchPythData(): Promise<Hex>
+export async function fetchPythData(items?: string[], out?: 'hex'): Promise<Hex>
+export async function fetchPythData(items?: string[], out?: 'ts'): Promise<Result<typeof parseResult>>
+export async function fetchPythData(items?: string[], out?: string): Promise<Result<typeof parseResult> | Hex> {
+  items = items ?? process.argv[3]?.split(',') ?? []
   const pythIds = items
     .map(item => {
       return isPythTicker(item) ? tickers[item] : item
@@ -20,16 +23,29 @@ export async function fetchPythData(items: string[]) {
     error(`No valid Pyth IDs found: ${items.join(', ')}`)
   }
 
-  const result = await hermes.pricesV2(pythIds)
+  const result = parseResult(await hermes.pricesV2(pythIds))
 
-  const payloads = result.binary.data.map<Hex>(d => `0x${d}`)
+  if (out === 'hex') return encodeAbiParameters(pythPayloads, [result.payload, result.pythAssets])
+  return result
+}
+
+function parseResult(result: Pyth.V2Response) {
+  const payload = result.binary.data.map<Hex>(d => `0x${d}`)
   const pythAssets = result.parsed.map(({ id, price, ema_price }) => ({
     id: `0x${id}` as const,
     price: formatPrice(price),
     emaPrice: formatPrice(ema_price),
   }))
-
-  return encodeAbiParameters(pythPayloads, [payloads, pythAssets])
+  const view = {
+    ids: pythAssets.map(a => a.id),
+    prices: pythAssets.map(a => ({
+      price: BigInt(a.price.price),
+      conf: BigInt(a.price.conf),
+      exp: a.price.expo,
+      timestamp: BigInt(a.price.publishTime),
+    })),
+  }
+  return { pythAssets, payload, view }
 }
 
 export const pythPayloads = parseAbiParameters([

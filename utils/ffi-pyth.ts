@@ -1,5 +1,6 @@
-import { type Hex, encodeAbiParameters, parseAbiParameter } from 'viem'
+import { type Hex } from 'viem'
 import { fetchPythData } from './pyth/pyth-hermes'
+import { error } from './shared'
 
 if (process.argv.length < 3) {
   error(
@@ -11,7 +12,7 @@ if (!items?.length) {
   error('You have to provide feeds as the third argument. Example: `bun run lib/kresko-lib/utils/ffi-pyth.ts ETH,BTC`')
 }
 try {
-  const result = await fetchPythData(items)
+  const result = await fetchPythData(items, 'hex')
   success(result)
 } catch (e: any) {
   error(e.message)
@@ -29,8 +30,4 @@ function out(str: Hex, err?: boolean): never {
 
 export function success(str: Hex): never {
   out(str)
-}
-
-export function error(str: string): never {
-  out(encodeAbiParameters([parseAbiParameter('string')], [str]), true)
 }
