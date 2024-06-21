@@ -1,9 +1,7 @@
-import path from 'path'
-import { type Hex, encodeAbiParameters, parseAbiParameter, parseAbiParameters } from 'viem'
+import { encodeAbiParameters, parseAbiParameter, parseAbiParameters } from 'viem'
 import type { SuccessOutput } from './types'
 
-export const root = path.resolve(__dirname, '../')
-export const broadcastLocation = `${root}/**/broadcast`
+export const broadcastLocation = `./*/broadcast`
 
 export const signaturesPath = `${process.cwd()}/temp/sign/`
 
