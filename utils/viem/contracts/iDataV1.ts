@@ -1,3 +1,5 @@
+import { addr } from '.'
+
 export const iDataV1ABI = [
   {
     type: 'function',
@@ -2501,3 +2503,8 @@ export const iDataV1ABI = [
     stateMutability: 'payable',
   },
 ] as const
+
+export const iDataV1Config = {
+  abi: iDataV1ABI,
+  address: addr.DataV1,
+}
