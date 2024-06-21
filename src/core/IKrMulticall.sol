@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 import {IErrorsEvents} from "./IErrorsEvents.sol";
 
 interface IKrMulticall is IErrorsEvents {
+    event MulticallExecuted(address _sender, Operation[] ops, Result[] results);
+
     function rescue(address, uint256, address _to) external;
 
     function execute(

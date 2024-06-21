@@ -42,6 +42,53 @@ struct VaultAsset {
 }
 
 interface IVault is IERC20 {
+    /* -------------------------------------------------------------------------- */
+    /*                                   Events                                   */
+    /* -------------------------------------------------------------------------- */
+
+    event Deposit(
+        address indexed caller,
+        address indexed receiver,
+        address indexed asset,
+        uint256 assetsIn,
+        uint256 sharesOut
+    );
+
+    event OracleSet(
+        address indexed asset,
+        address indexed feed,
+        uint256 staletime,
+        uint256 price,
+        uint256 timestamp
+    );
+
+    event AssetAdded(
+        address indexed asset,
+        address indexed feed,
+        string indexed symbol,
+        uint256 staletime,
+        uint256 price,
+        uint256 depositLimit,
+        uint256 timestamp
+    );
+
+    event AssetRemoved(address indexed asset, uint256 timestamp);
+
+    event AssetEnabledChange(
+        address indexed asset,
+        bool enabled,
+        uint256 timestamp
+    );
+
+    event Withdraw(
+        address indexed caller,
+        address indexed receiver,
+        address indexed asset,
+        address owner,
+        uint256 assetsOut,
+        uint256 sharesIn
+    );
+
     /**
      * @notice This function deposits `assetsIn` of `asset`, regardless of the amount of vault shares minted.
      * @notice If depositFee > 0, `depositFee` of `assetsIn` is sent to the fee recipient.

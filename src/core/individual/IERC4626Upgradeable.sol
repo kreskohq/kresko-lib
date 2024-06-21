@@ -2,6 +2,36 @@
 pragma solidity ^0.8.0;
 
 interface IERC4626Upgradeable {
+    event Issue(
+        address indexed caller,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
+
+    event Deposit(
+        address indexed caller,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
+
+    event Destroy(
+        address indexed caller,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
+
+    event Withdraw(
+        address indexed caller,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
+
     /**
      * @notice Deposit KreskoAssets for equivalent amount of anchor tokens
      * @param assets Amount of KreskoAssets to deposit
