@@ -1,6 +1,5 @@
 import type { Address, Hex } from 'viem'
 
-export type SignResult = [signature: Hex, address: Address]
 export type TxType = 'CALL' | 'CREATE' | 'CREATE2'
 export type AdditionalContract = {
   transactionType: TxType
@@ -69,16 +68,4 @@ export type BroadcastJSON = {
   libraries: any[]
   pending: any[]
   returns: any
-}
-
-export type SafeInfoResponse = {
-  address: Address
-  nonce: number
-  threshold: number
-  owners: Address[]
-  masterCopy: Address
-  modules: Address[]
-  fallbackHandler: Address
-  guard: Address
-  version: string
 }

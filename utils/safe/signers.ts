@@ -3,8 +3,8 @@ import TrezorConnect from '@trezor/connect'
 import { $ } from 'bun'
 import ethProvider from 'eth-provider'
 import { type Address, type Hex, checksumAddress } from 'viem'
-import { type Method, Signer, getArg } from '../shared'
-import type { SignResult } from '../types'
+import { getArg } from '../shared'
+import { type Method, type SignResult, Signer } from './safe-types'
 
 const DERIVATION_PATH = process.env.MNEMONIC_PATH || "m/44'/60'/0'/0/0"
 const SIGNER = process.env.SIGNER_TYPE != null ? (Number(process.env.SIGNER_TYPE) as Signer) : Signer.Trezor

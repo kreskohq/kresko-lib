@@ -9,54 +9,19 @@ import {
   toFunctionSelector,
   zeroAddress,
 } from 'viem'
+import { broadcastLocation, getArg, signaturesPath } from '../shared'
+import type { BroadcastJSON } from '../types'
+import { SAFE_API } from './safe-config'
 import {
-  SAFE_API_V1,
-  broadcastLocation,
-  getArg,
+  type SafeInfoResponse,
+  deleteData,
   proposeOutput,
   signPayloadInput,
   signatureOutput,
-  signaturesPath,
   txPayloadOutput,
-} from '../shared'
-import type { BroadcastJSON, SafeInfoResponse } from '../types'
+  typedData,
+} from './safe-types'
 import { signData, signHash } from './signers'
-
-if (!process.env.SAFE_ADDRESS) throw new Error('SAFE_ADDRESS not set')
-if (!process.env.SAFE_CHAIN_ID) throw new Error('CHAIN_ID not set')
-
-const SAFE_ADDRESS = process.env.SAFE_ADDRESS
-const CHAIN_ID = process.env.SAFE_CHAIN_ID as unknown as keyof typeof SAFE_API_V1
-const SAFE_API = SAFE_API_V1[CHAIN_ID]
-
-export const types = {
-  EIP712Domain: [
-    { name: 'verifyingContract', type: 'address' },
-    { name: 'chainId', type: 'uint256' },
-  ],
-  SafeTx: [
-    { name: 'to', type: 'address' },
-    { name: 'value', type: 'uint256' },
-    { name: 'data', type: 'bytes' },
-    { name: 'operation', type: 'uint8' },
-    { name: 'safeTxGas', type: 'uint256' },
-    { name: 'baseGas', type: 'uint256' },
-    { name: 'gasPrice', type: 'uint256' },
-    { name: 'gasToken', type: 'address' },
-    { name: 'refundReceiver', type: 'address' },
-    { name: 'nonce', type: 'uint256' },
-  ],
-}
-
-const typedData = (safe: Address, message: any) => ({
-  types,
-  domain: {
-    verifyingContract: safe,
-    chainId: CHAIN_ID,
-  },
-  primaryType: 'SafeTx' as const,
-  message: message,
-})
 
 export async function getSafePayloads() {
   const name = process.argv[3]
@@ -225,29 +190,3 @@ async function parseBroadcast(name: string, chainId: number, safeAddr: Address, 
   }
   return encodeAbiParameters(txPayloadOutput, [metadata])
 }
-
-const deleteData = (txHash: Hex) => ({
-  types: {
-    EIP712Domain: [
-      { name: 'name', type: 'string' },
-      { name: 'version', type: 'string' },
-      { name: 'chainId', type: 'uint256' },
-      { name: 'verifyingContract', type: 'address' },
-    ],
-    DeleteRequest: [
-      { name: 'safeTxHash', type: 'bytes32' },
-      { name: 'totp', type: 'uint256' },
-    ],
-  },
-  primaryType: 'DeleteRequest',
-  domain: {
-    name: 'Safe Transaction Service',
-    version: '1.0',
-    chainId: CHAIN_ID,
-    verifyingContract: SAFE_ADDRESS,
-  },
-  message: {
-    safeTxHash: txHash,
-    totp: Math.floor(Date.now() / 1000 / 3600),
-  },
-})
