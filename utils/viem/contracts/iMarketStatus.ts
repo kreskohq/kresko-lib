@@ -1,3 +1,5 @@
+import { addr } from '.'
+
 export const iMarketStatus = [
   {
     type: 'function',
@@ -238,3 +240,8 @@ export const iMarketStatus = [
     stateMutability: 'view',
   },
 ] as const
+
+export const marketStatusConfig = {
+  abi: iMarketStatus,
+  address: addr.MarketStatus,
+}

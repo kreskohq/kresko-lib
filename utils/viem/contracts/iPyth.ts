@@ -1,3 +1,5 @@
+import { addr } from '.'
+
 export const iPythABI = [
   {
     type: 'function',
@@ -212,3 +214,8 @@ export const iPythABI = [
     inputs: [],
   },
 ] as const
+
+export const iPythConfig = {
+  address: addr.pythEP,
+  abi: iPythABI,
+}
