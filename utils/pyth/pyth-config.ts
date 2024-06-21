@@ -1,4 +1,4 @@
-export const HERMES_URLS = ['https://hermes.pyth.network', 'https://hermes.pyth.network']
+export const HERMES_URLS = ['https://hermes.pyth.network', process.env.PYTH_HERMES_EP]
 
 export const tickers = {
   '1INCH': '0x63f341689d98a12ef60a5cff1d7f85c70a9e17bf1575f0e7c0b2512d48b1c8b3',
