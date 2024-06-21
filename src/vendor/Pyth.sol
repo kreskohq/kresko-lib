@@ -1,22 +1,51 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
+
+/// @dev https://github.com/pyth-network/pyth-sdk-solidity/blob/main/PythStructs.sol
+/// @dev Extra ticker is included in the struct
+struct PriceFeed {
+    // The price ID.
+    bytes32 id;
+    // Latest available price
+    Price price;
+    // Latest available exponentially-weighted moving average price
+    Price emaPrice;
+}
+
+/// @dev  https://github.com/pyth-network/pyth-sdk-solidity/blob/main/PythStructs.sol
+struct Price {
+    // Price
+    int64 price;
+    // Confidence interval around the price
+    uint64 conf;
+    // Price exponent
+    int32 expo;
+    // Unix timestamp describing when the price was published
+    uint256 publishTime;
+}
+
+struct PythEPs {
+    mapping(uint256 chainId => IPyth pythEp) get;
+    IPyth avax;
+    IPyth bsc;
+    IPyth blast;
+    IPyth mainnet;
+    IPyth arbitrum;
+    IPyth optimism;
+    IPyth polygon;
+    IPyth polygonzkevm;
+}
 
 struct PythView {
     bytes32[] ids;
-    IPyth.Price[] prices;
-}
-
-struct PriceFeed {
-    bytes32 id;
-    IPyth.Price price;
-    IPyth.Price emaPrice;
+    Price[] prices;
 }
 
 function getPythPriceView(
     PriceFeed[] memory feeds
 ) pure returns (PythView memory view_) {
     view_.ids = new bytes32[](feeds.length);
-    view_.prices = new IPyth.Price[](feeds.length);
+    view_.prices = new Price[](feeds.length);
     for (uint256 i; i < feeds.length; i++) {
         view_.ids[i] = feeds[i].id;
         view_.prices[i] = feeds[i].price;
@@ -24,13 +53,6 @@ function getPythPriceView(
 }
 
 interface IPyth {
-    struct Price {
-        int64 price;
-        uint64 conf;
-        int32 exp;
-        uint256 timestamp;
-    }
-
     function getPriceNoOlderThan(
         bytes32 _id,
         uint256 _maxAge

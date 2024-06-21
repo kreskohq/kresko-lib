@@ -16,6 +16,7 @@ contract Cutter is ArbDeploy, Files, Scripted {
     IDiamond internal _diamond;
     FacetCut[] internal _cuts;
     string[] internal _fileInfo;
+    string[] internal _skipInfo;
     Initializer internal _initializer;
 
     constructor() {
@@ -28,11 +29,8 @@ contract Cutter is ArbDeploy, Files, Scripted {
     }
 
     /// @notice execute stored cuts, save to json with `_id`
-    function executeCuts(
-        string memory _id,
-        bool _dry
-    ) internal withJSON(_id) returns (bytes memory _txData) {
-        jsonKey(string.concat("diamondCut-", _id));
+    function executeCuts(bool _dry) internal returns (bytes memory _txData) {
+        jsonKey("diamondCut");
         json(address(_diamond), "to");
         json(
             _txData = abi.encodeWithSelector(
@@ -53,16 +51,27 @@ contract Cutter is ArbDeploy, Files, Scripted {
         }
     }
 
-    function fullUpgrade() internal {
-        fullUpgrade(defaultFacetLoc);
+    function clearCuts() internal {
+        delete _cuts;
+        delete _fileInfo;
+        delete _skipInfo;
+        delete _initializer;
+    }
+
+    function fullCut() internal {
+        fullCut("full", defaultFacetLoc);
     }
 
     /**
      * @param _facetsLoc search string for facets, wildcard support
      */
-    function fullUpgrade(string memory _facetsLoc) internal {
+    function fullCut(
+        string memory id,
+        string memory _facetsLoc
+    ) internal withJSON(string.concat(id, "-full")) {
+        clearCuts();
         _createAllFacets(_facetsLoc);
-        executeCuts("full", false);
+        executeCuts(false);
     }
 
     /**
@@ -71,10 +80,11 @@ contract Cutter is ArbDeploy, Files, Scripted {
     function createFacetAndCut(
         string memory _artifact,
         CreateMode _createMode
-    ) internal {
+    ) internal withJSON(_artifact) {
+        clearCuts();
         createMode = _createMode;
         createFacet(_artifact);
-        executeCuts(_artifact, false);
+        executeCuts(false);
     }
 
     /**
@@ -100,19 +110,26 @@ contract Cutter is ArbDeploy, Files, Scripted {
         }
 
         bytes4[] memory oldSelectors;
-        if (oldFacet != address(0) && !_eq(_facet.file, "")) {
-            bytes memory code = vm.getDeployedCode(
-                string.concat(_facet.file, ".sol:", _facet.file)
+        if (oldFacet != address(0) && bytes(_facet.file).length > 0) {
+            bytes32 newCodeHash = keccak256(
+                vm.getDeployedCode(
+                    string.concat(_facet.file, ".sol:", _facet.file)
+                )
             );
             // skip if code is the same
-            if (
-                keccak256(abi.encodePacked(code)) ==
-                keccak256(abi.encodePacked(oldFacet.code))
-            ) {
+            if (newCodeHash == oldFacet.codehash) {
                 jsonKey(string.concat(_facet.file, "-skip"));
                 json(oldFacet);
                 json(true, "skipped");
                 jsonKey();
+                _skipInfo.push(
+                    string.concat(
+                        "Skiped -> ",
+                        _facet.file,
+                        " exists @ ",
+                        vm.toString(oldFacet)
+                    )
+                );
                 return oldFacet;
             }
 
@@ -167,7 +184,7 @@ contract Cutter is ArbDeploy, Files, Scripted {
     }
 
     function logCuts() internal view {
-        _cuts.length.clg("FacetCuts:");
+        _cuts.length.clg("[Cutter] FacetCuts:");
         for (uint256 i; i < _cuts.length; i++) {
             PLog.clg("\n");
             PLog.clg(
@@ -194,6 +211,16 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 string.concat("Selectors (", vm.toString(selectorLength), ")")
             );
             selectorLength.clg("Selector Count");
+        }
+
+        if (_skipInfo.length > 0) {
+            PLog.clg("\n");
+            PLog.clg(
+                "*****************************************************************"
+            );
+            for (uint256 i; i < _skipInfo.length; i++) {
+                _skipInfo[i].clg(string.concat("[SKIP #", vm.toString(i), "]"));
+            }
         }
     }
 

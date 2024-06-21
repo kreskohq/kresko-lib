@@ -103,6 +103,12 @@ interface IMinVM is FFIVm {
 
     function envOr(string calldata n, address d) external returns (address);
 
+    function envString(string calldata n) external returns (string memory);
+
+    function envUint(string calldata n) external returns (uint256);
+
+    function envAddress(string calldata n) external returns (address);
+
     function createFork(string calldata urlOrAlias) external returns (uint256);
 
     function load(address t, bytes32 s) external view returns (bytes32);

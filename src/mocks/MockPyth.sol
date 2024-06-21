@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable
 pragma solidity ^0.8.19;
 
-import {IPyth} from "../vendor/Pyth.sol";
+import {IPyth, Price} from "../vendor/Pyth.sol";
 
 contract MockPyth is IPyth {
     mapping(bytes32 => Price) internal prices;
@@ -16,7 +17,7 @@ contract MockPyth is IPyth {
         bytes32 _id,
         uint256 _maxAge
     ) external view override returns (Price memory) {
-        if (prices[_id].timestamp >= block.timestamp - _maxAge) {
+        if (prices[_id].publishTime >= block.timestamp - _maxAge) {
             return prices[_id];
         }
         revert("Pyth: price too old");
@@ -46,7 +47,7 @@ contract MockPyth is IPyth {
         uint64[] memory _publishTimes
     ) external payable override {
         for (uint256 i = 0; i < _ids.length; i++) {
-            if (prices[_ids[i]].timestamp < _publishTimes[i]) {
+            if (prices[_ids[i]].publishTime < _publishTimes[i]) {
                 _set(_updateData[i]);
             }
         }
@@ -60,7 +61,7 @@ contract MockPyth is IPyth {
         for (uint256 i = 0; i < _ids.length; i++) {
             _updateData[i] = abi.encode(
                 _ids[i],
-                IPyth.Price(
+                Price(
                     _prices[i],
                     uint64(_prices[i]) / 1000,
                     -8,
@@ -74,7 +75,7 @@ contract MockPyth is IPyth {
     function _set(
         bytes memory _update
     ) internal returns (bytes32 id, Price memory price) {
-        (id, price) = abi.decode(_update, (bytes32, IPyth.Price));
+        (id, price) = abi.decode(_update, (bytes32, Price));
         prices[id] = price;
     }
 }
@@ -87,12 +88,7 @@ function createMockPyth(
     for (uint256 i = 0; i < _ids.length; i++) {
         _updateData[i] = abi.encode(
             _ids[i],
-            IPyth.Price(
-                _prices[i],
-                uint64(_prices[i]) / 1000,
-                -8,
-                block.timestamp
-            )
+            Price(_prices[i], uint64(_prices[i]) / 1000, -8, block.timestamp)
         );
     }
 

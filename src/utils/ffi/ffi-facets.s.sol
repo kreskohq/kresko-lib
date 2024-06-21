@@ -3,14 +3,14 @@
 
 pragma solidity ^0.8.0;
 
-import {vmFFI} from "../Base.s.sol";
+import {execFFI, getFFIPath, vmFFI} from "../Base.s.sol";
 import {FacetCut, Initializer} from "../../core/IDiamond.sol";
 
 struct DiamondCtor {
     FacetCut[] cuts;
     Initializer init;
 }
-string constant facetScriptLoc = "./lib/kresko-lib/utils/diamond/get-facet-data.sh";
+
 string constant defaultFacetLoc = "./**/facets/*Facet.sol";
 
 struct FacetData {
@@ -33,11 +33,11 @@ function getFacet(string memory _artifact) returns (FacetData memory) {
 
 function getFacets(string memory _from) returns (FacetData[] memory res) {
     string[] memory cmd = new string[](2);
-    cmd[0] = facetScriptLoc;
+    cmd[0] = getFFIPath("ffi-facets.sh");
     cmd[1] = _from;
 
     (string[] memory files, bytes4[][] memory selectors) = abi.decode(
-        vmFFI.ffi(cmd),
+        execFFI(cmd),
         (string[], bytes4[][])
     );
     res = new FacetData[](files.length);

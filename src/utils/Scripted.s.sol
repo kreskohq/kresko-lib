@@ -9,7 +9,7 @@ import {__revert} from "./Base.s.sol";
 
 abstract contract Scripted is Script, Wallet {
     using LibVm for IMinVM.CallerMode;
-    modifier fork(string memory _uoa) {
+    modifier fork(string memory _uoa) virtual {
         vm.createSelectFork(_uoa);
         _;
     }
@@ -145,26 +145,14 @@ abstract contract Scripted is Script, Wallet {
         __revert(_d);
     }
 
-    string __jsonk;
+    function getEnv(
+        string memory _envKey,
+        string memory _defaultKey
+    ) internal view returns (string memory) {
+        return vm.envOr(_envKey, vm.envString(_defaultKey));
+    }
 
-    /// @notice serialize things, set key as "end" to write to file to './temp/'
-    function toJSON(string memory key, string memory val) internal {
-        if (
-            keccak256(abi.encodePacked(key)) !=
-            keccak256(abi.encodePacked("end"))
-        ) {
-            __jsonk = mvm.serializeString("out", key, val);
-            return;
-        }
-        string memory outputDir = string.concat("./temp/");
-        if (!mvm.exists(outputDir)) mvm.createDir(outputDir, true);
-        string memory file = string.concat(
-            outputDir,
-            mvm.toString(block.chainid),
-            "-task-run-",
-            string.concat(mvm.toString(mvm.unixTime()), ".json")
-        );
-
-        mvm.writeJson(val, file);
+    function getTime() internal returns (uint256) {
+        return vm.unixTime() / 1000;
     }
 }
