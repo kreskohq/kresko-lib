@@ -9,8 +9,8 @@ abstract contract Based is PythScript, Scripted {
     string internal _defaultRPC = "RPC_ARBITRUM_ALCHEMY";
     address internal sender;
 
-    modifier fork(string memory _uoa) override(Scripted) {
-        createSelectFork(_uoa);
+    modifier based(string memory _mnemonic, string memory _uoa) {
+        base(_mnemonic, _uoa);
         _;
     }
 
