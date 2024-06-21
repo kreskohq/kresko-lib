@@ -166,7 +166,7 @@ export async function safeSign(txHash?: Hex): Promise<[Hex, Address]> {
 }
 
 async function parseBroadcast(name: string, chainId: number, safeAddr: Address, nonce?: number) {
-  const files = glob.sync(`${broadcastLocation}/**/${chainId}/dry-run/${name}-latest.json`)
+  const files = glob.sync(`${broadcastLocation}/*/${chainId}/dry-run/${name}-latest.json`)
 
   if (!files.length) {
     throw new Error(`No transactions found with ${name}(). Did you forget to broadcast?`)
