@@ -4,11 +4,12 @@ import { error } from '../shared'
 import { HERMES_URLS, tickers } from './pyth-config'
 import { type Pyth, formatPrice, isPythID, isPythTicker } from './pyth-types'
 
-const hermes = {
+export const hermes = {
   pricesV2: (ids: Pyth.ID[]) =>
     fetchHermes<Pyth.V2Response>(`/v2/updates/price/latest?ids[]=${ids.join('&ids[]=')}&binary=true`),
   sse: (ids: Pyth.ID[], idx = 1) => `${HERMES_URLS[idx]}/v2/updates/price/stream?ids[]=${ids.join('&ids[]=')}`,
 }
+
 export async function fetchPythData(): Promise<Hex>
 export async function fetchPythData(items?: string[], out?: 'hex'): Promise<Hex>
 export async function fetchPythData(items?: string[], out?: 'ts'): Promise<Result<typeof parseResult>>
