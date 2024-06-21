@@ -3,12 +3,13 @@ pragma solidity ^0.8.0;
 
 import {Scripted} from "../Scripted.s.sol";
 import {PLog} from "../PLog.s.sol";
+import {PythScript} from "../ffi/PythScript.s.sol";
 
-abstract contract Based is Scripted {
+abstract contract Based is PythScript, Scripted {
     string internal _defaultRPC = "RPC_ARBITRUM_ALCHEMY";
     address internal sender;
 
-    modifier fork(string memory _uoa) override {
+    modifier fork(string memory _uoa) override(Scripted) {
         createSelectFork(_uoa);
         _;
     }

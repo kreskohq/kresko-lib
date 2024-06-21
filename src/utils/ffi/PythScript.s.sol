@@ -10,40 +10,10 @@ import {mvm} from "../MinVm.s.sol";
 contract PythScript {
     string private _PYTH_FFI_SCRIPT;
     string[] private ffiArgs = ["bun", "run"];
-    string internal pythTickers =
-        "BTC,ETH,USDC,ARB,SOL,GBP,EUR,JPY,XAU,XAG,DOGE";
-    bytes[] internal pythData;
-    uint256 internal pythUpdateCost;
-    PythView internal pythView;
     PythEPs internal pyth;
 
-    function updatePyth() internal {
-        fetchPyth(pythTickers);
-        pyth.get[block.chainid].updatePriceFeeds{value: pythUpdateCost}(
-            pythData
-        );
-    }
-
-    function fetchPyth() internal {
-        fetchPyth(pythTickers);
-    }
-
-    function fetchPyth(string memory _tickerOrIds) internal {
-        delete pythView;
-        (bytes[] memory update, PriceFeed[] memory values) = getPythData(
-            _tickerOrIds
-        );
-        pythData = update;
-        pythView.ids = new bytes32[](values.length);
-        pythView.prices = new Price[](values.length);
-        pythUpdateCost = pyth.get[block.chainid].getUpdateFee(pythData);
-        for (uint256 i; i < values.length; i++) {
-            pythView.ids.push(values[i].id);
-            pythView.prices.push(values[i].price);
-        }
-    }
-
     constructor() {
+        pyth.tickers = "BTC,ETH,USDC,ARB,SOL,GBP,EUR,JPY,XAU,XAG,DOGE";
         _PYTH_FFI_SCRIPT = getFFIPath("ffi-pyth.ts");
         ffiArgs.push(_PYTH_FFI_SCRIPT);
 
@@ -65,28 +35,26 @@ contract PythScript {
         pyth.get[1101] = pyth.polygonzkevm;
     }
 
-    /**
-     * @notice Update the Pyth price feeds for the given `_tickers` in the current chain
-     * @param _tickers Tickers to update the price feeds for eg. "BTC,ETH"
-     * @dev The Pyth endpoint for the current chain must be set
-     */
-    function updatePythPrices(string memory _tickers) public {
-        (pythData, ) = getPythData(_tickers);
-        IPyth ep = pyth.get[block.chainid];
-        require(address(ep) != address(0), "PythScript: invalid chain id");
-        ep.updatePriceFeeds{value: ep.getUpdateFee(pythData)}(pythData);
+    function updatePyth() internal {
+        fetchPyth(pyth.tickers);
+        pyth.get[block.chainid].updatePriceFeeds{value: pyth.cost}(pyth.update);
     }
 
-    /**
-     * @notice Update the Pyth price feeds for the given `_ids` in the current chain
-     * @param _ids Pyth IDs to update the price feeds for eg. [0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace]"
-     * @dev The Pyth endpoint for the current chain must be set
-     */
-    function updatePythPrices(bytes32[] memory _ids) public {
-        (pythData, ) = getPythData(_ids);
-        IPyth ep = pyth.get[block.chainid];
-        require(address(ep) != address(0), "PythScript: invalid chain id");
-        ep.updatePriceFeeds{value: ep.getUpdateFee(pythData)}(pythData);
+    function fetchPyth() internal {
+        fetchPyth(pyth.tickers);
+    }
+
+    function fetchPyth(string memory _tickerOrIds) internal {
+        delete pyth.viewData;
+        (bytes[] memory update, PriceFeed[] memory values) = getPythData(
+            _tickerOrIds
+        );
+        pyth.update = update;
+        pyth.cost = pyth.get[block.chainid].getUpdateFee(pyth.update);
+        for (uint256 i; i < values.length; i++) {
+            pyth.viewData.ids.push(values[i].id);
+            pyth.viewData.prices.push(values[i].price);
+        }
     }
 
     function getPythData(

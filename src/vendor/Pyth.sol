@@ -34,6 +34,10 @@ struct PythEPs {
     IPyth optimism;
     IPyth polygon;
     IPyth polygonzkevm;
+    bytes[] update;
+    uint256 cost;
+    PythView viewData;
+    string tickers;
 }
 
 struct PythView {
