@@ -31,7 +31,7 @@ abstract contract ArbDeployAddr {
     address constant krJPYAddr = 0xc4fEE1b0483eF73352447b1357adD351Bfddae77;
     address constant krGBPAddr = 0xdb274afDfA7f395ef73ab98C18cDf3D9C03b538C;
     address constant krXAUAddr = 0xe0A49C9215206f9cfb79981901bDF1f2716d3215;
-    address constant krXAGAddr = 0xe0A49C9215206f9cfb79981901bDF1f2716d3215;
+    address constant krXAGAddr = 0x1d6A65BBfbbc995a19Fc19cB17FA135f9EdB6A24;
     address constant krDOGEAddr = 0x4a719F02aF3f0FFf15447B6824464857ADB5210D;
 
     address constant akrETHAddr = 0x3103570A28ca026e818c79608F1FF804F4Bde284;
