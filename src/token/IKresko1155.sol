@@ -370,6 +370,10 @@ library Roles {
 interface IKresko1155 is IONFT1155Upgradeable, IAccessControlUpgradeable {
     function owner() external view returns (address);
 
+    function contractURI() external view returns (string memory);
+
+    function uri(uint256 _tokenId) external view returns (string memory);
+
     function getRoleAdmin(bytes32 role) external view returns (bytes32);
 
     function initialize(
