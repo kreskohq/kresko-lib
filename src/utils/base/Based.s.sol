@@ -14,15 +14,26 @@ abstract contract Based is PythScript, Scripted {
         _;
     }
 
-    function base(string memory _mnemonic, string memory _network) internal {
+    function base(
+        string memory _mnemonic,
+        string memory _network,
+        uint256 _blockNr
+    ) internal returns (uint256 forkId) {
         PLog.clg(
             "***********************************************************************************"
         );
         base(_mnemonic);
-        createSelectFork(_network);
+        forkId = createSelectFork(_network, _blockNr);
         PLog.clg(
             "***********************************************************************************\n"
         );
+    }
+
+    function base(
+        string memory _mnemonic,
+        string memory _network
+    ) internal returns (uint256 forkId) {
+        return base(_mnemonic, _network, 0);
     }
 
     function base(string memory _mnemonic) internal {
@@ -31,15 +42,26 @@ abstract contract Based is PythScript, Scripted {
         PLog.clg(sender, "sender:");
     }
 
-    function createSelectFork(string memory _env) internal {
+    function createSelectFork(string memory _env) internal returns (uint256) {
+        return createSelectFork(_env, 0);
+    }
+
+    function createSelectFork(
+        string memory _env,
+        uint256 _blockNr
+    ) internal returns (uint256 forkId_) {
         string memory rpc = getEnv(_env, _defaultRPC);
-        vm.createSelectFork(rpc);
+        forkId_ = _blockNr != 0
+            ? vm.createSelectFork(rpc, _blockNr)
+            : vm.createSelectFork(rpc);
         PLog.clg(
             "rpc:",
             string.concat(
                 vm.rpcUrl(rpc),
                 " (",
                 vm.toString(block.chainid),
+                "@",
+                vm.toString(block.number),
                 ", ",
                 vm.toString(((getTime() - block.timestamp) / 60)),
                 "m ago)"
