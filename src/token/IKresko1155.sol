@@ -110,7 +110,7 @@ interface IAccessControlUpgradeable {
 /**
  * @dev Interface of the ONFT Core standard
  */
-interface IONFT1155CoreUpgradeable is IERC165 {
+interface IONFT1155CoreUpgradeable {
     event SendToChain(
         uint16 indexed _dstChainId,
         address indexed _from,
@@ -348,18 +348,6 @@ interface IERC1155Upgradeable is IERC165 {
     ) external;
 }
 
-// contracts/lz-contracts-upgradeable/token/onft/ERC1155/IONFT1155Upgradeable.sol
-
-/**
- * @dev Interface of the ONFT standard
- */
-interface IONFT1155Upgradeable is
-    IONFT1155CoreUpgradeable,
-    IERC1155Upgradeable
-{
-
-}
-
 // contracts/interfaces/IKresko1155.sol
 
 library Roles {
@@ -367,12 +355,20 @@ library Roles {
     bytes32 public constant OPERATOR_ROLE = keccak256("kresko.roles.operator");
 }
 
-interface IKresko1155 is IONFT1155Upgradeable, IAccessControlUpgradeable {
+interface IKresko1155 is
+    IERC1155Upgradeable,
+    IONFT1155CoreUpgradeable,
+    IAccessControlUpgradeable
+{
     function owner() external view returns (address);
 
     function contractURI() external view returns (string memory);
 
     function uri(uint256 _tokenId) external view returns (string memory);
+
+    function name() external view returns (string memory);
+
+    function symbol() external view returns (string memory);
 
     function getRoleAdmin(bytes32 role) external view returns (bytes32);
 
