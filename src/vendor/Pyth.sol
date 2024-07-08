@@ -128,13 +128,11 @@ function pythPrice(
     bool _invert,
     uint256 _staleTime
 ) view returns (uint256 price, uint8 expo) {
-    Price memory result = IPyth(_pythEp).getPriceNoOlderThan(_id, _staleTime);
-
-    (price, expo) = processPyth(result, _invert);
-
-    if (price == 0 || price > type(uint56).max) {
-        revert IPyth.PriceFeedNotFoundWithinRange();
-    }
+    return
+        processPyth(
+            IPyth(_pythEp).getPriceNoOlderThan(_id, _staleTime),
+            _invert
+        );
 }
 function processPyth(
     Price memory _price,
@@ -155,13 +153,13 @@ function normalizePythPrice(
     Price memory _price,
     uint8 oracleDec
 ) pure returns (uint256 price, uint8 expo) {
-    uint256 result = uint64(_price.price);
+    price = uint64(_price.price);
     expo = uint8(uint32(-_price.expo));
+
     if (expo > oracleDec) {
-        price = result / 10 ** (expo - oracleDec);
-    }
-    if (expo < oracleDec) {
-        price = result * 10 ** (oracleDec - expo);
+        price = price / 10 ** (expo - oracleDec);
+    } else if (expo < oracleDec) {
+        price = price * 10 ** (oracleDec - expo);
     }
 }
 
