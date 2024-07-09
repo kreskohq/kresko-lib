@@ -1,29 +1,23 @@
-import { http, createPublicClient } from 'viem'
-import { arbitrum, optimism } from 'viem/chains'
-import { transports } from './config'
+import { createPublicClient, createWalletClient, http, type Chain, type Transport } from 'viem'
+import { mnemonicToAccount } from 'viem/accounts'
+import { arbitrum } from 'viem/chains'
 
-export const arb = createPublicClient({
-  transport: transports[42161],
-  batch: {
-    multicall: true,
-  },
-  chain: arbitrum,
-  cacheTime: 0,
-})
-export const opt = createPublicClient({
-  transport: transports[10],
-  batch: {
-    multicall: true,
-  },
-  chain: optimism,
-  cacheTime: 0,
-})
+export const client = ({ chain, rpc }: { chain?: Chain; rpc: Transport | string }) =>
+	createPublicClient({
+		transport: typeof rpc === 'string' ? http(process.env[rpc]) : rpc,
+		batch: {
+			multicall: true,
+		},
+		chain,
+		cacheTime: 0,
+	})
+export const arb = client({ chain: arbitrum, rpc: process.env.RPC_ARBITRUM_ALCHEMY! })
+export const opt = client({ chain: arbitrum, rpc: process.env.RPC_OPTIMISM_ALCHEMY! })
 
-export const arbPersonal = createPublicClient({
-  transport: http(process.env.RPC_ARBITRUM_PERSONAL!),
-  batch: {
-    multicall: true,
-  },
-  chain: arbitrum,
-  cacheTime: 0,
-})
+export const wallet = ({ rpc, chain, env }: { rpc: Transport | string; chain?: Chain; env?: string }) =>
+	createWalletClient({
+		transport: typeof rpc === 'string' ? http(process.env[rpc]) : rpc,
+		chain,
+		account: mnemonicToAccount(env ? process.env[env]! : process.env.MNEMONIC!),
+		cacheTime: 0,
+	})
