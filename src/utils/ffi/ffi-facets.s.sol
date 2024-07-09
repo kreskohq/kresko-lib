@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {execFFI, getFFIPath, vmFFI} from "../Base.s.sol";
+import {execFFI, getFFIPath, vmFFI} from "../s/Base.s.sol";
 import {FacetCut, Initializer} from "../../core/IDiamond.sol";
 
 struct DiamondCtor {

@@ -1,20 +1,21 @@
 // solhint-disable
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
-import {console} from "forge-std/Test.sol";
-import {Tested} from "../src/utils/Tested.t.sol";
-import {Help, Log} from "../src/utils/Libs.s.sol";
-import {LibVm} from "../src/utils/LibVm.s.sol";
-import {ShortAssert} from "../src/utils/ShortAssert.t.sol";
-import {PLog, logp} from "../src/utils/PLog.s.sol";
+import {Tested} from "../src/utils/s/Tested.t.sol";
+import {LibVm, Help, Log} from "../src/utils/s/LibVm.s.sol";
+import {ShortAssert} from "../src/utils/s/ShortAssert.t.sol";
+import {PLog, logp} from "../src/utils/s/PLog.s.sol";
+import {Utils} from "../src/utils/Libs.sol";
+import {split} from "../src/utils/Bytes.s.sol";
+import {__revert} from "../src/utils/s/Base.s.sol";
 
 contract Sandbox is Tested {
     TestContract internal thing;
     using LibVm for *;
     using Log for *;
+    using Help for *;
+    using Utils for *;
     using ShortAssert for *;
-
-    // using Help for *;
 
     function setUp() public {
         useMnemonic("MNEMONIC");
@@ -22,7 +23,44 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
-    function testFunc() public {
+    function testStrings() public {
+        bytes32 val = bytes32("foo");
+        bytes(val.txt()).length.eq(66, "str");
+        bytes(val.str()).length.eq(3, "txt");
+
+        12.5e8.strDec(8).eq("12.50000000", "dec");
+    }
+
+    function testDecimals() public {
+        uint256 wad = 1e18;
+        uint256 ray = 1e27;
+
+        wad.toDec(18, 27).eq(ray, "wad-ray");
+        ray.toDec(27, 18).eq(wad, "ray-wad");
+
+        1.29e18.toDec(18, 1).eq(12, "a-b");
+    }
+
+    function testBytes() public {
+        bytes32 val = bytes32(abi.encodePacked(uint192(192), uint64(64)));
+        (uint192 a, uint64 b) = abi.decode(split(val, 192), (uint192, uint64));
+        a.eq(192, "a");
+        b.eq(64, "b");
+    }
+
+    function testRevert() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                TestContract2.TestError.selector,
+                "nope",
+                1 ether,
+                TestContract2.Structy("hello", 1 ether)
+            )
+        );
+        thing.nope();
+    }
+
+    function testLogs() public {
         vm.startBroadcast(address(5));
         broadcastWith(address(2));
         prank(address(5));
@@ -107,7 +145,6 @@ contract Sandbox is Tested {
         _unprankRestored().eq(msg.sender);
         peekSender().eq(third);
     }
-
     function _prankRestored() internal repranked(getAddr(1)) returns (address) {
         thing.save();
         return peekSender();
@@ -129,12 +166,18 @@ contract TestContract {
     using Help for *;
     address public addr;
 
+    TestContract2 public thing2;
+
+    constructor() {
+        thing2 = new TestContract2();
+    }
+
     function save() public {
         addr = msg.sender;
     }
 
     function func() public {
-        console.log("TestContract");
+        Log.clg("TestContract");
         uint256[] memory nums = new uint256[](3);
 
         nums[0] = 1 ether;
@@ -142,5 +185,24 @@ contract TestContract {
         nums[2] = 0 ether;
 
         Log.logCallers();
+    }
+
+    function nope() public view {
+        (, bytes memory data) = address(thing2).staticcall(
+            abi.encodeWithSelector(thing2.nope.selector)
+        );
+        __revert(data);
+    }
+}
+
+contract TestContract2 {
+    struct Structy {
+        string mesg;
+        uint256 val;
+    }
+    error TestError(string mesg, uint256 val, Structy _struct);
+
+    function nope() public pure {
+        revert TestError("nope", 1 ether, Structy("hello", 1 ether));
     }
 }

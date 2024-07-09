@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 import {Deployment, IDeploymentFactory} from "../core/IDeploymentFactory.sol";
-import {mvm} from "../utils/MinVm.s.sol";
+import {mvm} from "./s/MinVm.s.sol";
 
 library Factory {
     IDeploymentFactory internal constant FACTORY =

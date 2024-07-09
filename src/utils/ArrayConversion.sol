@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {mAddr} from "./MinVm.s.sol";
+import {mAddr} from "./s/MinVm.s.sol";
 
 library ArrayConversion {
     event log_array(uint256[] val);

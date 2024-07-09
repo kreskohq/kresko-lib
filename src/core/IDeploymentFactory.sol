@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import {ITransparentUpgradeableProxy} from "./individual/TransparentUpgradeableProxy.sol";
+import {ITransparentUpgradeableProxy} from "./TransparentUpgradeableProxy.sol";
 
 enum CreationKind {
     NONE,

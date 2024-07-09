@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.0;
 import {IDiamond} from "./IDiamond.sol";
-import {IERC165} from "./individual/IERC165.sol";
-import {IERC173} from "./individual/IERC173.sol";
+import {IERC165} from "./IERC165.sol";
+import {IERC173} from "./IERC173.sol";
 
 // lib/solidstate/contracts/access/access_control/IAccessControlInternal.sol
 
@@ -334,9 +334,7 @@ interface IAccessControl is IAccessControlInternal {
 
 // solhint-disable no-empty-blocks
 
-interface IOwnershipFacet is IERC173 {
-
-}
+interface IOwnershipFacet is IERC173 {}
 
 // src/core/RegistryState.sol
 
@@ -723,6 +721,4 @@ interface IKreditsDiamond is
     IERC721Facet,
     Errors,
     Events
-{
-
-}
+{}

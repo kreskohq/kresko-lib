@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.0;
-import {WadRay} from "../core/Math.sol";
 
 /// @dev https://github.com/pyth-network/pyth-sdk-solidity/blob/main/PythStructs.sol
 /// @dev Extra ticker is included in the struct
@@ -44,17 +43,6 @@ struct PythEPs {
 struct PythView {
     bytes32[] ids;
     Price[] prices;
-}
-
-function getPythPriceView(
-    PriceFeed[] memory feeds
-) pure returns (PythView memory view_) {
-    view_.ids = new bytes32[](feeds.length);
-    view_.prices = new Price[](feeds.length);
-    for (uint256 i; i < feeds.length; i++) {
-        view_.ids[i] = feeds[i].id;
-        view_.prices[i] = feeds[i].price;
-    }
 }
 
 interface IPyth {
@@ -119,57 +107,4 @@ interface IPyth {
     // The wormhole address to set in SetWormholeAddress governance is invalid.
     // Signature: 0x13d3ed82
     error InvalidWormholeAddressToSet();
-}
-
-using WadRay for uint256;
-function pythPrice(
-    address _pythEp,
-    bytes32 _id,
-    bool _invert,
-    uint256 _staleTime
-) view returns (uint256 price, uint8 expo) {
-    return
-        processPyth(
-            IPyth(_pythEp).getPriceNoOlderThan(_id, _staleTime),
-            _invert
-        );
-}
-function processPyth(
-    Price memory _price,
-    bool _invert
-) pure returns (uint256 price, uint8 expo) {
-    if (!_invert) {
-        (price, expo) = normalizePythPrice(_price, 8);
-    } else {
-        (price, expo) = invertNormalizePythPrice(_price, 8);
-    }
-
-    if (price == 0 || price > type(uint56).max) {
-        revert IPyth.PriceFeedNotFoundWithinRange();
-    }
-}
-
-function normalizePythPrice(
-    Price memory _price,
-    uint8 oracleDec
-) pure returns (uint256 price, uint8 expo) {
-    price = uint64(_price.price);
-    expo = uint8(uint32(-_price.expo));
-
-    if (expo > oracleDec) {
-        price = price / 10 ** (expo - oracleDec);
-    } else if (expo < oracleDec) {
-        price = price * 10 ** (oracleDec - expo);
-    }
-}
-
-function invertNormalizePythPrice(
-    Price memory _price,
-    uint8 oracleDec
-) pure returns (uint256 price, uint8 expo) {
-    _price.price = int64(
-        uint64(1 * (10 ** uint32(-_price.expo)).wadDiv(uint64(_price.price)))
-    );
-    _price.expo = -18;
-    return normalizePythPrice(_price, oracleDec);
 }

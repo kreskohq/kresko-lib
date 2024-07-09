@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {PLog} from "./PLog.s.sol";
-import {__revert} from "./Base.s.sol";
+import {PLog} from "./s/PLog.s.sol";
+import {__revert} from "./s/Base.s.sol";
 import {FacetCut, FacetCutAction, IDiamond, Initializer} from "../core/IDiamond.sol";
 import {defaultFacetLoc, FacetData, getFacet, getFacets} from "./ffi/ffi-facets.s.sol";
-import {Scripted} from "./Scripted.s.sol";
+import {Scripted} from "./s/Scripted.s.sol";
 import {ArbDeploy} from "../info/ArbDeploy.sol";
 import {Factory, Files} from "./Files.s.sol";
 

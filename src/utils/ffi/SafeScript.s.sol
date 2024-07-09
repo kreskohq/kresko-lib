@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {SafeScriptUtils, __revert} from "./SafeScriptUtils.s.sol";
 import {MultisendAddr} from "./Multisends.s.sol";
-import {mvm} from "../MinVm.s.sol";
-import {execFFI, getFFIPath} from "../Base.s.sol";
+import {mvm} from "../s/MinVm.s.sol";
+import {execFFI, getFFIPath, __revert} from "../s/Base.s.sol";
+import {PLog} from "../s/PLog.s.sol";
+import {Utils} from "../Libs.sol";
 
 // solhint-disable
 
 contract SafeScript is MultisendAddr {
-    using SafeScriptUtils for *;
+    using PLog for *;
+    using Utils for *;
     string private _SAFE_FFI_SCRIPT;
 
     enum Operation {

@@ -2,8 +2,8 @@
 // solhint-disable
 pragma solidity ^0.8.0;
 import {IERC20Permit} from "../token/IERC20Permit.sol";
-import {IKreskoAssetIssuer} from "./individual/IKreskoAssetIssuer.sol";
-import {IERC4626Upgradeable} from "./individual/IERC4626Upgradeable.sol";
+import {IKreskoAssetIssuer} from "./IKreskoAssetIssuer.sol";
+import {IERC4626Upgradeable} from "./IERC4626Upgradeable.sol";
 
 interface ISyncable {
     function sync() external;

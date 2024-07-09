@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 // solhint-disable
 
 import {IPyth, Price, PriceFeed, PythEPs, PythView} from "../../vendor/Pyth.sol";
-import {execFFI, getFFIPath} from "../Base.s.sol";
-import {mvm} from "../MinVm.s.sol";
+import {execFFI, getFFIPath} from "../s/Base.s.sol";
+import {mvm} from "../s/MinVm.s.sol";
 
 contract PythScript {
     string private _PYTH_FFI_SCRIPT;

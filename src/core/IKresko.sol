@@ -7,10 +7,10 @@ import {IDiamond} from "./IDiamond.sol";
 import {SwapArgs, BurnArgs, UncheckedWithdrawArgs, LiquidationArgs, SCDPLiquidationArgs, MintArgs, SCDPWithdrawArgs, SCDPRepayArgs, WithdrawArgs} from "./types/Args.sol";
 import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./types/Setup.sol";
 import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
-import {IDiamondStateFacet} from "./individual/IDiamondStateFacet.sol";
-import {IAuthorizationFacet} from "./individual/IAuthorizationFacet.sol";
-import {IViewDataFacet} from "./individual/IViewDataFacet.sol";
-import {IBatchFacet} from "./individual/IBatchFacet.sol";
+import {IDiamondStateFacet} from "./IDiamondStateFacet.sol";
+import {IAuthorizationFacet} from "./IAuthorizationFacet.sol";
+import {IViewDataFacet} from "./IViewDataFacet.sol";
+import {IBatchFacet} from "./IBatchFacet.sol";
 
 interface ISCDPConfigFacet {
     /**
@@ -1177,6 +1177,4 @@ interface IKresko is
     IMinterLiquidationFacet,
     IViewDataFacet,
     IBatchFacet
-{
-
-}
+{}

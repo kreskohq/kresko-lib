@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Scripted} from "../Scripted.s.sol";
-import {PLog} from "../PLog.s.sol";
-import {PythScript} from "../ffi/PythScript.s.sol";
+import {Scripted} from "./s/Scripted.s.sol";
+import {PLog} from "./s/PLog.s.sol";
+import {PythScript} from "./ffi/PythScript.s.sol";
 
 abstract contract Based is PythScript, Scripted {
     string internal _defaultRPC = "RPC_ARBITRUM_ALCHEMY";

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import {IERC20} from "../token/IERC20.sol";
-import {IKreskoAssetIssuer} from "./individual/IKreskoAssetIssuer.sol";
-import {IVaultExtender} from "./individual/IVaultExtender.sol";
-import {IERC165} from "./individual/IERC165.sol";
+import {IKreskoAssetIssuer} from "./IKreskoAssetIssuer.sol";
+import {IVaultExtender} from "./IVaultExtender.sol";
+import {IERC165} from "./IERC165.sol";
 
 interface IKISS is IKreskoAssetIssuer, IVaultExtender, IERC20, IERC165 {
     function vKISS() external view returns (address);

@@ -1,7 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {Purify} from "./Purify.sol";
+import {Purify} from "../Purify.sol";
 
 address constant clgAddr = 0x000000000000000000636F6e736F6c652e6c6f67;
 address constant fSender = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;

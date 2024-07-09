@@ -11,7 +11,7 @@ abstract contract ArbDeployAddr {
     address constant multicallAddr = 0xC35A7648B434f0A161c12BD144866bdf93c4a4FC;
     address constant factoryAddr = 0x000000000070AB95211e32fdA3B706589D3482D5;
     address constant vaultAddr = 0x2dF01c1e472eaF880e3520C456b9078A5658b04c;
-    address constant dataV1Addr = 0xF21De5aBac99514610F33Ca15113Bb6bCfCD476d;
+    address constant dataAddr = 0x8aea7ff4D6cc3E7F79B3801252495d8E7C749d0d;
     address constant marketStatusAddr =
         0xf6188e085ebEB716a730F8ecd342513e72C8AD04;
 
@@ -21,6 +21,7 @@ abstract contract ArbDeployAddr {
     address constant WBTCAddr = 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f;
     address constant wethAddr = 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1;
     address constant DAIAddr = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
+    address constant USDTAddr = 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9;
 
     address constant kissAddr = 0x6A1D6D2f4aF6915e6bBa8F2db46F442d18dB5C9b;
 
@@ -55,6 +56,7 @@ abstract contract ArbDeployAddr {
     IERC20 constant USDCe = IERC20(USDCeAddr);
     IERC20 constant WBTC = IERC20(WBTCAddr);
     IERC20 constant ARB = IERC20(ARBAddr);
+    IERC20 constant USDT = IERC20(USDTAddr);
 
     address constant binanceAddr = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
     address constant pythAddr = 0xff1a0f4744e8582DF1aE09D5611b887B6a12925C;

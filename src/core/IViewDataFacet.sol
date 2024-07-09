@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {PythView} from "../../vendor/Pyth.sol";
-import {View} from "../types/Views.sol";
+import {PythView} from "../vendor/Pyth.sol";
+import {View} from "./types/Views.sol";
 
 interface IViewDataFacet {
     function viewProtocolData(

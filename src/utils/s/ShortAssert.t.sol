@@ -469,7 +469,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function gteDecimal(int a, int b, uint d) internal {
+    function gteDec(int a, int b, uint d) internal {
         if (a < b) {
             emit log("Error: a >= b not satisfied [decimal int]");
             _log("  Value a", a, d);
@@ -478,14 +478,14 @@ library ShortAssert {
         }
     }
 
-    function gteDecimal(int a, int b, uint d, string memory err) internal {
+    function gteDec(int a, int b, uint d, string memory err) internal {
         if (a < b) {
             _log("Error", err);
-            gteDecimal(a, b, d);
+            gteDec(a, b, d);
         }
     }
 
-    function gteDecimal(uint a, uint b, uint d) internal {
+    function gteDec(uint a, uint b, uint d) internal {
         if (a < b) {
             emit log("Error: a >= b not satisfied [decimal uint]");
             _log("  Value a", a, d);
@@ -494,10 +494,10 @@ library ShortAssert {
         }
     }
 
-    function gteDecimal(uint a, uint b, uint d, string memory err) internal {
+    function gteDec(uint a, uint b, uint d, string memory err) internal {
         if (a < b) {
             _log("Error", err);
-            gteDecimal(a, b, d);
+            gteDec(a, b, d);
         }
     }
 
@@ -541,7 +541,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function ltDecimal(int a, int b, uint d) internal {
+    function ltDec(int a, int b, uint d) internal {
         if (a >= b) {
             emit log("Error: a < b not satisfied [decimal int]");
             _log("  Value a", a, d);
@@ -550,14 +550,14 @@ library ShortAssert {
         }
     }
 
-    function ltDecimal(int a, int b, uint d, string memory err) internal {
+    function ltDec(int a, int b, uint d, string memory err) internal {
         if (a >= b) {
             _log("Error", err);
-            ltDecimal(a, b, d);
+            ltDec(a, b, d);
         }
     }
 
-    function ltDecimal(uint a, uint b, uint d) internal {
+    function ltDec(uint a, uint b, uint d) internal {
         if (a >= b) {
             emit log("Error: a < b not satisfied [decimal uint]");
             _log("  Value a", a, d);
@@ -566,10 +566,10 @@ library ShortAssert {
         }
     }
 
-    function ltDecimal(uint a, uint b, uint d, string memory err) internal {
+    function ltDec(uint a, uint b, uint d, string memory err) internal {
         if (a >= b) {
             _log("Error", err);
-            ltDecimal(a, b, d);
+            ltDec(a, b, d);
         }
     }
 
@@ -612,7 +612,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function lteDecimal(int a, int b, uint d) internal {
+    function lteDec(int a, int b, uint d) internal {
         if (a > b) {
             emit log("Error: a <= b not satisfied [decimal int]");
             _log("  Value a", a, d);
@@ -621,14 +621,14 @@ library ShortAssert {
         }
     }
 
-    function lteDecimal(int a, int b, uint d, string memory err) internal {
+    function lteDec(int a, int b, uint d, string memory err) internal {
         if (a > b) {
             _log("Error", err);
-            lteDecimal(a, b, d);
+            lteDec(a, b, d);
         }
     }
 
-    function lteDecimal(uint a, uint b, uint d) internal {
+    function lteDec(uint a, uint b, uint d) internal {
         if (a > b) {
             emit log("Error: a <= b not satisfied [decimal uint]");
             _log("  Value a", a, d);
@@ -637,10 +637,10 @@ library ShortAssert {
         }
     }
 
-    function lteDecimal(uint a, uint b, uint d, string memory err) internal {
+    function lteDec(uint a, uint b, uint d, string memory err) internal {
         if (a > b) {
             _log("Error", err);
-            lteDecimal(a, b, d);
+            lteDec(a, b, d);
         }
     }
 
@@ -864,7 +864,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function closeToDecimal(
+    function closeToDec(
         uint256 a,
         uint256 b,
         uint256 maxDelta,
@@ -884,7 +884,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function closeToDecimal(
+    function closeToDec(
         uint256 a,
         uint256 b,
         uint256 maxDelta,
@@ -895,7 +895,7 @@ library ShortAssert {
 
         if (delta > maxDelta) {
             _log("Error", err);
-            closeToDecimal(a, b, maxDelta, d);
+            closeToDec(a, b, maxDelta, d);
         }
     }
 
@@ -934,7 +934,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function closeToDecimal(
+    function closeToDec(
         int256 a,
         int256 b,
         uint256 maxDelta,
@@ -954,7 +954,7 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function closeToDecimal(
+    function closeToDec(
         int256 a,
         int256 b,
         uint256 maxDelta,
@@ -965,7 +965,7 @@ library ShortAssert {
 
         if (delta > maxDelta) {
             _log("Error", err);
-            closeToDecimal(a, b, maxDelta, d);
+            closeToDec(a, b, maxDelta, d);
         }
 
         return !store()._failed;
