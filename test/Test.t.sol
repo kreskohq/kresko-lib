@@ -23,6 +23,12 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
+    function testDlg() public {
+        uint256 valA = 12.5e8;
+
+        valA.dlg("valA", 8);
+    }
+
     function testStrings() public {
         bytes32 val = bytes32("foo");
         bytes(val.txt()).length.eq(66, "str");

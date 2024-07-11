@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {logp} from "./Base.s.sol";
-
+import {Utils} from "../Libs.sol";
 library PLog {
+    using Utils for *;
+
     function clg(string memory p0) internal pure {
         logp(abi.encodeWithSignature("log(string)", p0));
     }
@@ -26,6 +28,15 @@ library PLog {
     function clg(int256 p0, string memory p1) internal pure {
         logp(abi.encodeWithSignature("log(string,int256)", p1, p0));
     }
+    function dlg(int256 p0, string memory p1, uint256 dec) internal pure {
+        logp(
+            abi.encodeWithSignature(
+                "log(string,string)",
+                p1,
+                uint256(p0).strDec(dec)
+            )
+        );
+    }
 
     function clg(bool p0) internal pure {
         logp(abi.encodeWithSignature("log(bool)", p0));
@@ -33,6 +44,9 @@ library PLog {
 
     function clg(uint256 p1, string memory p0) internal pure {
         logp(abi.encodeWithSignature("log(string,uint256)", p0, p1));
+    }
+    function dlg(uint256 p1, string memory p0, uint256 dec) internal pure {
+        logp(abi.encodeWithSignature("log(string,string)", p0, p1.strDec(dec)));
     }
 
     function clg(address p0, uint256 p1) internal pure {

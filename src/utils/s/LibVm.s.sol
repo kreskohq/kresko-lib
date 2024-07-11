@@ -164,44 +164,44 @@ library Log {
         }
     }
 
-    function pct(uint256 _val, string memory _str) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    function pct(uint256 _val, string memory _str) internal pure {
+        PLog.dlg(_val, _str, 2);
     }
 
-    function pct(string memory _str, uint256 _val) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 2);
+    function pct(string memory _str, uint256 _val) internal pure {
+        PLog.dlg(_val, _str, 2);
     }
 
-    function dlg(int256 _val, string memory _str) internal {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
+    function dlg(int256 _val, string memory _str) internal pure {
+        dlg(_val, _pre(_str), 18);
     }
 
-    function dlg(int256 _val, string memory _str, uint256 dec) internal {
-        emit log_named_decimal_int(_pre(_str), _val, dec);
+    function dlg(int256 _val, string memory _str, uint256 dec) internal pure {
+        PLog.dlg(_val, _pre(_str), dec);
     }
 
-    function dlg(string memory _str, int256 _val) internal {
-        emit log_named_decimal_int(_pre(_str), _val, 18);
+    function dlg(string memory _str, int256 _val) internal pure {
+        dlg(_val, _str);
     }
 
-    function dlg(string memory _str, uint256 _val) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    function dlg(string memory _str, uint256 _val) internal pure {
+        dlg(_val, _str, 18);
     }
 
-    function dlg(string memory _str, int256 _val, uint256 dec) internal {
-        emit log_named_decimal_int(_pre(_str), _val, dec);
+    function dlg(string memory _str, int256 _val, uint256 dec) internal pure {
+        PLog.dlg(_val, _str, dec);
     }
 
-    function dlg(string memory _str, uint256 _val, uint256 dec) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    function dlg(string memory _str, uint256 _val, uint256 dec) internal pure {
+        PLog.dlg(_val, _str, dec);
     }
 
-    function dlg(uint256 _val, string memory _str) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, 18);
+    function dlg(uint256 _val, string memory _str) internal pure {
+        PLog.dlg(_val, _str, 18);
     }
 
-    function dlg(uint256 _val, string memory _str, uint256 dec) internal {
-        emit log_named_decimal_uint(_pre(_str), _val, dec);
+    function dlg(uint256 _val, string memory _str, uint256 dec) internal pure {
+        PLog.dlg(_val, _str, dec);
     }
 
     function clg(string memory _str, uint256 _val) internal pure {

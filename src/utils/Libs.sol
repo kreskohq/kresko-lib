@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {split} from "./Bytes.s.sol";
-import {mvm} from "./s/MinVm.s.sol";
 
 library Utils {
     using Utils for *;
@@ -153,7 +152,7 @@ library Utils {
     }
     function strDec(
         uint256 _val,
-        uint8 _dec
+        uint256 _dec
     ) internal pure returns (string memory) {
         return
             string.concat(
