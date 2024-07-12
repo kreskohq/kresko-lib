@@ -80,12 +80,12 @@ library Pyth {
         price = uint64(_price.price);
         expo = uint8(uint32(-_price.expo));
 
-        return (price.toDec(expo, toDec), expo);
+        return (price.toDec(expo, toDec), toDec);
     }
 
     function invertNormalizePrice(
         Price memory _price,
-        uint8 oracleDec
+        uint8 toDec
     ) internal pure returns (uint256 price, uint8 expo) {
         _price.price = int64(
             uint64(
@@ -93,7 +93,7 @@ library Pyth {
             )
         );
         _price.expo = -18;
-        return normalizePythPrice(_price, oracleDec);
+        return normalizePythPrice(_price, toDec);
     }
     function getView(
         PriceFeed[] memory feeds
