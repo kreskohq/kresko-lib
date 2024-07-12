@@ -1,6 +1,6 @@
 import { addr } from '.'
 
-export const iDataV1ABI = [
+export const iDataABI = [
 	{
 		type: 'function',
 		name: 'getAccount',
@@ -1307,7 +1307,7 @@ export const iDataV1ABI = [
 										internalType: 'string',
 									},
 									{
-										name: 'oracleDecimals',
+										name: 'oracleDec',
 										type: 'uint8',
 										internalType: 'uint8',
 									},
@@ -1325,48 +1325,6 @@ export const iDataV1ABI = [
 										name: 'tSupply',
 										type: 'uint256',
 										internalType: 'uint256',
-									},
-									{
-										name: 'priceRaw',
-										type: 'tuple',
-										internalType: 'struct RawPrice',
-										components: [
-											{
-												name: 'answer',
-												type: 'int256',
-												internalType: 'int256',
-											},
-											{
-												name: 'timestamp',
-												type: 'uint256',
-												internalType: 'uint256',
-											},
-											{
-												name: 'staleTime',
-												type: 'uint256',
-												internalType: 'uint256',
-											},
-											{
-												name: 'isStale',
-												type: 'bool',
-												internalType: 'bool',
-											},
-											{
-												name: 'isZero',
-												type: 'bool',
-												internalType: 'bool',
-											},
-											{
-												name: 'oracle',
-												type: 'uint8',
-												internalType: 'enum Enums.OracleType',
-											},
-											{
-												name: 'feed',
-												type: 'address',
-												internalType: 'address',
-											},
-										],
 									},
 									{
 										name: 'config',
@@ -2123,7 +2081,7 @@ export const iDataV1ABI = [
 						internalType: 'string',
 					},
 					{
-						name: 'oracleDecimals',
+						name: 'oracleDec',
 						type: 'uint8',
 						internalType: 'uint8',
 					},
@@ -2141,48 +2099,6 @@ export const iDataV1ABI = [
 						name: 'tSupply',
 						type: 'uint256',
 						internalType: 'uint256',
-					},
-					{
-						name: 'priceRaw',
-						type: 'tuple',
-						internalType: 'struct RawPrice',
-						components: [
-							{
-								name: 'answer',
-								type: 'int256',
-								internalType: 'int256',
-							},
-							{
-								name: 'timestamp',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'staleTime',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'isStale',
-								type: 'bool',
-								internalType: 'bool',
-							},
-							{
-								name: 'isZero',
-								type: 'bool',
-								internalType: 'bool',
-							},
-							{
-								name: 'oracle',
-								type: 'uint8',
-								internalType: 'enum Enums.OracleType',
-							},
-							{
-								name: 'feed',
-								type: 'address',
-								internalType: 'address',
-							},
-						],
 					},
 					{
 						name: 'config',
@@ -2243,229 +2159,6 @@ export const iDataV1ABI = [
 	},
 	{
 		type: 'function',
-		name: 'getVault',
-		inputs: [],
-		outputs: [
-			{
-				name: '',
-				type: 'tuple',
-				internalType: 'struct IData.V',
-				components: [
-					{
-						name: 'assets',
-						type: 'tuple[]',
-						internalType: 'struct IData.VA[]',
-						components: [
-							{
-								name: 'addr',
-								type: 'address',
-								internalType: 'address',
-							},
-							{
-								name: 'name',
-								type: 'string',
-								internalType: 'string',
-							},
-							{
-								name: 'symbol',
-								type: 'string',
-								internalType: 'string',
-							},
-							{
-								name: 'oracleDecimals',
-								type: 'uint8',
-								internalType: 'uint8',
-							},
-							{
-								name: 'vSupply',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'isMarketOpen',
-								type: 'bool',
-								internalType: 'bool',
-							},
-							{
-								name: 'tSupply',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'priceRaw',
-								type: 'tuple',
-								internalType: 'struct RawPrice',
-								components: [
-									{
-										name: 'answer',
-										type: 'int256',
-										internalType: 'int256',
-									},
-									{
-										name: 'timestamp',
-										type: 'uint256',
-										internalType: 'uint256',
-									},
-									{
-										name: 'staleTime',
-										type: 'uint256',
-										internalType: 'uint256',
-									},
-									{
-										name: 'isStale',
-										type: 'bool',
-										internalType: 'bool',
-									},
-									{
-										name: 'isZero',
-										type: 'bool',
-										internalType: 'bool',
-									},
-									{
-										name: 'oracle',
-										type: 'uint8',
-										internalType: 'enum Enums.OracleType',
-									},
-									{
-										name: 'feed',
-										type: 'address',
-										internalType: 'address',
-									},
-								],
-							},
-							{
-								name: 'config',
-								type: 'tuple',
-								internalType: 'struct VaultAsset',
-								components: [
-									{
-										name: 'token',
-										type: 'address',
-										internalType: 'contract IERC20',
-									},
-									{
-										name: 'feed',
-										type: 'address',
-										internalType: 'contract IAggregatorV3',
-									},
-									{
-										name: 'staleTime',
-										type: 'uint24',
-										internalType: 'uint24',
-									},
-									{
-										name: 'decimals',
-										type: 'uint8',
-										internalType: 'uint8',
-									},
-									{
-										name: 'depositFee',
-										type: 'uint32',
-										internalType: 'uint32',
-									},
-									{
-										name: 'withdrawFee',
-										type: 'uint32',
-										internalType: 'uint32',
-									},
-									{
-										name: 'maxDeposits',
-										type: 'uint248',
-										internalType: 'uint248',
-									},
-									{
-										name: 'enabled',
-										type: 'bool',
-										internalType: 'bool',
-									},
-								],
-							},
-							{
-								name: 'price',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-						],
-					},
-					{
-						name: 'share',
-						type: 'tuple',
-						internalType: 'struct IData.Tkn',
-						components: [
-							{
-								name: 'ticker',
-								type: 'string',
-								internalType: 'string',
-							},
-							{
-								name: 'addr',
-								type: 'address',
-								internalType: 'address',
-							},
-							{
-								name: 'name',
-								type: 'string',
-								internalType: 'string',
-							},
-							{
-								name: 'symbol',
-								type: 'string',
-								internalType: 'string',
-							},
-							{
-								name: 'amount',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'tSupply',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'oracleDec',
-								type: 'uint8',
-								internalType: 'uint8',
-							},
-							{
-								name: 'val',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'decimals',
-								type: 'uint8',
-								internalType: 'uint8',
-							},
-							{
-								name: 'price',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'chainId',
-								type: 'uint256',
-								internalType: 'uint256',
-							},
-							{
-								name: 'isKrAsset',
-								type: 'bool',
-								internalType: 'bool',
-							},
-							{
-								name: 'isCollateral',
-								type: 'bool',
-								internalType: 'bool',
-							},
-						],
-					},
-				],
-			},
-		],
-		stateMutability: 'view',
-	},
-	{
-		type: 'function',
 		name: 'previewWithdraw',
 		inputs: [
 			{
@@ -2505,9 +2198,16 @@ export const iDataV1ABI = [
 		],
 		stateMutability: 'payable',
 	},
+	{
+		type: 'function',
+		name: 'refreshProtocolAssets',
+		inputs: [],
+		outputs: [],
+		stateMutability: 'nonpayable',
+	},
 ] as const
 
-export const iDataV1Config = {
-	abi: iDataV1ABI,
-	address: addr.DataV1,
+export const iDataConfig = {
+	abi: iDataABI,
+	address: addr.Data,
 }

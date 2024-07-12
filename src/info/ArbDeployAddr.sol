@@ -11,7 +11,7 @@ abstract contract ArbDeployAddr {
     address constant multicallAddr = 0xC35A7648B434f0A161c12BD144866bdf93c4a4FC;
     address constant factoryAddr = 0x000000000070AB95211e32fdA3B706589D3482D5;
     address constant vaultAddr = 0x2dF01c1e472eaF880e3520C456b9078A5658b04c;
-    address constant dataAddr = 0x8aea7ff4D6cc3E7F79B3801252495d8E7C749d0d;
+    address constant dataAddr = 0x9696aa99399cEADc1D4eA04d3182f3e7d88AE28f;
     address constant marketStatusAddr =
         0xf6188e085ebEB716a730F8ecd342513e72C8AD04;
 
