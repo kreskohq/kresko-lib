@@ -186,6 +186,7 @@ interface IData {
         address addr;
         bytes32 pythId;
         address clFeed;
+        bool invertPyth;
         bool ext;
     }
 
@@ -202,7 +203,7 @@ interface IData {
         address addr;
         string name;
         string symbol;
-        uint8 oracleDecimals;
+        uint8 oracleDec;
         uint256 vSupply;
         bool isMarketOpen;
         uint256 tSupply;
@@ -216,7 +217,7 @@ interface IData {
         uint8 decimals;
         string name;
         uint256 price;
-        uint8 oracleDecimals;
+        uint8 oracleDec;
         uint256 tSupply;
     }
 
@@ -291,6 +292,8 @@ interface IData {
         uint256 val;
         uint256 nativeVal;
     }
+
+    function refreshProtocolAssets() external;
 
     function previewWithdraw(
         PreviewWithdrawArgs calldata args

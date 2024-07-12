@@ -21,7 +21,10 @@ abstract contract Inspector is ArbDeploy {
     IData internal constant dataV1 = IData(dataAddr);
     IKresko internal constant kresko = IKresko(kreskoAddr);
     address[] extTokens = [USDTAddr];
-    function peekAccount(address account, PythView memory pythView) public {
+    function peekAccount(
+        address account,
+        PythView memory pythView
+    ) public view {
         IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
         Log.sr();
         account.clg("Account");
@@ -65,7 +68,10 @@ abstract contract Inspector is ArbDeploy {
         }
     }
 
-    function _logAccMinter(address account, PythView memory pythView) internal {
+    function _logAccMinter(
+        address account,
+        PythView memory pythView
+    ) internal view {
         IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
         for (uint256 i; i < acc.minter.deposits.length; i++) {
             acc.minter.deposits[i].symbol.clg("Deposits");
@@ -85,7 +91,7 @@ abstract contract Inspector is ArbDeploy {
 
     function _logAccSCDPDeposits(
         IData.A memory acc
-    ) internal returns (uint256 totalVal) {
+    ) internal pure returns (uint256 totalVal) {
         for (uint256 i; i < acc.scdp.deposits.length; i++) {
             acc.scdp.deposits[i].symbol.clg("SCDP Deposits");
             acc.scdp.deposits[i].amount.dlg(
@@ -98,7 +104,10 @@ abstract contract Inspector is ArbDeploy {
         }
     }
 
-    function _logAccBals(address account, PythView memory pythView) internal {
+    function _logAccBals(
+        address account,
+        PythView memory pythView
+    ) internal view {
         IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
         uint256 totalVal;
         for (uint256 i; i < acc.tokens.length; i++) {
@@ -113,7 +122,7 @@ abstract contract Inspector is ArbDeploy {
         account.balance.dlg("ETH Balance");
     }
 
-    function peekAsset(address asset) internal {
+    function peekAsset(address asset) internal view {
         Asset memory config = kresko.getAsset(asset);
         IERC20 token = IERC20(asset);
         (
@@ -194,7 +203,7 @@ abstract contract Inspector is ArbDeploy {
         config.protocolFeeShareSCDP.pct("SCDP Protocol Fee");
     }
 
-    function peekSCDPAsset(address asset) internal {
+    function peekSCDPAsset(address asset) internal view {
         Asset memory config = kresko.getAsset(asset);
         Log.hr();
         uint256 totalColl = kresko.getTotalCollateralValueSCDP(false);
