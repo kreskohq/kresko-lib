@@ -207,7 +207,6 @@ interface IData {
         uint256 vSupply;
         bool isMarketOpen;
         uint256 tSupply;
-        RawPrice priceRaw;
         VaultAsset config;
         uint256 price;
     }
@@ -315,8 +314,6 @@ interface IData {
         address _account,
         address[] calldata _extTokens
     ) external view returns (Tkn[] memory result);
-
-    function getVault() external view returns (V memory);
 
     function getVAssets() external view returns (VA[] memory);
 }
