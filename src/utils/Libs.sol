@@ -352,6 +352,28 @@ library Utils {
             c := div(add(mul(a, WAD), div(b, 2)), b)
         }
     }
+
+    function cc(
+        string memory _a,
+        string memory _b
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b);
+    }
+    function cc(
+        string memory _a,
+        string memory _b,
+        string memory _c
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b, _c);
+    }
+    function cc(
+        string memory _a,
+        string memory _b,
+        string memory _c,
+        string memory _d
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b, _c, _d);
+    }
 }
 
 library Meta {
@@ -456,27 +478,5 @@ library Meta {
         res_.akrSalt = bytes32(
             bytes.concat(bytes(_akrs), bytes(_krs), SALT_VERSION)
         );
-    }
-
-    function cc(
-        string memory _a,
-        string memory _b
-    ) internal pure returns (string memory) {
-        return string.concat(_a, _b);
-    }
-    function cc(
-        string memory _a,
-        string memory _b,
-        string memory _c
-    ) internal pure returns (string memory) {
-        return string.concat(_a, _b, _c);
-    }
-    function cc(
-        string memory _a,
-        string memory _b,
-        string memory _c,
-        string memory _d
-    ) internal pure returns (string memory) {
-        return string.concat(_a, _b, _c, _d);
     }
 }
