@@ -39,6 +39,9 @@ contract PythScript {
         fetchPyth(pyth.tickers);
         pyth.get[block.chainid].updatePriceFeeds{value: pyth.cost}(pyth.update);
     }
+    function updatePyth(bytes[] memory _payload, uint256 _cost) internal {
+        pyth.get[block.chainid].updatePriceFeeds{value: _cost}(_payload);
+    }
 
     function fetchPyth() internal {
         fetchPyth(pyth.tickers);
