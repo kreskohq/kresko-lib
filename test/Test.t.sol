@@ -7,6 +7,7 @@ import {ShortAssert} from "../src/utils/s/ShortAssert.t.sol";
 import {PLog, logp} from "../src/utils/s/PLog.s.sol";
 import {Utils} from "../src/utils/Libs.sol";
 import {__revert, split} from "../src/utils/Funcs.sol";
+import {MockPyth} from "../src/mocks/MockPyth.sol";
 
 contract Sandbox is Tested {
     TestContract internal thing;
@@ -22,7 +23,7 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
-    function testDlg() public {
+    function testDlg() public view {
         uint256 valA = 12.5e8;
 
         valA.dlg("valA", 8);
