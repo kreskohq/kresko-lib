@@ -53,8 +53,6 @@ library Log {
 
     event log_named_address(string key, address val);
     event log_named_bytes32(string key, bytes32 val);
-    event log_named_decimal_int(string key, int256 val, uint256 decimals);
-    event log_named_decimal_uint(string key, uint256 val, uint256 decimals);
     event log_named_int(string key, int256 val);
     event log_named_uint(string key, uint256 val);
     event log_named_bytes(string key, bytes val);
@@ -70,10 +68,6 @@ library Log {
     using Help for string;
     using Help for address;
     using Help for bytes;
-    using Help for uint256[2];
-    using Help for uint8[2];
-    using Help for uint32[2];
-    using Help for uint16[2];
     using Utils for *;
 
     function prefix(string memory _prefix) internal {
@@ -116,11 +110,11 @@ library Log {
         PLog.clg("**************************************************");
     }
 
-    function log_bool(bool _val) internal pure {
+    function clg(bool _val) internal pure {
         PLog.clg(_pre(_val ? "true" : "false"));
     }
 
-    function log_named_bool(string memory _str, bool _val) internal pure {
+    function clg(string memory _str, bool _val) internal pure {
         PLog.clg(_pre(_str), _val ? "true" : "false");
     }
 
@@ -164,11 +158,11 @@ library Log {
         }
     }
 
-    function pct(uint256 _val, string memory _str) internal pure {
+    function plg(uint256 _val, string memory _str) internal pure {
         PLog.dlg(_val, _str, 2);
     }
 
-    function pct(string memory _str, uint256 _val) internal pure {
+    function plg(string memory _str, uint256 _val) internal pure {
         PLog.dlg(_val, _str, 2);
     }
 
@@ -257,11 +251,7 @@ library Log {
     }
 
     function clg(bool _val, string memory _str) internal pure {
-        log_named_bool(_pre(_str), _val);
-    }
-
-    function clg(bool _val) internal pure {
-        log_bool(_val);
+        clg(_pre(_str), _val);
     }
 
     function clg(address[] memory _val) internal {
@@ -276,19 +266,7 @@ library Log {
         }
     }
 
-    function clg(int256[] memory _val) internal {
-        if (!_hasPrefix()) {
-            emit log_array(_val);
-        } else {
-            emit log_named_array(_pre(""), _val);
-        }
-    }
-
     function clg(uint256[] memory _val, string memory _str) internal {
-        emit log_named_array(_pre(_str), _val);
-    }
-
-    function clg(int256[] memory _val, string memory _str) internal {
         emit log_named_array(_pre(_str), _val);
     }
 

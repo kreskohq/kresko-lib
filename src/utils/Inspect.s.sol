@@ -18,14 +18,14 @@ abstract contract Inspector is ArbDeploy {
     using Utils for *;
     using PercentageMath for *;
 
-    IData internal constant dataV1 = IData(dataAddr);
+    IData internal constant data = IData(dataAddr);
     IKresko internal constant kresko = IKresko(kreskoAddr);
-    address[] extTokens = [USDTAddr];
+    address[] extTokens = [usdtAddr];
     function peekAccount(
         address account,
         PythView memory pythView
     ) public view {
-        IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
+        IData.A memory acc = data.getAccount(pythView, account, extTokens);
         Log.sr();
         account.clg("Account");
         Log.hr();
@@ -51,7 +51,7 @@ abstract contract Inspector is ArbDeploy {
         address account,
         PythView memory pythView
     ) internal view {
-        IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
+        IData.A memory acc = data.getAccount(pythView, account, extTokens);
         for (uint256 i; i < acc.collections.length; i++) {
             acc.collections[i].name.clg("Collection");
             for (uint256 j; j < acc.collections[i].items.length; j++) {
@@ -72,7 +72,7 @@ abstract contract Inspector is ArbDeploy {
         address account,
         PythView memory pythView
     ) internal view {
-        IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
+        IData.A memory acc = data.getAccount(pythView, account, extTokens);
         for (uint256 i; i < acc.minter.deposits.length; i++) {
             acc.minter.deposits[i].symbol.clg("Deposits");
             acc.minter.deposits[i].amount.dlg(
@@ -108,7 +108,7 @@ abstract contract Inspector is ArbDeploy {
         address account,
         PythView memory pythView
     ) internal view {
-        IData.A memory acc = dataV1.getAccount(pythView, account, extTokens);
+        IData.A memory acc = data.getAccount(pythView, account, extTokens);
         uint256 totalVal;
         for (uint256 i; i < acc.tokens.length; i++) {
             acc.tokens[i].symbol.clg("Wallet Balance");
@@ -184,8 +184,8 @@ abstract contract Inspector is ArbDeploy {
         config.isSharedCollateral.clg("SCDP Depositable");
         config.isCoverAsset.clg("SCDP Cover");
         peekSCDPAsset(asset);
-        config.kFactor.pct("kFactor");
-        config.factor.pct("cFactor");
+        config.kFactor.plg("kFactor");
+        config.factor.plg("cFactor");
         Log.hr();
         config.depositLimitSCDP.dlg("SCDP Deposit Limit", config.decimals);
         kresko.getValue(asset, config.depositLimitSCDP).dlg("Value", 8);
@@ -194,13 +194,13 @@ abstract contract Inspector is ArbDeploy {
         config.maxDebtSCDP.dlg("SCDP Debt Limit", config.decimals);
         kresko.getValue(asset, config.maxDebtSCDP).dlg("Value", 8);
         ("-------  Config --------").clg();
-        config.liqIncentiveSCDP.pct("SCDP Liquidation Incentive");
-        config.liqIncentive.pct("Minter Liquidation Incentive");
-        config.openFee.pct("Minter Open Fee");
-        config.closeFee.pct("Minter Close Fee");
-        config.swapInFeeSCDP.pct("SCDP Swap In Fee");
-        config.swapOutFeeSCDP.pct("SCDP Swap Out Fee");
-        config.protocolFeeShareSCDP.pct("SCDP Protocol Fee");
+        config.liqIncentiveSCDP.plg("SCDP Liquidation Incentive");
+        config.liqIncentive.plg("Minter Liquidation Incentive");
+        config.openFee.plg("Minter Open Fee");
+        config.closeFee.plg("Minter Close Fee");
+        config.swapInFeeSCDP.plg("SCDP Swap In Fee");
+        config.swapOutFeeSCDP.plg("SCDP Swap Out Fee");
+        config.protocolFeeShareSCDP.plg("SCDP Protocol Fee");
     }
 
     function peekSCDPAsset(address asset) internal view {

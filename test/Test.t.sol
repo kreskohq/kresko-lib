@@ -23,7 +23,7 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
-    function testDlg() public {
+    function testDlg() public pure {
         uint256 valA = 12.5e8;
 
         valA.dlg("valA", 8);
@@ -73,13 +73,13 @@ contract Sandbox is Tested {
         Log.logCallers();
         thing.func();
         uint16 a = 150e2;
-        a.pct("pct");
+        a.plg("pct");
 
         uint32 b = 150e2;
-        b.pct("pct");
+        b.plg("pct");
 
         uint256 c = 150e2;
-        c.pct("pct");
+        c.plg("pct");
 
         string memory s = "hello";
         bytes memory bts = bytes(s);

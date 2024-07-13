@@ -15,13 +15,13 @@ abstract contract ArbDeployAddr {
     address constant marketStatusAddr =
         0xf6188e085ebEB716a730F8ecd342513e72C8AD04;
 
-    address constant USDCAddr = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
-    address constant ARBAddr = 0x912CE59144191C1204E64559FE8253a0e49E6548;
-    address constant USDCeAddr = 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8;
-    address constant WBTCAddr = 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f;
+    address constant arbAddr = 0x912CE59144191C1204E64559FE8253a0e49E6548;
+    address constant usdcAddr = 0xaf88d065e77c8cC2239327C5EDb3A432268e5831;
+    address constant usdceAddr = 0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8;
+    address constant wbtcAddr = 0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f;
     address constant wethAddr = 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1;
-    address constant DAIAddr = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
-    address constant USDTAddr = 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9;
+    address constant daiAddr = 0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1;
+    address constant usdtAddr = 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9;
 
     address constant kissAddr = 0x6A1D6D2f4aF6915e6bBa8F2db46F442d18dB5C9b;
 
@@ -47,16 +47,15 @@ abstract contract ArbDeployAddr {
 
     address constant safe = 0x266489Bde85ff0dfe1ebF9f0a7e6Fed3a973cEc3;
     address constant nftMultisig = 0x389297F0d8C489954D65e04ff0690FC54E57Dad6;
-    address constant og_deployer = 0x5a6B3E907b83DE2AbD9010509429683CF5ad5984;
     address constant kreskianAddr = 0xAbDb949a18d27367118573A217E5353EDe5A0f1E;
     address constant questAddr = 0x1C04925779805f2dF7BbD0433ABE92Ea74829bF6;
 
     IWETH9 constant weth = IWETH9(wethAddr);
-    IERC20 constant USDC = IERC20(USDCAddr);
-    IERC20 constant USDCe = IERC20(USDCeAddr);
-    IERC20 constant WBTC = IERC20(WBTCAddr);
-    IERC20 constant ARB = IERC20(ARBAddr);
-    IERC20 constant USDT = IERC20(USDTAddr);
+    IERC20 constant USDC = IERC20(usdcAddr);
+    IERC20 constant USDCe = IERC20(usdceAddr);
+    IERC20 constant WBTC = IERC20(wbtcAddr);
+    IERC20 constant ARB = IERC20(arbAddr);
+    IERC20 constant USDT = IERC20(usdtAddr);
 
     address constant binanceAddr = 0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D;
     address constant pythAddr = 0xff1a0f4744e8582DF1aE09D5611b887B6a12925C;

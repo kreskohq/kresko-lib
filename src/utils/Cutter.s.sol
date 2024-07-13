@@ -124,7 +124,7 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 jsonKey();
                 _skipInfo.push(
                     string.concat(
-                        "Skiped -> ",
+                        "Skip -> ",
                         _facet.file,
                         " exists @ ",
                         vm.toString(oldFacet)
@@ -222,14 +222,5 @@ contract Cutter is ArbDeploy, Files, Scripted {
                 _skipInfo[i].clg(string.concat("[SKIP #", vm.toString(i), "]"));
             }
         }
-    }
-
-    function _eq(
-        string memory __a,
-        string memory __b
-    ) internal pure returns (bool) {
-        return
-            keccak256(abi.encodePacked(__a)) ==
-            keccak256(abi.encodePacked(__b));
     }
 }
