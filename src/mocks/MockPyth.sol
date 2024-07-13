@@ -38,10 +38,12 @@ contract MockPyth is IPyth {
     function getUpdateFee(
         bytes[] memory _updateData
     ) external pure override returns (uint256) {
+        if (_updateData.length == 0) return 0;
         return abi.decode(_updateData[0], (PythView)).ids.length;
     }
 
     function updatePriceFeeds(bytes[] memory _updateData) public payable {
+        if (_updateData.length == 0) return;
         PythView memory _viewData = abi.decode(_updateData[0], (PythView));
         for (uint256 i; i < _viewData.ids.length; i++) {
             _set(_viewData.ids[i], _viewData.prices[i]);
@@ -53,6 +55,7 @@ contract MockPyth is IPyth {
         bytes32[] memory _ids,
         uint64[] memory _publishTimes
     ) external payable override {
+        if (_updateData.length == 0) return;
         PythView memory _viewData = abi.decode(_updateData[0], (PythView));
         for (uint256 i; i < _ids.length; i++) {
             if (prices[_ids[i]].publishTime < _publishTimes[i]) {

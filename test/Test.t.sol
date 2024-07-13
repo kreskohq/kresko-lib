@@ -22,7 +22,7 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
-    function testDlg() public pure {
+    function testDlg() public {
         uint256 valA = 12.5e8;
 
         valA.dlg("valA", 8);
