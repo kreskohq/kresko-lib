@@ -61,13 +61,6 @@ library Log {
     event log_array(uint256[] val);
     event log_array(int256[] val);
     event log_array(address[] val);
-    event log_named_array(string key, uint256[] val);
-    event log_named_array(string key, int256[] val);
-    event log_named_array(string key, address[] val);
-    using Help for bytes32;
-    using Help for string;
-    using Help for address;
-    using Help for bytes;
     using Utils for *;
 
     function prefix(string memory _prefix) internal {
@@ -80,7 +73,7 @@ library Log {
 
     function __pre(string memory _str) private view returns (string memory) {
         if (_hasPrefix()) {
-            return string.concat(store().logPrefix, _str);
+            return store().logPrefix.cc(_str);
         } else {
             return _str;
         }
@@ -226,24 +219,12 @@ library Log {
         PLog.clg(_val, _pre(_lbl));
     }
 
-    function clg(string memory _lbl, uint256[] memory _val) internal {
-        emit log_named_array(_pre(_lbl), _val);
-    }
-
-    function clg(string memory _lbl, int256[] memory _val) internal {
-        emit log_named_array(_pre(_lbl), _val);
-    }
-
     function blg(string memory _lbl, bytes memory _val) internal pure {
         PLog.blg(_val, _pre(_lbl));
     }
 
     function blg(string memory _lbl, bytes32 _val) internal pure {
         PLog.blg(_val, _pre(_lbl));
-    }
-
-    function clg(address[] memory _val, string memory _str) internal {
-        emit log_named_array(_pre(_str), _val);
     }
 
     function clg(address _val, string memory _str) internal pure {
@@ -256,18 +237,6 @@ library Log {
 
     function clg(address[] memory _val) internal {
         emit log_array(_val);
-    }
-
-    function clg(uint256[] memory _val) internal {
-        if (!_hasPrefix()) {
-            emit log_array(_val);
-        } else {
-            emit log_named_array(_pre(""), _val);
-        }
-    }
-
-    function clg(uint256[] memory _val, string memory _str) internal {
-        emit log_named_array(_pre(_str), _val);
     }
 
     function blg(bytes32 _val, string memory _str) internal pure {

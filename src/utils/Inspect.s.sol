@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {IData} from "../core/types/Views.sol";
-import {Log, Help} from "./s/LibVm.s.sol";
+import {Log} from "./s/LibVm.s.sol";
 import {Asset, Oracle, RawPrice} from "../core/types/Data.sol";
 import {IERC20} from "../token/IERC20.sol";
 import {PythView} from "../vendor/Pyth.sol";
@@ -14,7 +14,6 @@ import {Utils} from "./Libs.sol";
 
 abstract contract Inspector is ArbDeploy {
     using Log for *;
-    using Help for *;
     using Utils for *;
     using PercentageMath for *;
 
@@ -59,9 +58,9 @@ abstract contract Inspector is ArbDeploy {
                 if (bal == 0) continue;
                 string memory info = string.concat(
                     "nft id: ",
-                    j.txt(),
+                    j.str(),
                     " balance: ",
-                    bal.txt()
+                    bal.str()
                 );
                 info.clg();
             }

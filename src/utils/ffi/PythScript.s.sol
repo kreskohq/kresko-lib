@@ -114,13 +114,6 @@ contract PythScript {
         return abi.decode(res, (bytes[], PriceFeed[]));
     }
 
-    function updatePythMock() internal {
-        fetchPyth(pyth.tickers, false);
-        bytes[] memory _updateData = new bytes[](1);
-        _updateData[0] = abi.encode(pyth.viewData);
-        pyth.update = _updateData;
-        pyth.get[block.chainid].updatePriceFeeds{value: pyth.cost}(pyth.update);
-    }
     function getMockPayload(
         PythView memory _viewData
     ) internal returns (bytes[] memory _updateData) {

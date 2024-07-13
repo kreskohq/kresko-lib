@@ -146,7 +146,7 @@ library Utils {
     function str(bytes memory _val) internal pure returns (string memory res) {
         for (uint256 i; i < _val.length; i++) {
             if (_val[i] == 0x00) continue;
-            res = string.concat(res, string(abi.encodePacked(_val[i])));
+            res = res.cc(string(abi.encodePacked(_val[i])));
         }
     }
     function strDec(
@@ -377,6 +377,7 @@ library Utils {
 }
 
 library Meta {
+    using Utils for string;
     struct KrAssetMetadata {
         string name;
         string symbol;
@@ -415,7 +416,7 @@ library Meta {
         string memory _n,
         string memory _s
     ) internal pure returns (string memory, string memory) {
-        return (string.concat(KRASSET_NAME_PREFIX, _n), _s);
+        return (KRASSET_NAME_PREFIX.cc(_n), _s);
     }
 
     function anchorMeta(
@@ -423,15 +424,15 @@ library Meta {
         string memory _krSymbol
     ) internal pure returns (string memory, string memory) {
         return (
-            string.concat(ANCHOR_NAME_PREFIX, _krName),
-            string.concat(ANCHOR_SYMBOL_PREFIX, _krSymbol)
+            ANCHOR_NAME_PREFIX.cc(_krName),
+            ANCHOR_SYMBOL_PREFIX.cc(_krSymbol)
         );
     }
 
     function krAssetSalts(
         string memory _s
     ) internal pure returns (KrAssetSalts memory) {
-        return krAssetSalts(_s, string.concat(ANCHOR_SYMBOL_PREFIX, _s));
+        return krAssetSalts(_s, ANCHOR_SYMBOL_PREFIX.cc(_s));
     }
 
     function pathV3(
