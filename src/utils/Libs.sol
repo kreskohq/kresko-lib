@@ -457,4 +457,17 @@ library Meta {
             bytes.concat(bytes(_akrs), bytes(_krs), SALT_VERSION)
         );
     }
+
+    function cc(
+        string memory _a,
+        string memory _b
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b);
+    }
+    function cc(
+        bytes memory _a,
+        bytes memory _b
+    ) internal pure returns (bytes memory) {
+        return bytes.concat(_a, _b);
+    }
 }
