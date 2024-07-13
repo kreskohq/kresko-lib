@@ -465,9 +465,18 @@ library Meta {
         return string.concat(_a, _b);
     }
     function cc(
-        bytes memory _a,
-        bytes memory _b
-    ) internal pure returns (bytes memory) {
-        return bytes.concat(_a, _b);
+        string memory _a,
+        string memory _b,
+        string memory _c
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b, _c);
+    }
+    function cc(
+        string memory _a,
+        string memory _b,
+        string memory _c,
+        string memory _d
+    ) internal pure returns (string memory) {
+        return string.concat(_a, _b, _c, _d);
     }
 }
