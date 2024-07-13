@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 import {IWETH9} from "../token/IWETH9.sol";
 import {IERC20} from "../token/IERC20.sol";
-import {Meta} from "./Periphery.sol";
+import {Meta} from "../utils/Libs.sol";
 
 abstract contract ArbDeployAddr {
     address constant kreskoAddr = 0x0000000000177abD99485DCaea3eFaa91db3fe72;

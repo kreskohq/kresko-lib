@@ -12,7 +12,6 @@ import {IMarketStatus} from "../core/IMarketStatus.sol";
 import {IDeploymentFactory} from "../core/IDeploymentFactory.sol";
 import {ISwapRouter} from "../vendor/ISwapRouter.sol";
 import {IQuoterV2} from "../vendor/IQuoterV2.sol";
-import {Meta} from "./Periphery.sol";
 
 abstract contract ArbDeploy is ArbDeployAddr {
     IKresko1155 constant kreskian = IKresko1155(kreskianAddr);
