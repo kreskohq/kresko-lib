@@ -3,8 +3,9 @@
 pragma solidity ^0.8.0;
 
 import {IPyth, PythView, Price} from "../vendor/Pyth.sol";
-
+import {Utils} from "../utils/Libs.sol";
 contract MockPyth is IPyth {
+    using Utils for *;
     mapping(bytes32 => Price) internal prices;
 
     constructor(bytes[] memory _updateData) {
@@ -18,7 +19,14 @@ contract MockPyth is IPyth {
         if (prices[_id].publishTime >= block.timestamp - _maxAge) {
             return prices[_id];
         }
-        revert("Pyth: price too old");
+        revert(
+            string.concat(
+                "Price too old: ",
+                uint256(prices[_id].publishTime).str(),
+                "current: ",
+                uint256(block.timestamp).str()
+            )
+        );
     }
 
     function getPriceUnsafe(
