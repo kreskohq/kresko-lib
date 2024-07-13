@@ -93,6 +93,9 @@ library Log {
         PLog.clg(_h1);
         hr();
     }
+    function h2(string memory _h2) internal pure {
+        PLog.clg(("------ ").cc(_h2, " ------"));
+    }
 
     function clg(bool _val) internal pure {
         PLog.clg(_pre(_val ? "true" : "false"));

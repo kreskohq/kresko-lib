@@ -53,17 +53,11 @@ contract SafeScript is MultisendAddr {
         MULTI_SEND_ADDRESS = _multisend[CHAIN_ID];
         require(
             SAFE_ADDRESS != address(0),
-            string.concat(
-                "SAFE_ADDRESS not set, chain:",
-                mvm.toString(CHAIN_ID)
-            )
+            "SAFE_ADDRESS not set, chain: ".cc(mvm.toString(CHAIN_ID))
         );
         require(
             MULTI_SEND_ADDRESS != address(0),
-            string.concat(
-                "MULTI_SEND_ADDRESS not set, chain:",
-                mvm.toString(CHAIN_ID)
-            )
+            "MULTI_SEND_ADDRESS not set, chain:".cc(mvm.toString(CHAIN_ID))
         );
     }
 
@@ -94,10 +88,10 @@ contract SafeScript is MultisendAddr {
             bytes memory sig,
             address signer
         ) = signBatch(simulate(broadcastId, nonce));
-        string.concat("Hash: ", mvm.toString(txHash)).clg();
-        string.concat("Signer: ", mvm.toString(signer)).clg();
-        string.concat("Signature: ", mvm.toString(sig)).clg();
-        string.concat("Output File: ", file).clg();
+        "Hash:".clg(mvm.toString(txHash));
+        "Signer:".clg(mvm.toString(signer));
+        "Signature:".clg(mvm.toString(sig));
+        "Output File:".clg(file);
         return (txHash, file);
     }
 
@@ -151,19 +145,11 @@ contract SafeScript is MultisendAddr {
     ) private returns (Batch memory batch) {
         batch = createBatch(payloads);
         bytes32 fromSafe = getSafeTxHash(batch);
-        string
-            .concat(
-                "Simulating transaction in: ",
-                NETWORK,
-                " (",
-                mvm.toString(block.chainid),
-                ")",
-                "\n  safeTxHash: ",
-                mvm.toString(fromSafe),
-                "\n  batch.txHash: ",
-                mvm.toString(batch.txHash)
-            )
-            .clg();
+
+        "Simulating tx: ".cc(NETWORK).clg("(".cc(block.chainid.str(), ")"));
+        "safeTxHash: ".cc(mvm.toString(fromSafe)).clg(
+            "\n batch.txHash: ".cc(mvm.toString(batch.txHash))
+        );
         mvm.prank(SAFE_ADDRESS);
         (bool success, bytes memory returnData) = SAFE_ADDRESS.call(
             abi.encodeWithSignature(
@@ -178,17 +164,13 @@ contract SafeScript is MultisendAddr {
                 (bool, bytes)
             );
             if (!successRevert) {
-                ("Batch simulation failed: ").clg(
-                    mvm.toString(successReturnData)
-                );
+                ("Simulation fail: ").clg(mvm.toString(successReturnData));
                 __revert(successReturnData);
             }
             if (successReturnData.length == 0) {
-                ("Batch simulation successful.").clg();
+                ("Simulation success.").clg();
             } else {
-                ("Batch simulation successful:").clg(
-                    mvm.toString(successReturnData)
-                );
+                ("Simulation success:").clg(mvm.toString(successReturnData));
             }
         }
     }
@@ -311,13 +293,14 @@ contract SafeScript is MultisendAddr {
         if (!success) {
             __revert(ret);
         }
-        string.concat("Removed Safe Tx: ", mvm.toString(safeTxHash)).clg();
-        string.concat("Deleted file: ", filename).clg();
+
+        "Removed Safe Tx: ".clg(mvm.toString(safeTxHash));
+        "Deleted file: ".clg(filename);
     }
 
     function deleteProposal(bytes32 safeTxHash) public {
         deleteTx(safeTxHash);
-        string.concat("Removed Safe Tx: ", mvm.toString(safeTxHash)).clg();
+        "Removed Safe Tx: ".clg(mvm.toString(safeTxHash));
     }
 
     function deleteTx(bytes32 txHash) private {
@@ -356,30 +339,26 @@ contract SafeScript is MultisendAddr {
             fileName,
             mvm.serializeBytes(out, "payloads", abi.encode(payloads))
         );
-        string.concat("Output File: ", fileName).clg();
+        "Output File:".clg(fileName);
     }
 
     function printPayloads(Payloads memory payloads) public pure {
         for (uint256 i; i < payloads.payloads.length; ++i) {
             Payload memory payload = payloads.payloads[i];
             // string memory data = string(payload.data);
-            string memory txStr = string.concat(
-                "to: ",
-                mvm.toString(payload.to),
-                " value: ",
-                mvm.toString(payload.value)
+            "to:".cc(mvm.toString(payload.to)).clg(
+                " value: ".cc(mvm.toString(payload.value))
             );
-            txStr.clg();
-            string memory funcStr = string.concat(
-                "new contracts -> ",
-                mvm.toString(payloads.extras[i].creations.length),
-                "\n  function -> ",
-                payloads.extras[i].func,
-                "\n  args -> ",
-                join(payloads.extras[i].args)
-            );
-            funcStr.clg();
-            ("\n").clg();
+            string
+                .concat(
+                    "new contracts -> ",
+                    mvm.toString(payloads.extras[i].creations.length),
+                    "\n  function -> ",
+                    payloads.extras[i].func,
+                    "\n  args -> ",
+                    join(payloads.extras[i].args)
+                )
+                .clg("\n");
         }
     }
 
@@ -391,14 +370,9 @@ contract SafeScript is MultisendAddr {
             string memory suffix = i == arr.length - 1 ? "" : ",";
 
             if (len > 500) {
-                string memory lengthStr = string.concat(
-                    "bytes(",
-                    mvm.toString(len),
-                    ")"
-                );
-                result = string.concat(result, lengthStr, suffix);
+                result = result.cc("bytes(".cc(mvm.toString(len), ")"), suffix);
             } else {
-                result = string.concat(result, arr[i], suffix);
+                result = result.cc(arr[i], suffix);
             }
         }
     }

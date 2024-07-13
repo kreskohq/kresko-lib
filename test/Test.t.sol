@@ -8,8 +8,9 @@ import {PLog, logp} from "../src/utils/s/PLog.s.sol";
 import {Utils} from "../src/utils/Libs.sol";
 import {__revert, split} from "../src/utils/Funcs.sol";
 import {MockPyth} from "../src/mocks/MockPyth.sol";
+import {Based} from "../src/utils/Based.s.sol";
 
-contract Sandbox is Tested {
+contract Sandbox is Tested, Based {
     TestContract internal thing;
     using LibVm for *;
     using Log for *;
@@ -21,6 +22,11 @@ contract Sandbox is Tested {
         useMnemonic("MNEMONIC");
         emit log_string("setUp");
         thing = new TestContract();
+    }
+
+    function testBase() public forked("RPC_ARBITRUM_ALCHEMY", 200000000) {
+        base("MNEMONIC", "arbitrum");
+        base("MNEMONIC", "RPC_ARBITRUM_ALCHEMY");
     }
 
     function testDlg() public {
@@ -42,6 +48,8 @@ contract Sandbox is Tested {
 
         ("asdf").h1();
         Log.logCallers();
+
+        "Hash: ".cc("kek").clg();
     }
 
     function testStrings() public {

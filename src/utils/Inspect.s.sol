@@ -26,7 +26,7 @@ abstract contract Inspector is ArbDeploy {
         Log.sr();
         account.clg("Account");
         Log.hr();
-        acc.minter.totals.cr.dlg("Minter CR", 2);
+        acc.minter.totals.cr.plg("Minter CR");
         acc.minter.totals.valColl.dlg("Minter Collateral", 8);
         acc.minter.totals.valDebt.dlg("Minter Debt", 8);
 
@@ -54,13 +54,7 @@ abstract contract Inspector is ArbDeploy {
             for (uint256 j; j < acc.collections[i].items.length; j++) {
                 uint256 bal = acc.collections[i].items[j].balance;
                 if (bal == 0) continue;
-                string memory info = string.concat(
-                    "nft id: ",
-                    j.str(),
-                    " balance: ",
-                    bal.str()
-                );
-                info.clg();
+                ("NFT ID: ").cc(j.str(), " Balance: ", bal.str()).clg();
             }
         }
     }
@@ -122,9 +116,7 @@ abstract contract Inspector is ArbDeploy {
     function peekAsset(address asset) internal view {
         Asset memory config = kresko.getAsset(asset);
         IERC20 token = IERC20(asset);
-        (
-            "/* ------------------------------ Protocol Asset ------------------------------ */"
-        ).clg();
+        ("Protocol Asset").h1();
         token.symbol().clg("Symbol");
         asset.clg("Address");
         config.decimals.clg("Decimals");
@@ -140,7 +132,7 @@ abstract contract Inspector is ArbDeploy {
         } else {
             ("No Anchor").clg();
         }
-        ("-------  Oracle --------").clg();
+        ("Oracle").h2();
         config.ticker.str().clg("Ticker");
         uint8(config.oracles[0]).clg("Primary Oracle: ");
         uint8(config.oracles[1]).clg("Secondary Oracle: ");
@@ -174,7 +166,7 @@ abstract contract Inspector is ArbDeploy {
             (price2.pmul(1e4 + deviation)).dlg("Max Dev", 8);
             ((price1 * 1e8) / price2).dlg("Ratio", 8);
         }
-        ("-------  Types --------").clg();
+        ("Types").h2();
         config.isMinterMintable.clg("Minter Mintable");
         config.isMinterCollateral.clg("Minter Collateral");
         config.isSwapMintable.clg("SCDP Swappable");
@@ -190,7 +182,7 @@ abstract contract Inspector is ArbDeploy {
         kresko.getValue(asset, config.maxDebtMinter).dlg("Value", 8);
         config.maxDebtSCDP.dlg("SCDP Debt Limit", config.decimals);
         kresko.getValue(asset, config.maxDebtSCDP).dlg("Value", 8);
-        ("-------  Config --------").clg();
+        ("Config").h2();
         config.liqIncentiveSCDP.plg("SCDP Liquidation Incentive");
         config.liqIncentive.plg("Minter Liquidation Incentive");
         config.openFee.plg("Minter Open Fee");
@@ -211,14 +203,14 @@ abstract contract Inspector is ArbDeploy {
 
         debt.dlg("SCDP Debt", config.decimals);
         debtVal.dlg("Value", 8);
-        debtVal.pdiv(totalDebt).dlg("% of total debt", 2);
+        debtVal.pdiv(totalDebt).plg("% of total debt");
 
         uint256 deposits = kresko.getDepositsSCDP(asset);
         uint256 depositVal = kresko.getValue(asset, deposits);
 
         deposits.dlg("SCDP Deposits", config.decimals);
         depositVal.dlg("Value", 8);
-        depositVal.pdiv(totalColl).dlg("% of total collateral", 2);
+        depositVal.pdiv(totalColl).plg("% of total collateral");
         Log.hr();
     }
 }

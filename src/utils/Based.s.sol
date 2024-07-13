@@ -9,8 +9,12 @@ abstract contract Based is PythScript, Scripted {
     string internal _defaultRPC = "RPC_ARBITRUM_ALCHEMY";
     address internal sender;
 
-    modifier based(string memory _mnemonic, string memory _uoa) {
-        base(_mnemonic, _uoa);
+    modifier based(string memory _mnemonic, string memory _network) {
+        base(_mnemonic, _network);
+        _;
+    }
+    modifier forked(string memory _network, uint256 _blockNr) {
+        base(_network, _blockNr);
         _;
     }
 
@@ -20,12 +24,12 @@ abstract contract Based is PythScript, Scripted {
         uint256 _blockNr
     ) internal returns (uint256 forkId) {
         PLog.clg(
-            "***********************************************************************************"
+            "***************************************************************"
         );
         base(_mnemonic);
         forkId = createSelectFork(_network, _blockNr);
         PLog.clg(
-            "***********************************************************************************\n"
+            "***************************************************************\n"
         );
     }
 
@@ -33,7 +37,7 @@ abstract contract Based is PythScript, Scripted {
         string memory _mnemonic,
         string memory _network
     ) internal returns (uint256 forkId) {
-        return base(_mnemonic, _network, 0);
+        forkId = base(_mnemonic, _network, 0);
     }
 
     function base(string memory _mnemonic) internal {
@@ -42,18 +46,31 @@ abstract contract Based is PythScript, Scripted {
         PLog.clg(sender, "sender:");
     }
 
+    function base(
+        string memory _network,
+        uint256 _blockNr
+    ) internal returns (uint256 forkId) {
+        forkId = createSelectFork(_network, _blockNr);
+    }
+
     function createSelectFork(string memory _env) internal returns (uint256) {
         return createSelectFork(_env, 0);
     }
 
     function createSelectFork(
-        string memory _env,
+        string memory _network,
         uint256 _blockNr
     ) internal returns (uint256 forkId_) {
-        string memory rpc = getEnv(_env, _defaultRPC);
+        string memory rpc;
+        try vm.rpcUrl(_network) returns (string memory url) {
+            rpc = url;
+        } catch {
+            rpc = getEnv(_network, _defaultRPC);
+        }
         forkId_ = _blockNr != 0
             ? vm.createSelectFork(rpc, _blockNr)
             : vm.createSelectFork(rpc);
+
         PLog.clg(
             "rpc:",
             string.concat(
@@ -61,7 +78,7 @@ abstract contract Based is PythScript, Scripted {
                 " (",
                 vm.toString(block.chainid),
                 "@",
-                vm.toString(block.number),
+                vm.toString(_blockNr),
                 ", ",
                 vm.toString(((getTime() - block.timestamp) / 60)),
                 "m ago)"
