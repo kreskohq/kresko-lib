@@ -7,7 +7,6 @@ import {IERC20} from "../token/IERC20.sol";
 import {PythView} from "../vendor/Pyth.sol";
 import {ArbDeploy} from "../info/ArbDeploy.sol";
 import {IKresko} from "../core/IKresko.sol";
-import {PercentageMath} from "../core/Math.sol";
 import {Utils} from "./Libs.sol";
 
 // solhint-disable
@@ -15,7 +14,6 @@ import {Utils} from "./Libs.sol";
 abstract contract Inspector is ArbDeploy {
     using Log for *;
     using Utils for *;
-    using PercentageMath for *;
 
     IData internal constant data = IData(dataAddr);
     IKresko internal constant kresko = IKresko(kreskoAddr);
@@ -172,8 +170,8 @@ abstract contract Inspector is ArbDeploy {
             );
             Log.hr();
             uint256 deviation = kresko.getOracleDeviationPct();
-            (price2.percentMul(1e4 - deviation)).dlg("Min Dev", 8);
-            (price2.percentMul(1e4 + deviation)).dlg("Max Dev", 8);
+            (price2.pmul(1e4 - deviation)).dlg("Min Dev", 8);
+            (price2.pmul(1e4 + deviation)).dlg("Max Dev", 8);
             ((price1 * 1e8) / price2).dlg("Ratio", 8);
         }
         ("-------  Types --------").clg();
@@ -213,14 +211,14 @@ abstract contract Inspector is ArbDeploy {
 
         debt.dlg("SCDP Debt", config.decimals);
         debtVal.dlg("Value", 8);
-        debtVal.percentDiv(totalDebt).dlg("% of total debt", 2);
+        debtVal.pdiv(totalDebt).dlg("% of total debt", 2);
 
         uint256 deposits = kresko.getDepositsSCDP(asset);
         uint256 depositVal = kresko.getValue(asset, deposits);
 
         deposits.dlg("SCDP Deposits", config.decimals);
         depositVal.dlg("Value", 8);
-        depositVal.percentDiv(totalColl).dlg("% of total collateral", 2);
+        depositVal.pdiv(totalColl).dlg("% of total collateral", 2);
         Log.hr();
     }
 }

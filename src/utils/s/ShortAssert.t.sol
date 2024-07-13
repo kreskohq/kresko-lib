@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import {stdMath} from "forge-std/StdMath.sol";
 import {hasVM, vmAddr, store} from "./MinVm.s.sol";
+import {PLog} from "./PLog.s.sol";
 
 library ShortAssert {
     bool constant IS_TEST = true;
@@ -19,8 +20,6 @@ library ShortAssert {
 
     event log_named_address(string key, address val);
     event log_named_bytes32(string key, bytes32 val);
-    event log_named_decimal_int(string key, int256 val, uint256 d);
-    event log_named_decimal_uint(string key, uint256 val, uint256 d);
     event log_named_int(string key, int256 val);
     event log_named_uint(string key, uint256 val);
     event log_named_bytes(string key, bytes val);
@@ -971,20 +970,20 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function _log(string memory key, uint256 val, uint256 d) internal {
-        emit log_named_decimal_uint(key, val, d);
+    function _log(string memory key, uint256 val, uint256 d) internal pure {
+        PLog.dlg(val, key, d);
     }
 
-    function _log(string memory key, int256 val, uint256 d) internal {
-        emit log_named_decimal_int(key, val, d);
+    function _log(string memory key, int256 val, uint256 d) internal pure {
+        PLog.dlg(val, key, d);
     }
 
-    function _log(string memory key, uint256 val) internal {
-        emit log_named_uint(key, val);
+    function _log(string memory key, uint256 val) internal pure {
+        PLog.clg(val, key);
     }
 
-    function _log(string memory key, string memory val) internal {
-        emit log_named_string(key, val);
+    function _log(string memory key, string memory val) internal pure {
+        PLog.clg(val, key);
     }
 
     function eq(

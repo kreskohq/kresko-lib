@@ -5,12 +5,10 @@ pragma solidity ^0.8.0;
 import {IAggregatorV3} from "../vendor/IAggregatorV3.sol";
 import {IAPI3} from "../vendor/IAPI3.sol";
 import {Utils} from "./Libs.sol";
-import {PythView, PriceFeed, PythEPs, IPyth, Price} from "../vendor/Pyth.sol";
-import {WadRay} from "../core/Math.sol";
+import {PythView, PriceFeed, IPyth, Price} from "../vendor/Pyth.sol";
 
 using Utils for uint256;
 using Utils for int256;
-using WadRay for uint256;
 
 library CL {
     function price(address _feed) internal view returns (uint256) {
@@ -88,9 +86,7 @@ library Pyth {
         uint8 toDec
     ) internal pure returns (uint256 price, uint8 expo) {
         _price.price = int64(
-            uint64(
-                1 * (10 ** uint32(-_price.expo)).wadDiv(uint64(_price.price))
-            )
+            uint64(1 * (10 ** uint32(-_price.expo)).wdiv(uint64(_price.price)))
         );
         _price.expo = -18;
         return normalizePythPrice(_price, toDec);

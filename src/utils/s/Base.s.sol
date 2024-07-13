@@ -10,7 +10,7 @@ address constant vmAddr = 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D;
 string constant BASE_FFI_DIR = "./lib/kresko-lib/utils/";
 
 function getFFIPath(string memory _path) pure returns (string memory) {
-    return string(abi.encodePacked(BASE_FFI_DIR, _path));
+    return string.concat(BASE_FFI_DIR, _path);
 }
 
 function logp(bytes memory _p) pure {
@@ -43,6 +43,9 @@ interface FFIVm {
     function toString(address) external view returns (string memory);
 
     function toString(uint256) external view returns (string memory);
+    function toString(
+        bytes calldata value
+    ) external pure returns (string memory r);
 }
 
 FFIVm constant vmFFI = FFIVm(vmAddr);

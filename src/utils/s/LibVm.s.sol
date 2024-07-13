@@ -42,21 +42,6 @@ library Help {
 
 library Log {
     event log(string);
-    event logs(bytes);
-
-    event log_address(address);
-    event log_bytes32(bytes32);
-    event log_int(int256);
-    event log_uint(uint256);
-    event log_bytes(bytes);
-    event log_string(string);
-
-    event log_named_address(string key, address val);
-    event log_named_bytes32(string key, bytes32 val);
-    event log_named_int(string key, int256 val);
-    event log_named_uint(string key, uint256 val);
-    event log_named_bytes(string key, bytes val);
-    event log_named_string(string key, string val);
 
     event log_array(uint256[] val);
     event log_array(int256[] val);
@@ -73,7 +58,7 @@ library Log {
 
     function __pre(string memory _str) private view returns (string memory) {
         if (_hasPrefix()) {
-            return store().logPrefix.cc(_str);
+            return ("[").cc(store().logPrefix, "] ", _str);
         } else {
             return _str;
         }
@@ -92,7 +77,7 @@ library Log {
     }
 
     function br() internal pure {
-        PLog.clg("\n");
+        n();
     }
 
     function n() internal pure {
@@ -101,6 +86,12 @@ library Log {
 
     function sr() internal pure {
         PLog.clg("**************************************************");
+    }
+
+    function h1(string memory _h1) internal pure {
+        sr();
+        PLog.clg(_h1);
+        hr();
     }
 
     function clg(bool _val) internal pure {
@@ -152,15 +143,15 @@ library Log {
     }
 
     function plg(uint256 _val, string memory _str) internal pure {
-        PLog.dlg(_val, _str, 2);
+        PLog.plg(_val, _pre(_str));
     }
 
     function plg(string memory _str, uint256 _val) internal pure {
-        PLog.dlg(_val, _str, 2);
+        PLog.plg(_val, _pre(_str));
     }
 
     function dlg(int256 _val, string memory _str) internal pure {
-        dlg(_val, _pre(_str), 18);
+        dlg(_val, _str, 18);
     }
 
     function dlg(int256 _val, string memory _str, uint256 dec) internal pure {
@@ -176,19 +167,19 @@ library Log {
     }
 
     function dlg(string memory _str, int256 _val, uint256 dec) internal pure {
-        PLog.dlg(_val, _str, dec);
+        PLog.dlg(_val, _pre(_str), dec);
     }
 
     function dlg(string memory _str, uint256 _val, uint256 dec) internal pure {
-        PLog.dlg(_val, _str, dec);
+        PLog.dlg(_val, _pre(_str), dec);
     }
 
     function dlg(uint256 _val, string memory _str) internal pure {
-        PLog.dlg(_val, _str, 18);
+        PLog.dlg(_val, _pre(_str), 18);
     }
 
     function dlg(uint256 _val, string memory _str, uint256 dec) internal pure {
-        PLog.dlg(_val, _str, dec);
+        PLog.dlg(_val, _pre(_str), dec);
     }
 
     function clg(string memory _str, uint256 _val) internal pure {
@@ -242,17 +233,23 @@ library Log {
     function blg(bytes32 _val, string memory _str) internal pure {
         PLog.blg(_val, _pre(_str));
     }
+    function blgstr(bytes32 _val, string memory _str) internal pure {
+        PLog.blgstr(_val, _pre(_str));
+    }
 
     function blg(bytes memory _val, string memory _str) internal pure {
         PLog.blg(_val, _pre(_str));
+    }
+    function blgstr(bytes memory _val, string memory _str) internal pure {
+        PLog.blgstr(_val, _pre(_str));
     }
 
     function logCallers() internal {
         LibVm.Callers memory current = LibVm.callers();
 
-        emit log_named_string("isHEVM", hasVM() ? "true" : "false");
-        emit log_named_address("msg.sender", current.msgSender);
-        emit log_named_address("tx.origin", current.txOrigin);
-        emit log_named_string("mode", current.mode);
+        clg(hasVM() ? "true" : "false", "isHEVM:");
+        clg(current.msgSender, "msg.sender:");
+        clg(current.txOrigin, "tx.origin:");
+        clg(current.mode, "mode:");
     }
 }

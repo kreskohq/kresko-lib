@@ -23,10 +23,25 @@ contract Sandbox is Tested {
         thing = new TestContract();
     }
 
-    function testDlg() public view {
+    function testDlg() public {
         uint256 valA = 12.5e8;
-
+        Log.prefix("ABC");
         valA.dlg("valA", 8);
+
+        bytes memory bts = bytes("hello");
+        bytes32 bts32 = bytes32("val");
+
+        bts.blg("bts");
+        bts32.blg("bts32");
+        bts32.blgstr("bts32str");
+        bts.blgstr("btsstr");
+
+        uint256 pctVal = 105e2;
+
+        pctVal.plg("pct");
+
+        ("asdf").h1();
+        Log.logCallers();
     }
 
     function testStrings() public {

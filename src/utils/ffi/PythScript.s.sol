@@ -4,8 +4,7 @@ pragma solidity ^0.8.0;
 // solhint-disable
 
 import {IPyth, Price, PriceFeed, PythEPs, PythView} from "../../vendor/Pyth.sol";
-import {execFFI, getFFIPath} from "../s/Base.s.sol";
-import {mvm} from "../s/MinVm.s.sol";
+import {execFFI, vmFFI, getFFIPath} from "../s/Base.s.sol";
 
 contract PythScript {
     string private _PYTH_FFI_SCRIPT;
@@ -74,7 +73,11 @@ contract PythScript {
     ) public returns (bytes[] memory payload, PriceFeed[] memory priceData) {
         string memory arg;
         for (uint256 i; i < _ids.length; i++) {
-            arg = string.concat(arg, i == 0 ? "" : ",", mvm.toString(_ids[i]));
+            arg = string.concat(
+                arg,
+                i == 0 ? "" : ",",
+                vmFFI.toString(_ids[i])
+            );
         }
         ffiArgs.push(arg);
         return _exec();
