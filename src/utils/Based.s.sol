@@ -68,4 +68,8 @@ abstract contract Based is PythScript, Scripted {
             )
         );
     }
+
+    function syncTime() internal {
+        vm.warp(getTime());
+    }
 }
