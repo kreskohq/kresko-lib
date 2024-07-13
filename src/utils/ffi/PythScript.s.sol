@@ -111,4 +111,32 @@ contract PythScript {
 
         return abi.decode(res, (bytes[], PriceFeed[]));
     }
+
+    function getMockPayload(
+        bytes32[] memory _ids,
+        int64[] memory _prices
+    ) internal view returns (bytes[] memory) {
+        bytes[] memory _updateData = new bytes[](_ids.length);
+        for (uint256 i; i < _ids.length; i++) {
+            _updateData[i] = abi.encode(
+                _ids[i],
+                Price(
+                    _prices[i],
+                    uint64(_prices[i]) / 1000,
+                    -8,
+                    block.timestamp
+                )
+            );
+        }
+        return _updateData;
+    }
+    function getMockPayload(
+        PythView memory _viewData
+    ) internal pure returns (bytes[] memory) {
+        bytes[] memory _updateData = new bytes[](_viewData.ids.length);
+        for (uint256 i = 0; i < _viewData.ids.length; i++) {
+            _updateData[i] = abi.encode(_viewData.ids[i], _viewData.prices[i]);
+        }
+        return _updateData;
+    }
 }
