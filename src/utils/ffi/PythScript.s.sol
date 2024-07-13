@@ -114,8 +114,10 @@ contract PythScript {
 
     function getMockPayload(
         PythView memory _viewData
-    ) internal pure returns (bytes[] memory _updateData) {
+    ) internal returns (bytes[] memory _updateData) {
         _updateData = new bytes[](1);
         _updateData[0] = abi.encode(_viewData);
+        pyth.update = _updateData;
+        pyth.cost = _viewData.ids.length;
     }
 }
