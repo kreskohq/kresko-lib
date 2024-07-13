@@ -36,7 +36,7 @@ contract PythScript {
     }
 
     function updatePyth() internal {
-        fetchPyth(pyth.tickers);
+        fetchPyth(pyth.tickers, true);
         pyth.get[block.chainid].updatePriceFeeds{value: pyth.cost}(pyth.update);
     }
     function updatePyth(bytes[] memory _payload, uint256 _cost) internal {
@@ -44,16 +44,18 @@ contract PythScript {
     }
 
     function fetchPyth() internal {
-        fetchPyth(pyth.tickers);
+        fetchPyth(pyth.tickers, true);
     }
 
-    function fetchPyth(string memory _tickerOrIds) internal {
+    function fetchPyth(string memory _tickerOrIds, bool _getCost) internal {
         delete pyth.viewData;
         (bytes[] memory update, PriceFeed[] memory values) = getPythData(
             _tickerOrIds
         );
         pyth.update = update;
-        pyth.cost = pyth.get[block.chainid].getUpdateFee(pyth.update);
+        pyth.cost = _getCost
+            ? pyth.get[block.chainid].getUpdateFee(pyth.update)
+            : values.length;
         for (uint256 i; i < values.length; i++) {
             pyth.viewData.ids.push(values[i].id);
             pyth.viewData.prices.push(values[i].price);
@@ -112,6 +114,13 @@ contract PythScript {
         return abi.decode(res, (bytes[], PriceFeed[]));
     }
 
+    function updatePythMock() internal {
+        fetchPyth(pyth.tickers, false);
+        bytes[] memory _updateData = new bytes[](1);
+        _updateData[0] = abi.encode(pyth.viewData);
+        pyth.update = _updateData;
+        pyth.get[block.chainid].updatePriceFeeds{value: pyth.cost}(pyth.update);
+    }
     function getMockPayload(
         PythView memory _viewData
     ) internal returns (bytes[] memory _updateData) {
