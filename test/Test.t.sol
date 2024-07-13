@@ -6,8 +6,7 @@ import {LibVm, Help, Log} from "../src/utils/s/LibVm.s.sol";
 import {ShortAssert} from "../src/utils/s/ShortAssert.t.sol";
 import {PLog, logp} from "../src/utils/s/PLog.s.sol";
 import {Utils} from "../src/utils/Libs.sol";
-import {split} from "../src/utils/Bytes.s.sol";
-import {__revert} from "../src/utils/s/Base.s.sol";
+import {__revert, split} from "../src/utils/Funcs.sol";
 
 contract Sandbox is Tested {
     TestContract internal thing;

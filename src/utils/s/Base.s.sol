@@ -62,9 +62,3 @@ function execFFI(string[] memory args) returns (bytes memory) {
     }
     return res.stdout;
 }
-
-function __revert(bytes memory _d) pure {
-    assembly {
-        revert(add(32, _d), mload(_d))
-    }
-}

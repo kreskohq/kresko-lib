@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import {Wallet} from "./Wallet.s.sol";
 import {LibVm, IMinVM} from "./MinVm.s.sol";
 import {Script} from "forge-std/Script.sol";
-import {__revert} from "./Base.s.sol";
+import {__revert} from "../Funcs.sol";
 
 abstract contract Scripted is Script, Wallet {
     using LibVm for IMinVM.CallerMode;
