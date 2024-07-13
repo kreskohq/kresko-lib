@@ -2,15 +2,13 @@
 // solhint-disable
 pragma solidity ^0.8.0;
 
-import {IPyth, Price} from "../vendor/Pyth.sol";
+import {IPyth, PythView, Price} from "../vendor/Pyth.sol";
 
 contract MockPyth is IPyth {
     mapping(bytes32 => Price) internal prices;
 
     constructor(bytes[] memory _updateData) {
-        for (uint256 i = 0; i < _updateData.length; i++) {
-            _set(_updateData[i]);
-        }
+        updatePriceFeeds(_updateData);
     }
 
     function getPriceNoOlderThan(
@@ -32,12 +30,13 @@ contract MockPyth is IPyth {
     function getUpdateFee(
         bytes[] memory _updateData
     ) external pure override returns (uint256) {
-        return _updateData.length;
+        return abi.decode(_updateData[0], (PythView)).ids.length;
     }
 
-    function updatePriceFeeds(bytes[] memory _updateData) external payable {
-        for (uint256 i = 0; i < _updateData.length; i++) {
-            _set(_updateData[i]);
+    function updatePriceFeeds(bytes[] memory _updateData) public payable {
+        PythView memory _viewData = abi.decode(_updateData[0], (PythView));
+        for (uint256 i; i < _viewData.ids.length; i++) {
+            _set(_viewData.ids[i], _viewData.prices[i]);
         }
     }
 
@@ -46,51 +45,22 @@ contract MockPyth is IPyth {
         bytes32[] memory _ids,
         uint64[] memory _publishTimes
     ) external payable override {
-        for (uint256 i = 0; i < _ids.length; i++) {
+        PythView memory _viewData = abi.decode(_updateData[0], (PythView));
+        for (uint256 i; i < _ids.length; i++) {
             if (prices[_ids[i]].publishTime < _publishTimes[i]) {
-                _set(_updateData[i]);
+                _set(_viewData.ids[i], _viewData.prices[i]);
             }
         }
     }
 
-    function getMockPayload(
-        bytes32[] memory _ids,
-        int64[] memory _prices
-    ) external view returns (bytes[] memory) {
-        bytes[] memory _updateData = new bytes[](_ids.length);
-        for (uint256 i = 0; i < _ids.length; i++) {
-            _updateData[i] = abi.encode(
-                _ids[i],
-                Price(
-                    _prices[i],
-                    uint64(_prices[i]) / 1000,
-                    -8,
-                    block.timestamp
-                )
-            );
-        }
-        return _updateData;
-    }
-
-    function _set(
-        bytes memory _update
-    ) internal returns (bytes32 id, Price memory price) {
-        (id, price) = abi.decode(_update, (bytes32, Price));
-        prices[id] = price;
+    function _set(bytes32 _id, Price memory _price) internal {
+        prices[_id] = _price;
     }
 }
 
-function createMockPyth(
-    bytes32[] memory _ids,
-    int64[] memory _prices
-) returns (MockPyth) {
-    bytes[] memory _updateData = new bytes[](_ids.length);
-    for (uint256 i = 0; i < _ids.length; i++) {
-        _updateData[i] = abi.encode(
-            _ids[i],
-            Price(_prices[i], uint64(_prices[i]) / 1000, -8, block.timestamp)
-        );
-    }
+function createMockPyth(PythView memory _viewData) returns (MockPyth) {
+    bytes[] memory _updateData = new bytes[](1);
+    _updateData[0] = abi.encode(_viewData);
 
     return new MockPyth(_updateData);
 }
