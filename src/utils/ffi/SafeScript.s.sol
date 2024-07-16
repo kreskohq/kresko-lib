@@ -144,12 +144,8 @@ contract SafeScript is MultisendAddr {
         Payloads memory payloads
     ) private returns (Batch memory batch) {
         batch = createBatch(payloads);
-        bytes32 fromSafe = getSafeTxHash(batch);
-
-        "Simulating tx: ".cc(NETWORK).clg("(".cc(block.chainid.str(), ")"));
-        "safeTxHash: ".cc(mvm.toString(fromSafe)).clg(
-            "\n batch.txHash: ".cc(mvm.toString(batch.txHash))
-        );
+        "Simulating TX in ".clg(NETWORK.cc(" (", block.chainid.str(), ")"));
+        "Hash: ".clg(mvm.toString(batch.txHash));
         mvm.prank(SAFE_ADDRESS);
         (bool success, bytes memory returnData) = SAFE_ADDRESS.call(
             abi.encodeWithSignature(
@@ -164,13 +160,13 @@ contract SafeScript is MultisendAddr {
                 (bool, bytes)
             );
             if (!successRevert) {
-                ("Simulation fail: ").clg(mvm.toString(successReturnData));
+                "Simulation fail: ".clg(mvm.toString(successReturnData));
                 __revert(successReturnData);
             }
             if (successReturnData.length == 0) {
-                ("Simulation success.").clg();
+                "Simulation success.".clg();
             } else {
-                ("Simulation success:").clg(mvm.toString(successReturnData));
+                "Simulation success:".clg(mvm.toString(successReturnData));
             }
         }
     }
@@ -339,14 +335,13 @@ contract SafeScript is MultisendAddr {
             fileName,
             mvm.serializeBytes(out, "payloads", abi.encode(payloads))
         );
-        "Output File:".clg(fileName);
+        "Output File: ".clg(fileName);
     }
 
     function printPayloads(Payloads memory payloads) public pure {
         for (uint256 i; i < payloads.payloads.length; ++i) {
             Payload memory payload = payloads.payloads[i];
-            // string memory data = string(payload.data);
-            "to:".cc(mvm.toString(payload.to)).clg(
+            "to: ".cc(mvm.toString(payload.to)).clg(
                 " value: ".cc(mvm.toString(payload.value))
             );
             string
