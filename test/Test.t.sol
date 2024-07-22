@@ -53,11 +53,27 @@ contract Sandbox is Tested, Based {
     }
 
     function testStrings() public {
-        bytes32 val = bytes32("foo");
+        bytes32 val = "foo";
         bytes(val.txt()).length.eq(66, "str");
         bytes(val.str()).length.eq(3, "txt");
 
-        12.5e8.strDec(8).eq("12.50000000", "dec");
+        12.5e8.dstr(8).eq("12.50", "dec-1");
+        2524e8.dstr(8).eq("2524.00", "dec-2");
+        5000.01e8.dstr(8).eq("5000.01", "dec-3");
+
+        0.0005e8.dstr(8).eq("0.0005", "dec-4");
+        0.1e2.dstr(2).eq("0.10", "dec-5");
+        1 ether.dstr(18).eq("1.00", "dec-6");
+        PLog.clg("s1", address(0x64), 100 ether);
+        PLog.clg("s2", "s3");
+
+        this.testStrings.selector.blg(4);
+        this.testStrings.selector.txt(4).eq(
+            bytes4(keccak256("testStrings()")).txt(
+                this.testStrings.selector.length
+            ),
+            "sel"
+        );
     }
 
     function testDecimals() public {

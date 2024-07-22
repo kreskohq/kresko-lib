@@ -1,6 +1,7 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import {PLog} from "./s/PLog.s.sol";
 
 library Utils {
     using Utils for *;
@@ -18,17 +19,17 @@ library Utils {
         return _val / (10 ** (_from - _to));
     }
 
-    function toWad(int256 _a, uint8 _dec) internal pure returns (uint256) {
-        if (_a < 0) revert("-");
-        return toWad(uint256(_a), _dec);
+    function toWad(int256 _val, uint8 _dec) internal pure returns (uint256) {
+        if (_val < 0) revert("-");
+        return toWad(uint256(_val), _dec);
     }
 
-    function toWad(uint256 _a, uint8 _dec) internal pure returns (uint256) {
-        return toDec(_a, _dec, 18);
+    function toWad(uint256 _val, uint8 _dec) internal pure returns (uint256) {
+        return toDec(_val, _dec, 18);
     }
 
-    function fromWad(uint256 _wad, uint8 _dec) internal pure returns (uint256) {
-        return toDec(_wad, 18, _dec);
+    function fromWad(uint256 _val, uint8 _dec) internal pure returns (uint256) {
+        return toDec(_val, 18, _dec);
     }
 
     struct FindResult {
@@ -42,11 +43,9 @@ library Utils {
         address[] storage _els,
         address _el
     ) internal pure returns (FindResult memory result) {
-        address[] memory elements = _els;
-        for (uint256 i; i < elements.length; ) {
-            if (elements[i] == _el) {
-                return FindResult(i, true);
-            }
+        address[] memory els = _els;
+        for (uint256 i; i < els.length; ) {
+            if (els[i] == _el) return FindResult(i, true);
             unchecked {
                 ++i;
             }
@@ -57,11 +56,9 @@ library Utils {
         bytes32[] storage _els,
         bytes32 _el
     ) internal pure returns (FindResult memory result) {
-        bytes32[] memory elements = _els;
-        for (uint256 i; i < elements.length; ) {
-            if (elements[i] == _el) {
-                return FindResult(i, true);
-            }
+        bytes32[] memory els = _els;
+        for (uint256 i; i < els.length; ) {
+            if (els[i] == _el) return FindResult(i, true);
             unchecked {
                 ++i;
             }
@@ -72,11 +69,9 @@ library Utils {
         string[] storage _els,
         string memory _el
     ) internal pure returns (FindResult memory result) {
-        string[] memory elements = _els;
-        for (uint256 i; i < elements.length; ) {
-            if (elements[i].equals(_el)) {
-                return FindResult(i, true);
-            }
+        string[] memory els = _els;
+        for (uint256 i; i < els.length; ) {
+            if (els[i].equals(_el)) return FindResult(i, true);
             unchecked {
                 ++i;
             }
@@ -84,28 +79,20 @@ library Utils {
     }
 
     function pushUnique(address[] storage _arr, address _val) internal {
-        if (!_arr.find(_val).exists) {
-            _arr.push(_val);
-        }
+        if (!_arr.find(_val).exists) _arr.push(_val);
     }
 
     function pushUnique(bytes32[] storage _arr, bytes32 _val) internal {
-        if (!_arr.find(_val).exists) {
-            _arr.push(_val);
-        }
+        if (!_arr.find(_val).exists) _arr.push(_val);
     }
 
     function pushUnique(string[] storage _arr, string memory _val) internal {
-        if (!_arr.find(_val).exists) {
-            _arr.push(_val);
-        }
+        if (!_arr.find(_val).exists) _arr.push(_val);
     }
 
     function removeExisting(address[] storage _arr, address _val) internal {
-        FindResult memory result = _arr.find(_val);
-        if (result.exists) {
-            _arr.removeAddress(_val, result.index);
-        }
+        FindResult memory r = _arr.find(_val);
+        if (r.exists) _arr.removeAddress(_val, r.index);
     }
 
     function removeAddress(
@@ -115,11 +102,8 @@ library Utils {
     ) internal {
         if (_arr[_idx] != _val) revert ELEMENT_NOT_FOUND(_idx, _arr.length);
 
-        uint256 lastIndex = _arr.length - 1;
-        if (_idx != lastIndex) {
-            _arr[_idx] = _arr[lastIndex];
-        }
-
+        uint256 last = _arr.length - 1;
+        if (_idx != last) _arr[_idx] = _arr[last];
         _arr.pop();
     }
 
@@ -135,8 +119,7 @@ library Utils {
         string memory _a,
         string memory _b
     ) internal pure returns (bool) {
-        return
-            keccak256(abi.encodePacked(_a)) == keccak256(abi.encodePacked(_b));
+        return keccak256(bytes(_a)) == keccak256(bytes(_b));
     }
 
     function str(bytes32 _val) internal pure returns (string memory) {
@@ -145,20 +128,26 @@ library Utils {
 
     function str(bytes memory _val) internal pure returns (string memory res) {
         for (uint256 i; i < _val.length; i++) {
-            if (_val[i] == 0x00) continue;
-            res = res.cc(string(abi.encodePacked(_val[i])));
+            if (_val[i] != 0)
+                res = string.concat(res, string(bytes.concat(_val[i])));
         }
     }
-    function strDec(
+    function dstr(
         uint256 _val,
         uint256 _dec
     ) internal pure returns (string memory) {
-        return
-            string.concat(
-                (_val / (10 ** _dec)).str(),
-                ".",
-                (_val % (10 ** _dec)).str()
-            );
+        string memory num = (_val / (10 ** _dec)).str();
+        bytes memory dec = bytes((_val % (10 ** _dec)).str());
+
+        uint256 len = dec.length;
+        for (uint256 i = len; i > 0; ) if (dec[--i] == "0") dec[i] = 0;
+
+        if ((dec = bytes(dec.str())).length == 0) {
+            return string.concat(num, ".00");
+        }
+
+        (dec = bytes.concat(bytes((10 ** (_dec - len)).str()), dec))[0] = ".";
+        return string.concat(num, string(dec), dec.length == 2 ? "0" : "");
     }
 
     function str(uint256 _val) internal pure returns (string memory s) {
@@ -283,36 +272,36 @@ library Utils {
     uint256 internal constant HALF_PCT_F = 0.5e4;
 
     function pmul(
-        uint256 value,
+        uint256 _val,
         uint256 _pct
     ) internal pure returns (uint256 result) {
         assembly {
             if iszero(
                 or(
                     iszero(_pct),
-                    iszero(gt(value, div(sub(not(0), HALF_PCT_F), _pct)))
+                    iszero(gt(_val, div(sub(not(0), HALF_PCT_F), _pct)))
                 )
             ) {
                 revert(0, 0)
             }
 
-            result := div(add(mul(value, _pct), HALF_PCT_F), PCT_F)
+            result := div(add(mul(_val, _pct), HALF_PCT_F), PCT_F)
         }
     }
 
     function pdiv(
-        uint256 value,
+        uint256 _val,
         uint256 _pct
     ) internal pure returns (uint256 result) {
         assembly {
             if or(
                 iszero(_pct),
-                iszero(iszero(gt(value, div(sub(not(0), div(_pct, 2)), PCT_F))))
+                iszero(iszero(gt(_val, div(sub(not(0), div(_pct, 2)), PCT_F))))
             ) {
                 revert(0, 0)
             }
 
-            result := div(add(mul(value, PCT_F), div(_pct, 2)), _pct)
+            result := div(add(mul(_val, PCT_F), div(_pct, 2)), _pct)
         }
     }
 
@@ -448,16 +437,14 @@ library Meta {
     ) internal view returns (KrAssetAddr memory res_) {
         KrAssetSalts memory _metas = krAssetSalts(_s);
 
-        bytes memory retData;
+        bytes4 sig = 0xc6bdc35b;
 
-        (, retData) = _factory.staticcall(
-            abi.encodeWithSelector(0xc6bdc35b, _metas.krSalt)
-        );
-        (res_.proxy, res_.impl) = abi.decode(retData, (address, address));
-        (, retData) = _factory.staticcall(
-            abi.encodeWithSelector(0xc6bdc35b, _metas.akrSalt)
-        );
-        (res_.aProxy, res_.aImpl) = abi.decode(retData, (address, address));
+        bytes memory _data;
+        (, _data) = _factory.staticcall(bytes.concat(sig, _metas.krSalt));
+        (res_.proxy, res_.impl) = abi.decode(_data, (address, address));
+
+        (, _data) = _factory.staticcall(bytes.concat(sig, _metas.akrSalt));
+        (res_.aProxy, res_.aImpl) = abi.decode(_data, (address, address));
     }
 
     function krAssetSalts(

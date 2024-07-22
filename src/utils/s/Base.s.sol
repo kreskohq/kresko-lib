@@ -38,9 +38,9 @@ interface FFIVm {
 
     function tryFfi(string[] memory) external returns (FFIResult memory);
 
-    function toString(bytes32) external view returns (string memory);
+    function toString(bytes32) external pure returns (string memory);
 
-    function toString(address) external view returns (string memory);
+    function toString(address) external pure returns (string memory);
 
     function toString(uint256) external view returns (string memory);
     function toString(

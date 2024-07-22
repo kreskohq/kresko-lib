@@ -18,9 +18,27 @@ library Help {
     function txt(bytes32 _val) internal pure returns (string memory) {
         return mvm.toString(_val);
     }
+    function txt(
+        bytes32 _val,
+        uint256 _l
+    ) internal pure returns (string memory) {
+        return txt(bytes.concat(_val), _l);
+    }
 
     function txt(bytes memory _val) internal pure returns (string memory) {
         return mvm.toString(_val);
+    }
+
+    function txt(
+        bytes memory _p0,
+        uint256 _l
+    ) internal pure returns (string memory) {
+        bytes memory p0;
+        assembly {
+            p0 := _p0
+            mstore(p0, _l)
+        }
+        return mvm.toString(p0);
     }
 
     function toAddr(string memory _val) internal pure returns (address) {
@@ -93,12 +111,13 @@ library Log {
         PLog.clg(_h1);
         hr();
     }
+
     function h2(string memory _h2) internal pure {
         PLog.clg(("------ ").cc(_h2, " ------"));
     }
 
     function clg(bool _val) internal pure {
-        PLog.clg(_pre(_val ? "true" : "false"));
+        clg("", _val);
     }
 
     function clg(string memory _str, bool _val) internal pure {
@@ -138,11 +157,7 @@ library Log {
     }
 
     function blg(bytes memory _val) internal pure {
-        if (!_hasPrefix()) {
-            PLog.blg(_val);
-        } else {
-            PLog.blg(_val, _pre(""));
-        }
+        _hasPrefix() ? PLog.blg(_val, _pre("")) : PLog.blg(_val);
     }
 
     function plg(uint256 _val, string memory _str) internal pure {
@@ -150,7 +165,7 @@ library Log {
     }
 
     function plg(string memory _str, uint256 _val) internal pure {
-        PLog.plg(_val, _pre(_str));
+        plg(_val, _str);
     }
 
     function dlg(int256 _val, string memory _str) internal pure {
@@ -161,16 +176,12 @@ library Log {
         PLog.dlg(_val, _pre(_str), dec);
     }
 
-    function dlg(string memory _str, int256 _val) internal pure {
-        dlg(_val, _str);
-    }
-
     function dlg(string memory _str, uint256 _val) internal pure {
         dlg(_val, _str, 18);
     }
 
     function dlg(string memory _str, int256 _val, uint256 dec) internal pure {
-        PLog.dlg(_val, _pre(_str), dec);
+        dlg(_val, _str, dec);
     }
 
     function dlg(string memory _str, uint256 _val, uint256 dec) internal pure {
@@ -178,7 +189,7 @@ library Log {
     }
 
     function dlg(uint256 _val, string memory _str) internal pure {
-        PLog.dlg(_val, _pre(_str), 18);
+        dlg(_val, _str, 18);
     }
 
     function dlg(uint256 _val, string memory _str, uint256 dec) internal pure {
@@ -226,16 +237,29 @@ library Log {
     }
 
     function clg(bool _val, string memory _str) internal pure {
-        clg(_pre(_str), _val);
+        clg(_str, _val);
     }
 
-    function clg(address[] memory _val) internal {
-        emit log_array(_val);
+    function clg(address[] memory _val) internal pure {
+        string memory _str = "[";
+        for (uint256 i = 0; i < _val.length; i++) {
+            _str = string.concat(_str, " ", mvm.toString(_val[i]));
+        }
+        clg(string.concat(_str, "] (", _val.length.str(), ")"));
+    }
+
+    function blg(bytes32 _val, uint256 len) internal pure {
+        blg(bytes.concat(_val), len);
+    }
+
+    function blg(bytes memory _val, uint256 len) internal pure {
+        PLog.blg(_val, len);
     }
 
     function blg(bytes32 _val, string memory _str) internal pure {
         PLog.blg(_val, _pre(_str));
     }
+
     function blgstr(bytes32 _val, string memory _str) internal pure {
         PLog.blgstr(_val, _pre(_str));
     }
@@ -243,6 +267,7 @@ library Log {
     function blg(bytes memory _val, string memory _str) internal pure {
         PLog.blg(_val, _pre(_str));
     }
+
     function blgstr(bytes memory _val, string memory _str) internal pure {
         PLog.blgstr(_val, _pre(_str));
     }
