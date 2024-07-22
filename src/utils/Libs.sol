@@ -107,11 +107,11 @@ library Utils {
         _arr.pop();
     }
 
-    function isEmpty(address[2] memory _arr) internal pure returns (bool) {
+    function zero(address[2] memory _arr) internal pure returns (bool) {
         return _arr[0] == address(0) && _arr[1] == address(0);
     }
 
-    function isEmpty(string memory _val) internal pure returns (bool) {
+    function zero(string memory _val) internal pure returns (bool) {
         return bytes(_val).length == 0;
     }
 
@@ -136,18 +136,14 @@ library Utils {
         uint256 _val,
         uint256 _dec
     ) internal pure returns (string memory) {
-        string memory num = (_val / (10 ** _dec)).str();
-        bytes memory dec = bytes((_val % (10 ** _dec)).str());
+        uint256 ds = 10 ** _dec;
 
-        uint256 len = dec.length;
-        for (uint256 i = len; i > 0; ) if (dec[--i] == "0") dec[i] = 0;
+        bytes memory d = bytes(str(_val % ds));
+        (d = bytes.concat(bytes(str(10 ** (_dec - d.length))), d))[0] = 0;
 
-        if ((dec = bytes(dec.str())).length == 0) {
-            return string.concat(num, ".00");
-        }
+        for (uint256 i = d.length; --i > 2; d[i] = 0) if (d[i] != "0") break;
 
-        (dec = bytes.concat(bytes((10 ** (_dec - len)).str()), dec))[0] = ".";
-        return string.concat(num, string(dec), dec.length == 2 ? "0" : "");
+        return string.concat(str(_val / ds), ".", str(d));
     }
 
     function str(uint256 _val) internal pure returns (string memory s) {

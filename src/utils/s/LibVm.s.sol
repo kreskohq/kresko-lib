@@ -59,35 +59,29 @@ library Help {
 }
 
 library Log {
-    event log(string);
-
-    event log_array(uint256[] val);
-    event log_array(int256[] val);
-    event log_array(address[] val);
     using Utils for *;
 
-    function prefix(string memory _prefix) internal {
-        store().logPrefix = _prefix;
+    function id(string memory _pfix) internal {
+        store().logPrefix = _pfix;
     }
 
-    function _hp() private view returns (bool) {
-        return !store().logPrefix.isEmpty();
+    function __ispre() private view returns (bool) {
+        return !store().logPrefix.zero();
+    }
+    function ispre() private pure returns (bool) {
+        return Purify.BoolOut(__ispre)();
     }
 
-    function __pre(string memory _str) private view returns (string memory) {
-        if (_hasPrefix()) {
-            return ("[").cc(store().logPrefix, "] ", _str);
+    function __p(string memory _str) private view returns (string memory) {
+        if (ispre()) {
+            return string.concat("[", store().logPrefix, "] ", _str);
         } else {
             return _str;
         }
     }
 
-    function _pre(string memory _str) internal pure returns (string memory) {
-        return Purify.StrInStrOut(__pre)(_str);
-    }
-
-    function _hasPrefix() private pure returns (bool) {
-        return Purify.BoolOut(_hp)();
+    function _p(string memory _str) internal pure returns (string memory) {
+        return Purify.StrInStrOut(__p)(_str);
     }
 
     function hr() internal pure {
@@ -113,7 +107,7 @@ library Log {
     }
 
     function h2(string memory _h2) internal pure {
-        PLog.clg(("------ ").cc(_h2, " ------"));
+        PLog.clg("------", _h2.cc(" ------"));
     }
 
     function clg(bool _val) internal pure {
@@ -121,47 +115,31 @@ library Log {
     }
 
     function clg(string memory _str, bool _val) internal pure {
-        PLog.clg(_pre(_str), _val ? "true" : "false");
+        PLog.clg(_p(_str), _val ? "true" : "false");
     }
 
     function clg(address _val) internal pure {
-        if (!_hasPrefix()) {
-            PLog.clg(_val);
-        } else {
-            PLog.clg(_val, _pre(""));
-        }
+        !ispre() ? PLog.clg(_val) : PLog.clg(_val, _p(""));
     }
 
     function blg(bytes32 _val) internal pure {
-        if (!_hasPrefix()) {
-            PLog.blg(_val);
-        } else {
-            PLog.blg(_val, _pre(""));
-        }
+        !ispre() ? PLog.blg(_val) : PLog.blg(_val, _p(""));
     }
 
     function clg(int256 _val) internal pure {
-        if (!_hasPrefix()) {
-            PLog.clg(_val);
-        } else {
-            PLog.clg(_val, _pre(""));
-        }
+        !ispre() ? PLog.clg(_val) : PLog.clg(_val, _p(""));
     }
 
     function clg(uint256 _val) internal pure {
-        if (!_hasPrefix()) {
-            PLog.clg(_val);
-        } else {
-            PLog.clg(_val, _pre(""));
-        }
+        !ispre() ? PLog.clg(_val) : PLog.clg(_val, _p(""));
     }
 
     function blg(bytes memory _val) internal pure {
-        _hasPrefix() ? PLog.blg(_val, _pre("")) : PLog.blg(_val);
+        !ispre() ? PLog.blg(_val) : PLog.blg(_val, _p(""));
     }
 
     function plg(uint256 _val, string memory _str) internal pure {
-        PLog.plg(_val, _pre(_str));
+        PLog.plg(_val, _p(_str));
     }
 
     function plg(string memory _str, uint256 _val) internal pure {
@@ -173,7 +151,7 @@ library Log {
     }
 
     function dlg(int256 _val, string memory _str, uint256 dec) internal pure {
-        PLog.dlg(_val, _pre(_str), dec);
+        PLog.dlg(_val, _p(_str), dec);
     }
 
     function dlg(string memory _str, uint256 _val) internal pure {
@@ -185,7 +163,7 @@ library Log {
     }
 
     function dlg(string memory _str, uint256 _val, uint256 dec) internal pure {
-        PLog.dlg(_val, _pre(_str), dec);
+        PLog.dlg(_val, _p(_str), dec);
     }
 
     function dlg(uint256 _val, string memory _str) internal pure {
@@ -193,47 +171,47 @@ library Log {
     }
 
     function dlg(uint256 _val, string memory _str, uint256 dec) internal pure {
-        PLog.dlg(_val, _pre(_str), dec);
+        PLog.dlg(_val, _p(_str), dec);
     }
 
     function clg(string memory _str, uint256 _val) internal pure {
-        PLog.clg(_val, _pre(_str));
+        PLog.clg(_val, _p(_str));
     }
 
     function clg(uint256 _val, string memory _str) internal pure {
-        PLog.clg(_val, _pre(_str));
+        PLog.clg(_val, _p(_str));
     }
 
     function clg(string memory _str, int256 _val) internal pure {
-        PLog.clg(_val, _pre(_str));
+        PLog.clg(_val, _p(_str));
     }
 
     function clg(int256 _val, string memory _str) internal pure {
-        PLog.clg(_val, _pre(_str));
+        PLog.clg(_val, _p(_str));
     }
 
     function clg(string memory _val) internal pure {
-        PLog.clg(_pre(_val));
+        PLog.clg(_p(_val));
     }
 
-    function clg(string memory _val, string memory _lbl) internal pure {
-        PLog.clg(_pre(_lbl), _val);
+    function clg(string memory _s0, string memory _s1) internal pure {
+        PLog.clg(_p(_s0), _s1);
     }
 
     function clg(string memory _lbl, address _val) internal pure {
-        PLog.clg(_val, _pre(_lbl));
+        PLog.clg(_val, _p(_lbl));
     }
 
     function blg(string memory _lbl, bytes memory _val) internal pure {
-        PLog.blg(_val, _pre(_lbl));
+        PLog.blg(_val, _p(_lbl));
     }
 
     function blg(string memory _lbl, bytes32 _val) internal pure {
-        PLog.blg(_val, _pre(_lbl));
+        PLog.blg(_val, _p(_lbl));
     }
 
     function clg(address _val, string memory _str) internal pure {
-        PLog.clg(_val, _pre(_str));
+        PLog.clg(_val, _p(_str));
     }
 
     function clg(bool _val, string memory _str) internal pure {
@@ -257,27 +235,54 @@ library Log {
     }
 
     function blg(bytes32 _val, string memory _str) internal pure {
-        PLog.blg(_val, _pre(_str));
+        PLog.blg(_val, _p(_str));
     }
 
     function blgstr(bytes32 _val, string memory _str) internal pure {
-        PLog.blgstr(_val, _pre(_str));
+        PLog.blgstr(_val, _p(_str));
     }
 
     function blg(bytes memory _val, string memory _str) internal pure {
-        PLog.blg(_val, _pre(_str));
+        PLog.blg(_val, _p(_str));
     }
 
     function blgstr(bytes memory _val, string memory _str) internal pure {
-        PLog.blgstr(_val, _pre(_str));
+        PLog.blgstr(_val, _p(_str));
     }
 
-    function logCallers() internal {
-        LibVm.Callers memory current = LibVm.callers();
+    function ctx(string memory _id) internal {
+        LibVm.Callers memory _c = LibVm.callers();
+        string memory _t = store().logPrefix;
+        id(_id);
+        hr();
+        clg(
+            "chain/blocknr/blocktime ->",
+            block.chainid.str().cc("/", block.number.str(), "/").cc(
+                block.timestamp.str()
+            )
+        );
+        clg("address(this) ->", Help.txt(address(this)));
+        dlg(address(this).balance, "eth ->");
+        clg(
+            "msg.sender/tx.sender ->",
+            Help.txt(msg.sender).cc("/", Help.txt(tx.origin))
+        );
+        clg(
+            "eth ->",
+            msg.sender.balance.dstr(18).cc("/", tx.origin.balance.dstr(18))
+        );
+        hr();
+        clg(hasVM(), "HEVM ->");
+        clg("tx-mode ->", _c.mode);
+        clg(
+            "msg.sender/tx.origin ->",
+            Help.txt(_c.msgSender).cc("/", Help.txt(_c.txOrigin))
+        );
+        clg(
+            "eth ->",
+            _c.msgSender.balance.dstr(18).cc("/", _c.txOrigin.balance.dstr(18))
+        );
 
-        clg(hasVM() ? "true" : "false", "isHEVM:");
-        clg(current.msgSender, "msg.sender:");
-        clg(current.txOrigin, "tx.origin:");
-        clg(current.mode, "mode:");
+        id(_t);
     }
 }

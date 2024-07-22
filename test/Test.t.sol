@@ -31,7 +31,7 @@ contract Sandbox is Tested, Based {
 
     function testDlg() public {
         uint256 valA = 12.5e8;
-        Log.prefix("ABC");
+        Log.id("ABC");
         valA.dlg("valA", 8);
 
         bytes memory bts = bytes("hello");
@@ -46,8 +46,8 @@ contract Sandbox is Tested, Based {
 
         pctVal.plg("pct");
 
-        ("asdf").h1();
-        Log.logCallers();
+        ("h1").h1();
+        Log.ctx("testDlg");
 
         "Hash: ".cc("kek").clg();
     }
@@ -64,9 +64,17 @@ contract Sandbox is Tested, Based {
         0.0005e8.dstr(8).eq("0.0005", "dec-4");
         0.1e2.dstr(2).eq("0.10", "dec-5");
         1 ether.dstr(18).eq("1.00", "dec-6");
-        PLog.clg("s1", address(0x64), 100 ether);
-        PLog.clg("s2", "s3");
+        100.10101 ether.dstr(18).eq("100.10101", "dec-7");
+        10101010.10101010 ether.dstr(18).eq("10101010.1010101", "dec-7");
+        10101010.1 ether.dstr(18).eq("10101010.10", "dec-7");
+        10101010.01 ether.dstr(18).eq("10101010.01", "dec-8");
+        10101010.000 ether.dstr(18).eq("10101010.00", "dec-9");
+        10101010.0001 ether.dstr(18).eq("10101010.0001", "dec-9");
 
+        PLog.clg("s1", address(0x64), 100e4);
+        PLog.clg("s2", "s3");
+        string memory r;
+        PLog.clg(bytes(r).length, "empty-len");
         this.testStrings.selector.blg(4);
         this.testStrings.selector.txt(4).eq(
             bytes4(keccak256("testStrings()")).txt(
@@ -109,16 +117,16 @@ contract Sandbox is Tested, Based {
         vm.startBroadcast(address(5));
         broadcastWith(address(2));
         prank(address(5));
-        Log.logCallers();
+        Log.ctx("testLogs");
         thing.func();
         uint16 a = 150e2;
-        a.plg("pct");
+        a.plg("pct1");
 
-        uint32 b = 150e2;
-        b.plg("pct");
+        uint32 b = 152e2;
+        b.plg("pct2");
 
-        uint256 c = 150e2;
-        c.plg("pct");
+        uint256 c = 153.33e2;
+        c.plg("pct3");
 
         string memory s = "hello";
         bytes memory bts = bytes(s);
@@ -229,7 +237,7 @@ contract TestContract {
         nums[1] = 100 ether;
         nums[2] = 0 ether;
 
-        Log.logCallers();
+        Log.ctx("func()");
     }
 
     function nope() public view {
