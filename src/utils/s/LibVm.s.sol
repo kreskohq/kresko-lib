@@ -250,6 +250,21 @@ library Log {
         PLog.blgstr(_val, _p(_str));
     }
 
+    function link(address p0, string memory _str) internal pure {
+        PLog.link(p0, _p(_str));
+    }
+
+    function link20(address _tkn, string memory _str) internal pure {
+        PLog.link20(_tkn, _p(_str));
+    }
+
+    function link(bytes32 _tx, string memory _str) internal pure {
+        PLog.link(_tx, _p(_str));
+    }
+    function link(uint256 _bnr, string memory _str) internal pure {
+        PLog.link(_bnr, _p(_str));
+    }
+
     function ctx(string memory _id) internal {
         LibVm.Callers memory _c = LibVm.callers();
         string memory _t = store().logPrefix;

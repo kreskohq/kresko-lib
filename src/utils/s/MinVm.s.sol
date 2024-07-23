@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {FFIVm, hasVM, vmAddr} from "./Base.s.sol";
+import {Purify} from "../Purify.sol";
 
 interface IMinVM is FFIVm {
     enum CallerMode {
@@ -336,13 +337,9 @@ library LibVm {
         internal
         returns (IMinVM.CallerMode m_, address s_, address o_)
     {
-        (m_, s_, o_) = mvm.readCallers();
+        (m_, s_, o_) = unbroadcast();
+
         if (
-            m_ == IMinVM.CallerMode.Broadcast ||
-            m_ == IMinVM.CallerMode.RecurrentBroadcast
-        ) {
-            mvm.stopBroadcast();
-        } else if (
             m_ == IMinVM.CallerMode.Prank ||
             m_ == IMinVM.CallerMode.RecurrentPrank
         ) {
@@ -355,13 +352,12 @@ library LibVm {
     }
 
     function restore(IMinVM.CallerMode _m, address _ss, address _so) internal {
-        if (_m == IMinVM.CallerMode.Broadcast) {
-            mvm.broadcast(_ss);
-        } else if (_m == IMinVM.CallerMode.RecurrentBroadcast) {
-            mvm.startBroadcast(_ss);
-        } else if (_m == IMinVM.CallerMode.Prank) {
+        if (_m == IMinVM.CallerMode.Broadcast) mvm.broadcast(_ss);
+        if (_m == IMinVM.CallerMode.RecurrentBroadcast) mvm.startBroadcast(_ss);
+        if (_m == IMinVM.CallerMode.Prank) {
             _ss == _so ? mvm.prank(_ss, _so) : mvm.prank(_ss);
-        } else if (_m == IMinVM.CallerMode.RecurrentPrank) {
+        }
+        if (_m == IMinVM.CallerMode.RecurrentPrank) {
             _ss == _so ? mvm.startPrank(_ss, _so) : mvm.startPrank(_ss);
         }
     }
@@ -404,19 +400,14 @@ library LibVm {
     function callModeStr(
         IMinVM.CallerMode _mode
     ) internal pure returns (string memory) {
-        if (_mode == IMinVM.CallerMode.Broadcast) {
-            return "broadcast";
-        } else if (_mode == IMinVM.CallerMode.RecurrentBroadcast) {
+        if (_mode == IMinVM.CallerMode.Broadcast) return "broadcast";
+        if (_mode == IMinVM.CallerMode.RecurrentBroadcast)
             return "persistent broadcast";
-        } else if (_mode == IMinVM.CallerMode.Prank) {
-            return "prank";
-        } else if (_mode == IMinVM.CallerMode.RecurrentPrank) {
+        if (_mode == IMinVM.CallerMode.Prank) return "prank";
+        if (_mode == IMinVM.CallerMode.RecurrentPrank)
             return "persistent prank";
-        } else if (_mode == IMinVM.CallerMode.None) {
-            return "none";
-        } else {
-            return "unknown mode";
-        }
+        if (_mode == IMinVM.CallerMode.None) return "none";
+        return "unknown";
     }
 
     function getAddr(

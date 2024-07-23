@@ -27,6 +27,10 @@ contract Sandbox is Tested, Based {
     function testBase() public forked("RPC_ARBITRUM_ALCHEMY", 200000000) {
         base("MNEMONIC", "arbitrum");
         base("MNEMONIC", "RPC_ARBITRUM_ALCHEMY");
+        address(0x64).link("link-addr");
+        address(0x64).link20("link-tkn");
+        bytes32(hex"64").link("link-tx");
+        block.number.link("link-block");
     }
 
     function testDlg() public {
@@ -57,6 +61,7 @@ contract Sandbox is Tested, Based {
         bytes(val.txt()).length.eq(66, "str");
         bytes(val.str()).length.eq(3, "txt");
 
+        10.1 ether.dstr().eq("10.10", "dec-0");
         12.5e8.dstr(8).eq("12.50", "dec-1");
         2524e8.dstr(8).eq("2524.00", "dec-2");
         5000.01e8.dstr(8).eq("5000.01", "dec-3");
@@ -64,12 +69,14 @@ contract Sandbox is Tested, Based {
         0.0005e8.dstr(8).eq("0.0005", "dec-4");
         0.1e2.dstr(2).eq("0.10", "dec-5");
         1 ether.dstr(18).eq("1.00", "dec-6");
+
         100.10101 ether.dstr(18).eq("100.10101", "dec-7");
-        10101010.10101010 ether.dstr(18).eq("10101010.1010101", "dec-7");
-        10101010.1 ether.dstr(18).eq("10101010.10", "dec-7");
-        10101010.01 ether.dstr(18).eq("10101010.01", "dec-8");
-        10101010.000 ether.dstr(18).eq("10101010.00", "dec-9");
-        10101010.0001 ether.dstr(18).eq("10101010.0001", "dec-9");
+        10101010.10101010 ether.dstr(18).eq("10101010.1010101", "dec-8");
+
+        10101010.1 ether.dstr(18).eq("10101010.10", "dec-9");
+        10101010.01 ether.dstr(18).eq("10101010.01", "dec-10");
+        10101010.000 ether.dstr(18).eq("10101010.00", "dec-11");
+        10101010.0001 ether.dstr(18).eq("10101010.0001", "dec-12");
 
         PLog.clg("s1", address(0x64), 100e4);
         PLog.clg("s2", "s3");
@@ -93,6 +100,7 @@ contract Sandbox is Tested, Based {
 
         1.29e18.toDec(18, 1).eq(12, "a-b");
     }
+    function testLink() public {}
 
     function testBytes() public {
         bytes32 val = bytes32(abi.encodePacked(uint192(192), uint64(64)));

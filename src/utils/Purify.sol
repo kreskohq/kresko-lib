@@ -38,4 +38,11 @@ library Purify {
             out := fn
         }
     }
+    function StrOut(
+        function() view returns (string memory) fn
+    ) internal pure returns (function() pure returns (string memory) out) {
+        assembly {
+            out := fn
+        }
+    }
 }

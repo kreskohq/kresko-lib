@@ -42,7 +42,7 @@ interface FFIVm {
 
     function toString(address) external pure returns (string memory);
 
-    function toString(uint256) external view returns (string memory);
+    function toString(uint256) external pure returns (string memory);
     function toString(
         bytes calldata value
     ) external pure returns (string memory r);
@@ -56,6 +56,38 @@ function hasVM() view returns (bool) {
         len := extcodesize(vmAddr)
     }
     return len > 0;
+}
+function _exp() view returns (string memory res) {
+    res = "arbiscan.io";
+    if (block.chainid == 1) res = "etherscan.io";
+    if (block.chainid == 11155111) res = "sepolia.etherscan.io";
+    if (block.chainid == 137) res = "polygonscan.com";
+    if (block.chainid == 1101) res = "zkevm.polygonscan.com";
+    if (block.chainid == 1284) res = "moonscan.io";
+    if (block.chainid == 56) res = "bscscan.com";
+    if (block.chainid == 204) res = "opbnb.bscscan.com";
+    if (block.chainid == 8453) res = "basescan.org";
+    if (block.chainid == 43114) res = "snowtrace.io";
+    if (block.chainid == 250) res = "ftmscan.com";
+    if (block.chainid == 10) res = "optimistic.etherscan.io";
+    if (block.chainid == 100) res = "gnosisscan.io";
+    return string.concat("https://", res);
+}
+function explorer() pure returns (string memory) {
+    return Purify.StrOut(_exp)();
+}
+
+function explorer(address _a) pure returns (string memory) {
+    return string.concat(explorer(), "/address/", vmFFI.toString(_a));
+}
+function explorer20(address _a) pure returns (string memory) {
+    return string.concat(explorer(), "/token/", vmFFI.toString(_a));
+}
+function explorer(bytes32 _tx) pure returns (string memory) {
+    return string.concat(explorer(), "/tx/", vmFFI.toString(_tx));
+}
+function explorer(uint256 _bnr) pure returns (string memory) {
+    return string.concat(explorer(), "/block/", vmFFI.toString(_bnr));
 }
 
 function execFFI(string[] memory args) returns (bytes memory) {

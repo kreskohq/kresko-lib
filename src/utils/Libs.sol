@@ -119,7 +119,14 @@ library Utils {
         string memory _a,
         string memory _b
     ) internal pure returns (bool) {
-        return keccak256(bytes(_a)) == keccak256(bytes(_b));
+        return equals(bytes(_a), bytes(_b));
+    }
+
+    function equals(
+        bytes memory _a,
+        bytes memory _b
+    ) internal pure returns (bool) {
+        return keccak256(_a) == keccak256(_b);
     }
 
     function str(bytes32 _val) internal pure returns (string memory) {
@@ -132,6 +139,11 @@ library Utils {
                 res = string.concat(res, string(bytes.concat(_val[i])));
         }
     }
+
+    function dstr(uint256 _val) internal pure returns (string memory) {
+        return dstr(_val, 18);
+    }
+
     function dstr(
         uint256 _val,
         uint256 _dec
