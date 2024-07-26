@@ -2164,7 +2164,7 @@ export const iDataABI = [
 			{
 				name: 'args',
 				type: 'tuple',
-				internalType: 'struct IData.PreviewWithdrawArgs',
+				internalType: 'struct IData.PreviewWd',
 				components: [
 					{
 						name: 'vaultAsset',
