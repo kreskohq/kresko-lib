@@ -1,7 +1,6 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {mAddr} from "./s/MinVm.s.sol";
 
 library ArrayConversion {
     event log_array(uint256[] val);
@@ -454,30 +453,6 @@ library ArrayConversion {
 
     function clg(uint8 _val1, uint8 _val2, string memory _lbl) internal {
         emit log_named_array(_lbl, [_val1, _val2].dyn256());
-    }
-
-    function clg(
-        string memory _lbl,
-        string memory _mEnv,
-        uint32[] memory _idxs
-    ) internal {
-        address[] memory _tmp = new address[](_idxs.length);
-        for (uint256 i; i < _idxs.length; i++) {
-            _tmp[i] = mAddr(_mEnv, _idxs[i]);
-        }
-        emit log_named_array(_lbl, _tmp);
-    }
-
-    function clg(
-        uint32[] memory _idxs,
-        string memory _mEnv,
-        string memory _lbl
-    ) internal {
-        address[] memory _tmp = new address[](_idxs.length);
-        for (uint256 i; i < _idxs.length; i++) {
-            _tmp[i] = mAddr(_mEnv, _idxs[i]);
-        }
-        emit log_named_array(_lbl, _tmp);
     }
 
     function clg(string memory _lbl, uint8[2] memory _val) internal {

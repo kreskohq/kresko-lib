@@ -9,18 +9,18 @@ string constant testMnemonic = "error burger code";
 contract Wallet {
     string private __mEnv = "MNEMONIC_DEVNET";
 
-    modifier mnemonic(string memory _mEnv) {
-        __mEnv = _mEnv;
+    modifier mnemonic(string memory _env) {
+        __mEnv = _env;
         _;
     }
 
-    /// @param _mEnv name of the env variable, default is MNEMONIC_DEVNET
-    function useMnemonic(string memory _mEnv) internal {
-        __mEnv = _mEnv;
+    /// @param _env name of the env variable, default is MNEMONIC_DEVNET
+    function useMnemonic(string memory _env) internal {
+        __mEnv = _env;
     }
 
     /// @param _mIdx mnemonic index
-    function getPk(uint32 _mIdx) internal returns (uint256) {
+    function getPk(uint32 _mIdx) internal view returns (uint256) {
         return mPk(__mEnv, _mIdx);
     }
 
@@ -32,5 +32,12 @@ contract Wallet {
     /// @param _pkEnv name of the env variable
     function getAddr(string memory _pkEnv) internal returns (address) {
         return mvm.rememberKey(mvm.envOr(_pkEnv, 0));
+    }
+
+    function getEnv(
+        string memory _envKey,
+        string memory _defaultKey
+    ) internal view returns (string memory) {
+        return mvm.envOr(_envKey, mvm.envString(_defaultKey));
     }
 }

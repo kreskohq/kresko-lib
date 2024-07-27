@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.20;
 
-import {ERC1967Utils, ERC1967Proxy, ITransparentUpgradeableProxy} from "@oz/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {ERC1967Utils, ERC1967Proxy, ITransparentUpgradeableProxy} from "../../lib/openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 contract TransparentUpgradeableProxy is ERC1967Proxy {
     address private immutable _admin;

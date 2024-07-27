@@ -2,14 +2,24 @@
 pragma solidity ^0.8.0;
 
 import {PLog} from "./PLog.s.sol";
-import {IMinVM, LibVm, mvm} from "./MinVm.s.sol";
+import {IMinVm, VmHelp, VmCaller, mvm} from "./VmLibs.s.sol";
 
 // solhint-disable
 
-library Anvil {
+library LibAnvil {
     using PLog for *;
 
-    function setStorage(address account, bytes32 slot, bytes32 value) internal {
+    modifier noCallers() {
+        (IMinVm.CallerMode _m, address _s, address _o) = VmCaller.clear();
+        _;
+        VmCaller.restore(_m, _s, _o);
+    }
+
+    function setStorage(
+        address account,
+        bytes32 slot,
+        bytes32 value
+    ) internal noCallers {
         mvm.rpc(
             "anvil_setStorageAt",
             string.concat(
@@ -25,18 +35,15 @@ library Anvil {
         mine();
     }
 
-    function mine() internal {
+    function mine() internal noCallers {
         uint256 blockNr = block.number;
-        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
 
         mvm.rpc("evm_mine", "[]");
         mvm.createSelectFork("localhost", blockNr + 1);
-
-        LibVm.restore(_m, _s, _o);
     }
 
-    function syncTime(uint256 time) internal {
-        uint256 current = time != 0 ? time : LibVm.getTime();
+    function syncTime(uint256 time) internal noCallers {
+        uint256 current = time != 0 ? time : VmHelp.getTime();
         mvm.rpc(
             "evm_setNextBlockTimestamp",
             string.concat("[", mvm.toString(current), "]")

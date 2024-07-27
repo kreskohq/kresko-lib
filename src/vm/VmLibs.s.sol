@@ -1,12 +1,109 @@
 // solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {hasVM, mAddr, store, mvm, LibVm} from "./MinVm.s.sol";
+import {hasVM, mAddr, store, IMinVm, mvm} from "./MinVm.s.sol";
 import {PLog} from "./PLog.s.sol";
-import {Purify} from "../Purify.sol";
-import {Utils} from "../Libs.sol";
+import {Purify} from "../utils/Purify.sol";
+import {Utils} from "../utils/Libs.sol";
 
-library Help {
+library VmCaller {
+    struct Values {
+        address msgSender;
+        address txOrigin;
+        string mode;
+    }
+
+    function msgSender() internal returns (address s_) {
+        (, s_, ) = mvm.readCallers();
+    }
+
+    function clear()
+        internal
+        returns (IMinVm.CallerMode m_, address s_, address o_)
+    {
+        (m_, s_, o_) = unbroadcast();
+
+        if (
+            m_ == IMinVm.CallerMode.Prank ||
+            m_ == IMinVm.CallerMode.RecurrentPrank
+        ) {
+            mvm.stopPrank();
+        }
+    }
+
+    function restore(IMinVm.CallerMode _m, address _ss, address _so) internal {
+        if (_m == IMinVm.CallerMode.Broadcast) mvm.broadcast(_ss);
+        if (_m == IMinVm.CallerMode.RecurrentBroadcast) mvm.startBroadcast(_ss);
+        if (_m == IMinVm.CallerMode.Prank) {
+            _ss == _so ? mvm.prank(_ss, _so) : mvm.prank(_ss);
+        }
+        if (_m == IMinVm.CallerMode.RecurrentPrank) {
+            _ss == _so ? mvm.startPrank(_ss, _so) : mvm.startPrank(_ss);
+        }
+    }
+
+    function unbroadcast()
+        internal
+        returns (IMinVm.CallerMode m_, address s_, address o_)
+    {
+        (m_, s_, o_) = mvm.readCallers();
+        if (
+            m_ == IMinVm.CallerMode.Broadcast ||
+            m_ == IMinVm.CallerMode.RecurrentBroadcast
+        ) {
+            mvm.stopBroadcast();
+        }
+    }
+
+    function unprank()
+        internal
+        returns (IMinVm.CallerMode m_, address s_, address o_)
+    {
+        (m_, s_, o_) = mvm.readCallers();
+        if (
+            m_ == IMinVm.CallerMode.Prank ||
+            m_ == IMinVm.CallerMode.RecurrentPrank
+        ) {
+            mvm.stopPrank();
+        }
+    }
+
+    function values() internal returns (Values memory) {
+        (IMinVm.CallerMode m_, address s_, address o_) = mvm.readCallers();
+        return Values(s_, o_, callModeStr(m_));
+    }
+
+    function callModeStr(
+        IMinVm.CallerMode _mode
+    ) internal pure returns (string memory) {
+        if (_mode == IMinVm.CallerMode.Broadcast) return "broadcast";
+        if (_mode == IMinVm.CallerMode.RecurrentBroadcast)
+            return "persistent broadcast";
+        if (_mode == IMinVm.CallerMode.Prank) return "prank";
+        if (_mode == IMinVm.CallerMode.RecurrentPrank)
+            return "persistent prank";
+        if (_mode == IMinVm.CallerMode.None) return "none";
+        return "unknown";
+    }
+
+    function mode() internal returns (string memory) {
+        (IMinVm.CallerMode _m, , ) = mvm.readCallers();
+        return callModeStr(_m);
+    }
+}
+
+library VmHelp {
+    function getAddr(
+        string memory _mEnv,
+        uint32 _idx
+    ) internal returns (address) {
+        return mAddr(_mEnv, _idx);
+    }
+
+    function getTime() internal returns (uint256) {
+        return uint256(mvm.unixTime() / 1000);
+    }
+
     function txt(address _val) internal pure returns (string memory) {
         return mvm.toString(_val);
     }
@@ -266,7 +363,7 @@ library Log {
     }
 
     function ctx(string memory _id) internal {
-        LibVm.Callers memory _c = LibVm.callers();
+        VmCaller.Values memory _c = VmCaller.values();
         string memory _t = store().logPrefix;
         id(_id);
         hr();
@@ -276,11 +373,11 @@ library Log {
                 block.timestamp.str()
             )
         );
-        clg("address(this) ->", Help.txt(address(this)));
+        clg("address(this) ->", VmHelp.txt(address(this)));
         dlg(address(this).balance, "eth ->");
         clg(
             "msg.sender/tx.sender ->",
-            Help.txt(msg.sender).cc("/", Help.txt(tx.origin))
+            VmHelp.txt(msg.sender).cc("/", VmHelp.txt(tx.origin))
         );
         clg(
             "eth ->",
@@ -291,7 +388,7 @@ library Log {
         clg("tx-mode ->", _c.mode);
         clg(
             "msg.sender/tx.origin ->",
-            Help.txt(_c.msgSender).cc("/", Help.txt(_c.txOrigin))
+            VmHelp.txt(_c.msgSender).cc("/", VmHelp.txt(_c.txOrigin))
         );
         clg(
             "eth ->",

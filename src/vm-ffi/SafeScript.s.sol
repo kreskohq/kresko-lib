@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {MultisendAddr} from "./Multisends.s.sol";
-import {mvm} from "../s/MinVm.s.sol";
-import {execFFI, getFFIPath} from "../s/Base.s.sol";
-import {PLog} from "../s/PLog.s.sol";
-import {Utils} from "../Libs.sol";
-import {__revert} from "../Funcs.sol";
+import {mvm, execFFI, getFFIPath} from "../vm/MinVm.s.sol";
+import {__revert} from "../utils/Funcs.sol";
+import {Utils} from "../utils/Libs.sol";
+import {PLog} from "../vm/PLog.s.sol";
 
 // solhint-disable
 

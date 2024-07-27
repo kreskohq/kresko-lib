@@ -3,11 +3,11 @@
 pragma solidity ^0.8.0;
 
 import {Test} from "forge-std/Test.sol";
-import {IMinVM} from "./MinVm.s.sol";
-import {Scripted, LibVm} from "./Scripted.s.sol";
+import {IMinVm} from "./MinVm.s.sol";
+import {Scripted, VmCaller} from "./Scripted.s.sol";
 
 abstract contract Tested is Scripted, Test {
-    using LibVm for IMinVM.CallerMode;
+    using VmCaller for IMinVm.CallerMode;
     address user0;
     address user1;
     address user2;
@@ -27,49 +27,49 @@ abstract contract Tested is Scripted, Test {
         address who = getAddr(_mIdx);
         vm.startPrank(who, who);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
     }
 
     modifier prankedByKey(string memory _pkEnv) {
         address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
     }
 
     modifier prankedByNew(string memory _label) {
         address who = prankNew(_label).addr;
         vm.startPrank(who, who);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
     }
 
     modifier reprankedById(uint32 _mIdx) {
-        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVm.CallerMode _m, address _s, address _o) = VmCaller.clear();
 
         address who = getAddr(_mIdx);
         vm.startPrank(who, who);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
         _m.restore(_s, _o);
     }
 
     modifier reprankedByKey(string memory _pkEnv) {
-        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVm.CallerMode _m, address _s, address _o) = VmCaller.clear();
 
         address who = getAddr(_pkEnv);
         vm.startPrank(who, who);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
         _m.restore(_s, _o);
     }
 
     modifier reprankedByNew(string memory _label) {
-        (IMinVM.CallerMode _m, address _s, address _o) = LibVm.clearCallers();
+        (IMinVm.CallerMode _m, address _s, address _o) = VmCaller.clear();
 
         prankNew(_label);
         _;
-        LibVm.clearCallers();
+        VmCaller.clear();
         _m.restore(_s, _o);
     }
 

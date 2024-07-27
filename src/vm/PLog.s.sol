@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {logp, explorer, explorer20, vmFFI} from "./Base.s.sol";
-import {Utils} from "../Libs.sol";
+import {Utils} from "../utils/Libs.sol";
 
 // solhint-disable
 

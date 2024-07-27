@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Scripted} from "./s/Scripted.s.sol";
-import {PLog} from "./s/PLog.s.sol";
-import {PythScript} from "./ffi/PythScript.s.sol";
+import {Scripted} from "./Scripted.s.sol";
+import {PLog} from "./PLog.s.sol";
+import {PythScript} from "../vm-ffi/PythScript.s.sol";
 
 abstract contract Based is PythScript, Scripted {
-    string internal _defaultRPC = "RPC_ARBITRUM_ALCHEMY";
+    string internal defaultRPC = "RPC_ARBITRUM_ALCHEMY";
     address internal sender;
 
     modifier based(string memory _mnemonic, string memory _network) {
@@ -65,7 +65,7 @@ abstract contract Based is PythScript, Scripted {
         try vm.rpcUrl(_network) returns (string memory url) {
             rpc = url;
         } catch {
-            rpc = getEnv(_network, _defaultRPC);
+            rpc = getEnv(_network, defaultRPC);
         }
         forkId_ = _blockNr != 0
             ? vm.createSelectFork(rpc, _blockNr)

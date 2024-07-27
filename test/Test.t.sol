@@ -1,20 +1,20 @@
 // solhint-disable
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
-import {Tested} from "../src/utils/s/Tested.t.sol";
-import {LibVm, Help, Log} from "../src/utils/s/LibVm.s.sol";
-import {ShortAssert} from "../src/utils/s/ShortAssert.t.sol";
-import {PLog, logp} from "../src/utils/s/PLog.s.sol";
+import {Tested} from "../src/vm/Tested.t.sol";
+import {VmCaller, VmHelp, Log} from "../src/vm/VmLibs.s.sol";
+import {ShortAssert} from "../src/vm/ShortAssert.t.sol";
+import {PLog, logp} from "../src/vm/PLog.s.sol";
 import {Utils} from "../src/utils/Libs.sol";
 import {__revert, split} from "../src/utils/Funcs.sol";
 import {MockPyth} from "../src/mocks/MockPyth.sol";
-import {Based} from "../src/utils/Based.s.sol";
+import {Based} from "../src/vm/Based.s.sol";
 
 contract Sandbox is Tested, Based {
     TestContract internal thing;
-    using LibVm for *;
+    using VmCaller for *;
+    using VmHelp for *;
     using Log for *;
-    using Help for *;
     using Utils for *;
     using ShortAssert for *;
 
@@ -150,20 +150,20 @@ contract Sandbox is Tested, Based {
         address second = getAddr(1);
         address third = getAddr(2);
         vm.startBroadcast(first);
-        peekSender().eq(first);
+        vmSender().eq(first);
 
         broadcastWith(second);
-        peekSender().eq(second);
+        vmSender().eq(second);
 
         broadcastWith(first);
         _broadcastRestored().eq(second);
 
-        peekSender().eq(first);
+        vmSender().eq(first);
         thing.addr().eq(second);
 
         broadcastWith(third);
         _unbroadcastedRestored().eq(msg.sender);
-        peekSender().eq(third);
+        vmSender().eq(third);
         vm.stopBroadcast();
 
         _unbroadcastedRestored();
@@ -175,7 +175,7 @@ contract Sandbox is Tested, Based {
         returns (address)
     {
         thing.save();
-        return peekSender();
+        return vmSender();
     }
 
     function _unbroadcastedRestored()
@@ -184,7 +184,7 @@ contract Sandbox is Tested, Based {
         returns (address)
     {
         thing.save();
-        return peekSender();
+        return vmSender();
     }
 
     function testPranks() public {
@@ -192,28 +192,28 @@ contract Sandbox is Tested, Based {
         address second = getAddr(1);
         address third = getAddr(2);
         vm.startPrank(first);
-        peekSender().eq(first);
+        vmSender().eq(first);
 
         prank(second);
-        peekSender().eq(second);
+        vmSender().eq(second);
 
         prank(first);
         _prankRestored().eq(second);
-        peekSender().eq(first);
+        vmSender().eq(first);
         thing.addr().eq(second);
 
         prank(third);
         _unprankRestored().eq(msg.sender);
-        peekSender().eq(third);
+        vmSender().eq(third);
     }
     function _prankRestored() internal repranked(getAddr(1)) returns (address) {
         thing.save();
-        return peekSender();
+        return vmSender();
     }
 
     function _unprankRestored() internal reclearCallers returns (address) {
         thing.save();
-        return peekSender();
+        return vmSender();
     }
 
     function testMinLog() public pure {
@@ -223,8 +223,8 @@ contract Sandbox is Tested, Based {
 
 contract TestContract {
     using Log for *;
-    using LibVm for *;
-    using Help for *;
+    using VmCaller for *;
+    using VmHelp for *;
     address public addr;
 
     TestContract2 public thing2;

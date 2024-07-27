@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// solhint-disable
+
 pragma solidity ^0.8.0;
 
 interface IAccess {
@@ -43,4 +45,18 @@ interface IAccess {
         bytes32,
         address
     ) external view returns (uint256);
+}
+
+interface Initializable {
+    function initialize(
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals,
+        address _admin,
+        address _kresko,
+        address _underlying,
+        address _feeRecipient,
+        uint48 _openFee,
+        uint40 _closeFee
+    ) external;
 }

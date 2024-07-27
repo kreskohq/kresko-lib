@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 import {IERC20} from "./IERC20.sol";
 import {IERC20Permit} from "./IERC20Permit.sol";
 
+// solhint-disable
+
 error APPROVE_FAILED(address, address, address, uint256);
 error ETH_TRANSFER_FAILED(address, uint256);
 error TRANSFER_FAILED(address, address, address, uint256);

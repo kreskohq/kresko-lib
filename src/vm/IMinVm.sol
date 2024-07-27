@@ -1,10 +1,8 @@
-// solhint-disable
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import {FFIVm, hasVM, vmAddr} from "./Base.s.sol";
-import {Purify} from "../Purify.sol";
+import {IFFIVm} from "./Base.s.sol";
 
-interface IMinVM is FFIVm {
+interface IMinVm is IFFIVm {
     enum CallerMode {
         // No caller modification is currently active.
         None,
@@ -98,21 +96,25 @@ interface IMinVM is FFIVm {
     function envOr(
         string calldata n,
         string calldata d
-    ) external returns (string memory);
+    ) external view returns (string memory);
 
-    function envOr(string calldata n, uint256 d) external returns (uint256);
+    function envOr(
+        string calldata n,
+        uint256 d
+    ) external view returns (uint256);
 
-    function envOr(string calldata n, address d) external returns (address);
+    function envOr(
+        string calldata n,
+        address d
+    ) external view returns (address);
 
-    function envString(string calldata n) external returns (string memory);
+    function envString(string calldata n) external view returns (string memory);
 
-    function envUint(string calldata n) external returns (uint256);
+    function envUint(string calldata n) external view returns (uint256);
 
-    function envAddress(string calldata n) external returns (address);
+    function envAddress(string calldata n) external view returns (address);
 
     function createFork(string calldata urlOrAlias) external returns (uint256);
-
-    function load(address t, bytes32 s) external view returns (bytes32);
 
     // Signs data
     function sign(
@@ -129,20 +131,6 @@ interface IMinVM is FFIVm {
     function getCode(string calldata a) external view returns (bytes memory cc);
 
     function setEnv(string calldata k, string calldata v) external;
-
-    function toString(address value) external pure returns (string memory r);
-
-    function toString(
-        bytes calldata value
-    ) external pure returns (string memory r);
-
-    function toString(bytes32 value) external pure returns (string memory r);
-
-    function toString(bool value) external pure returns (string memory r);
-
-    function toString(uint256 value) external pure returns (string memory r);
-
-    function toString(int256 value) external pure returns (string memory r);
 
     // Convert values from a string
     function parseBytes(
@@ -293,134 +281,17 @@ interface IMinVM is FFIVm {
 
     /// Write a serialized JSON object to a file. If the file exists, it will be overwritten.
     function writeJson(string calldata json, string calldata path) external;
-}
 
-IMinVM constant mvm = IMinVM(vmAddr);
+    function computeCreateAddress(
+        address deployer,
+        uint256 nonce
+    ) external pure returns (address);
 
-function mPk(string memory _mEnv, uint32 _idx) returns (uint256) {
-    return mvm.deriveKey(mvm.envOr(_mEnv, "error burger code"), _idx);
-}
+    function computeCreate2Address(
+        bytes32 salt,
+        bytes32 initCodeHash,
+        address deployer
+    ) external pure returns (address);
 
-function mAddr(string memory _mEnv, uint32 _idx) returns (address) {
-    return
-        mvm.rememberKey(
-            mvm.deriveKey(mvm.envOr(_mEnv, "error burger code"), _idx)
-        );
-}
-
-struct Store {
-    bool _failed;
-    bool logDisabled;
-    string logPrefix;
-}
-
-function store() view returns (Store storage s) {
-    if (!hasVM()) revert("no hevm");
-    assembly {
-        s.slot := 0x35b9089429a720996a27ffd842a4c293f759fc6856f1c672c8e2b5040a1eddfe
-    }
-}
-
-library LibVm {
-    struct Callers {
-        address msgSender;
-        address txOrigin;
-        string mode;
-    }
-
-    function callmode() internal returns (string memory) {
-        (IMinVM.CallerMode _m, , ) = mvm.readCallers();
-        return callModeStr(_m);
-    }
-
-    function clearCallers()
-        internal
-        returns (IMinVM.CallerMode m_, address s_, address o_)
-    {
-        (m_, s_, o_) = unbroadcast();
-
-        if (
-            m_ == IMinVM.CallerMode.Prank ||
-            m_ == IMinVM.CallerMode.RecurrentPrank
-        ) {
-            mvm.stopPrank();
-        }
-    }
-
-    function getTime() internal returns (uint256) {
-        return uint256(mvm.unixTime() / 1000);
-    }
-
-    function restore(IMinVM.CallerMode _m, address _ss, address _so) internal {
-        if (_m == IMinVM.CallerMode.Broadcast) mvm.broadcast(_ss);
-        if (_m == IMinVM.CallerMode.RecurrentBroadcast) mvm.startBroadcast(_ss);
-        if (_m == IMinVM.CallerMode.Prank) {
-            _ss == _so ? mvm.prank(_ss, _so) : mvm.prank(_ss);
-        }
-        if (_m == IMinVM.CallerMode.RecurrentPrank) {
-            _ss == _so ? mvm.startPrank(_ss, _so) : mvm.startPrank(_ss);
-        }
-    }
-
-    function unbroadcast()
-        internal
-        returns (IMinVM.CallerMode m_, address s_, address o_)
-    {
-        (m_, s_, o_) = mvm.readCallers();
-        if (
-            m_ == IMinVM.CallerMode.Broadcast ||
-            m_ == IMinVM.CallerMode.RecurrentBroadcast
-        ) {
-            mvm.stopBroadcast();
-        }
-    }
-
-    function unprank()
-        internal
-        returns (IMinVM.CallerMode m_, address s_, address o_)
-    {
-        (m_, s_, o_) = mvm.readCallers();
-        if (
-            m_ == IMinVM.CallerMode.Prank ||
-            m_ == IMinVM.CallerMode.RecurrentPrank
-        ) {
-            mvm.stopPrank();
-        }
-    }
-
-    function callers() internal returns (Callers memory) {
-        (IMinVM.CallerMode m_, address s_, address o_) = mvm.readCallers();
-        return Callers(s_, o_, callModeStr(m_));
-    }
-
-    function sender() internal returns (address s_) {
-        (, s_, ) = mvm.readCallers();
-    }
-
-    function callModeStr(
-        IMinVM.CallerMode _mode
-    ) internal pure returns (string memory) {
-        if (_mode == IMinVM.CallerMode.Broadcast) return "broadcast";
-        if (_mode == IMinVM.CallerMode.RecurrentBroadcast)
-            return "persistent broadcast";
-        if (_mode == IMinVM.CallerMode.Prank) return "prank";
-        if (_mode == IMinVM.CallerMode.RecurrentPrank)
-            return "persistent prank";
-        if (_mode == IMinVM.CallerMode.None) return "none";
-        return "unknown";
-    }
-
-    function getAddr(
-        string memory _mEnv,
-        uint32 _idx
-    ) internal returns (address) {
-        return mAddr(_mEnv, _idx);
-    }
-
-    function getPk(
-        string memory _mEnv,
-        uint32 _idx
-    ) internal returns (uint256) {
-        return mPk(_mEnv, _idx);
-    }
+    function randomAddress() external returns (address);
 }
