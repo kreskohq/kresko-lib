@@ -2,10 +2,12 @@
 pragma solidity ^0.8.0;
 
 import {IERC20} from "./IERC20.sol";
+import {IERC20Permit} from "./IERC20Permit.sol";
 
 error APPROVE_FAILED(address, address, address, uint256);
 error ETH_TRANSFER_FAILED(address, uint256);
 error TRANSFER_FAILED(address, address, address, uint256);
+error PERMIT_DUP_NONCE(address, uint256, uint256);
 
 /// @notice Safe ETH and ERC20 transfer library that gracefully handles missing return values.
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/SafeTransferLib.sol)
@@ -152,5 +154,22 @@ library SafeTransfer {
 
         if (!success)
             revert APPROVE_FAILED(address(token), msg.sender, to, amount);
+    }
+
+    function safePermit(
+        IERC20Permit token,
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        uint256 nonceBefore = token.nonces(owner);
+        token.permit(owner, spender, value, deadline, v, r, s);
+        uint256 nonceAfter = token.nonces(owner);
+        if (nonceAfter != nonceBefore + 1)
+            revert PERMIT_DUP_NONCE(owner, nonceBefore, nonceAfter);
     }
 }
