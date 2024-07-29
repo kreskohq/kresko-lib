@@ -1,12 +1,12 @@
+// solhint-disable
 // SPDX-License-Identifier: MIT
-// solhint-disable one-contract-per-file, max-line-length
 pragma solidity ^0.8.0;
 
+import "./types/Args.sol";
+import "./types/Data.sol";
 import {IErrorsEvents} from "./IErrorsEvents.sol";
 import {IDiamond} from "./IDiamond.sol";
-import {SwapArgs, BurnArgs, UncheckedWithdrawArgs, LiquidationArgs, SCDPLiquidationArgs, MintArgs, SCDPWithdrawArgs, SCDPRepayArgs, WithdrawArgs} from "./types/Args.sol";
 import {FeedConfiguration, MinterParams, SwapRouteSetter, SCDPInitArgs} from "./types/Setup.sol";
-import {RawPrice, Asset, SafetyState, Enums, MaxLiqInfo, MinterAccountState, SCDPAssetIndexes, SCDPParameters, Oracle} from "./types/Data.sol";
 import {IDiamondStateFacet} from "./IDiamondStateFacet.sol";
 import {IAuthorizationFacet} from "./IAuthorizationFacet.sol";
 import {IViewDataFacet} from "./IViewDataFacet.sol";

@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import {Asset, Enums, Oracle, RoleData, SafetyState, SCDPAccountIndexes, SCDPAssetData, SCDPAssetIndexes, SCDPSeizeData} from "./types/Data.sol";
 import {EnumerableSet} from "../../lib/openzeppelin-contracts/contracts/utils/structs/EnumerableSet.sol";
-import {IERC1155} from "../vendor/IERC1155.sol";
+import {IERC1155} from "../token/IERC1155.sol";
 
 interface IGatingManager {
     function transferOwnership(address) external;

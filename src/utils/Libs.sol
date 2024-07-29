@@ -361,6 +361,33 @@ library Utils {
     ) internal pure returns (string memory) {
         return string.concat(_a, _b, _c, _d);
     }
+
+    function toAddress(bytes32 b) internal pure returns (address) {
+        return address(uint160(uint256(b)));
+    }
+
+    function toBytes32(address a) internal pure returns (bytes32) {
+        return bytes32(bytes20(uint160(a)));
+    }
+
+    function toAddr(bytes memory b) internal pure returns (address) {
+        return abi.decode(b, (address));
+    }
+
+    function toArray(
+        bytes memory value
+    ) internal pure returns (bytes[] memory result) {
+        result = new bytes[](1);
+        result[0] = value;
+    }
+
+    function add(bytes32 a, uint256 b) internal pure returns (bytes32) {
+        return bytes32(uint256(a) + b);
+    }
+
+    function sub(bytes32 a, uint256 b) internal pure returns (bytes32) {
+        return bytes32(uint256(a) - b);
+    }
 }
 
 library Meta {

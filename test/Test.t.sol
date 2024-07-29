@@ -10,7 +10,7 @@ import {__revert, split} from "../src/utils/Funcs.sol";
 import {MockPyth} from "../src/mocks/MockPyth.sol";
 import {Based} from "../src/vm/Based.s.sol";
 
-contract Sandbox is Tested, Based {
+contract TTest is Tested, Based {
     TestContract internal thing;
     using VmCaller for *;
     using VmHelp for *;

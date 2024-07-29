@@ -4,6 +4,7 @@ out = "out"
 libs = ["lib"]
 ffi = true
 via_ir = false
+evm_version = "cancun"
 remappings = [
     '@oz-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/',
     '@oz/=lib/openzeppelin-contracts/contracts/',

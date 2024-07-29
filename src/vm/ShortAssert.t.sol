@@ -123,20 +123,6 @@ library ShortAssert {
         return !store()._failed;
     }
 
-    function assertTrue(bool condition) internal {
-        if (!condition) {
-            emit log("Error: Assertion Failed");
-            fail();
-        }
-    }
-
-    function assertTrue(bool condition, string memory err) internal {
-        if (!condition) {
-            _log("Error", err);
-            assertTrue(condition);
-        }
-    }
-
     function eq(address a, address b) internal returns (bool) {
         if (a != b) {
             emit log("Error: a == b not satisfied [address]");
@@ -679,7 +665,7 @@ library ShortAssert {
         }
     }
 
-    function checkEq0(
+    function isEqz(
         bytes memory a,
         bytes memory b
     ) internal pure returns (bool ok) {
@@ -695,8 +681,8 @@ library ShortAssert {
         }
     }
 
-    function eq0(bytes memory a, bytes memory b) internal {
-        if (!checkEq0(a, b)) {
+    function eqz(bytes memory a, bytes memory b) internal {
+        if (!isEqz(a, b)) {
             emit log("Error: a == b not satisfied [bytes]");
             emit log_named_bytes("      Left", a);
             emit log_named_bytes("     Right", b);
@@ -704,15 +690,15 @@ library ShortAssert {
         }
     }
 
-    function eq0(bytes memory a, bytes memory b, string memory err) internal {
-        if (!checkEq0(a, b)) {
+    function eqz(bytes memory a, bytes memory b, string memory err) internal {
+        if (!isEqz(a, b)) {
             _log("Error", err);
-            eq0(a, b);
+            eqz(a, b);
         }
     }
 
     function notEq0(bytes memory a, bytes memory b) internal {
-        if (checkEq0(a, b)) {
+        if (isEqz(a, b)) {
             emit log("Error: a != b not satisfied [bytes]");
             emit log_named_bytes("      Left", a);
             emit log_named_bytes("     Right", b);
@@ -725,18 +711,32 @@ library ShortAssert {
         bytes memory b,
         string memory err
     ) internal {
-        if (checkEq0(a, b)) {
+        if (isEqz(a, b)) {
             _log("Error", err);
             notEq0(a, b);
         }
     }
 
-    function isFalse(bool data) internal {
-        assertTrue(!data);
+    function yes(bool a) internal {
+        if (!a) {
+            emit log("Error: Assertion Failed");
+            fail();
+        }
     }
 
-    function isFalse(bool data, string memory err) internal {
-        assertTrue(!data, err);
+    function yes(bool a, string memory err) internal {
+        if (!a) {
+            _log("Error", err);
+            yes(a);
+        }
+    }
+
+    function no(bool a) internal {
+        yes(!a);
+    }
+
+    function no(bool a, string memory err) internal {
+        yes(!a, err);
     }
 
     function eq(bool a, bool b) internal {
@@ -756,11 +756,11 @@ library ShortAssert {
     }
 
     function eq(bytes memory a, bytes memory b) internal {
-        eq0(a, b);
+        eqz(a, b);
     }
 
     function eq(bytes memory a, bytes memory b, string memory err) internal {
-        eq0(a, b, err);
+        eqz(a, b, err);
     }
 
     function eq(uint256[] memory a, uint256[] memory b) internal {
